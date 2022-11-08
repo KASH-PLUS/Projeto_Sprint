@@ -12,7 +12,7 @@ from random import randint
 from matplotlib.animation import FuncAnimation
 import matplotlib.pyplot as plt # Definindo um "apelido" para a biblioteca
 import openpyxl
-from slack import chamadoSlack
+# from slack import chamadoSlack
 from wordCloud import cloud
 
 if os.name == "nt":
@@ -65,18 +65,22 @@ def metricasMaximas(idCpu, idDisco, idRam):
 
     for i in idCpu:
         queryCpu = f"UPDATE tbComponente SET metricaMaxima = 100 WHERE idComponente = {i};"
+        print(queryCpu)
         time.sleep(1)
         insert(queryCpu)
 
     for i in idDisco:
         queryDisco = f"UPDATE tbComponente SET metricaMaxima = {conversao_bytes(disk_usage(disco).total, 3)} WHERE idComponente = {i};"
+        print(queryDisco)
         time.sleep(1)
         insert(queryDisco)
 
     for i in idRam:
         queryRam = f"UPDATE tbComponente SET metricaMaxima = {conversao_bytes(virtual_memory().total, 3)} WHERE idComponente = {i};"
+        print(queryRam)
         time.sleep(1)
         insert(queryRam)
+
 
 
 
@@ -232,19 +236,19 @@ def insertPeriodico(idCpu, idDisco, idRam, serialNumber, nome):
             queryRam = f"INSERT INTO tbRegistro(fkComponente, registro, dataHora) VALUES ('{i}', '{usoAtualMemoria}', '{dataHora}');"
             insert(queryRam)
 
-        if(float(usoDisco) > float(discoTotal[0]) * 0.69):
-            msg = f"USO DO DISCO FORA DO IDEAL!\nSerialNumber: {serialNumber}\nUso: {usoDisco}GB\nIdeal: {float(discoTotal[0]) * 0.69}GB"
-            chamadoSlack(msg, nome)
+        # if(float(usoDisco) > float(discoTotal[0]) * 0.69):
+        #    msg = f"USO DO DISCO FORA DO IDEAL!\nSerialNumber: {serialNumber}\nUso: {usoDisco}GB\nIdeal: {float(discoTotal[0]) * 0.69}GB"
+        #    chamadoSlack(msg, nome)
 
-        if(float(usoAtualMemoriaPorc) > 69):
-            msg = f"USO DE MEMORIA FORA DO IDEAL!\nSerialNumber: {serialNumber}\nUso: {usoAtualMemoriaPorc}%\nIdeal: 0 ~ 69.9%"
-            chamadoSlack(msg, nome)
+        # if(float(usoAtualMemoriaPorc) > 69):
+        #   msg = f"USO DE MEMORIA FORA DO IDEAL!\nSerialNumber: {serialNumber}\nUso: {usoAtualMemoriaPorc}%\nIdeal: 0 ~ 69.9%"
+        #   chamadoSlack(msg, nome)
         
-        if(int(usoCpuPorc) > 69):
-            msg = f"USO DA CPU FORA DO IDEAL!\nSerialNumber: {serialNumber}\nUso: {usoCpuPorc}%\nIdeal: 0 ~ 69.9%"
-            chamadoSlack(msg, nome)
+        # if(int(usoCpuPorc) > 69):
+        #   msg = f"USO DA CPU FORA DO IDEAL!\nSerialNumber: {serialNumber}\nUso: {usoCpuPorc}%\nIdeal: 0 ~ 69.9%"
+        #   chamadoSlack(msg, nome)
 
-        time.sleep(30)
+        # time.sleep(10)
 
 
 

@@ -35,12 +35,23 @@ idComponente INT PRIMARY KEY AUTO_INCREMENT
 ,tipo VARCHAR(100)
 ,metrica VARCHAR(100)
 ,metricaMaxima INT
-);
+)
+;
 
 CREATE TABLE tbRegistro(
 idRegistro INT PRIMARY KEY AUTO_INCREMENT
 ,fkComponente INT, FOREIGN KEY(fkComponente) REFERENCES tbComponente(idComponente)
 ,registro VARCHAR(50)
+,dataHora DATETIME
+);
+
+CREATE TABLE tbProcesso(
+idProcesso INT PRIMARY KEY AUTO_INCREMENT
+,fkMaquina VARCHAR(30), FOREIGN KEY(fkMaquina) REFERENCES tbMaquina(serialNumber)
+, idRegistro INT 
+, processo VARCHAR(50)
+, usoCpu VARCHAR(45)
+, usoRam VARCHAR(45)
 ,dataHora DATETIME
 );
 
@@ -91,3 +102,17 @@ CREATE VIEW vwFuncionario AS
             JOIN
         tbUsuario ON cnpj = fkEmpresa
 ;
+
+INSERT INTO tbEmpresa VALUES ('75885017000172', 'banco', 'banco@email.com', '', '');
+SELECT * FROM tbEmpresa;
+INSERT INTO tbUsuario VALUES (null, '75885017000172', 'adm', 'adm@email.com', '123', 'ADM');
+SELECT * FROM tbUsuario;
+INSERT INTO tbMaquina VALUES ('BRJ123', '75885017000172', 'Maquina1', '09541270', 'São Caetano do Sul', 'Sudeste');
+SELECT * FROM tbMaquina;
+INSERT INTO tbComponente VALUES (null, 'BRJ123', 'cpu', '%', null);
+INSERT INTO tbComponente VALUES (null, 'BRJ123', 'disco', 'mb', null);
+INSERT INTO tbComponente VALUES (null, 'BRJ123', 'ram', 'gb', null);
+SELECT * FROM tbComponente;
+SELECT * FROM tbRegistro;
+SELECT * FROM tbProcesso;
+

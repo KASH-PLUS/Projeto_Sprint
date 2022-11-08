@@ -102,8 +102,8 @@ def dashboard():
         listaProcessos = []
 
         for proc in process_iter():
-            infoProc = proc.as_dict(['name','cpu_percent'])
-            if infoProc['cpu_percent'] > 0:
+            infoProc = proc.as_dict(['name','cpu_percent', 'memory_percent'])
+            if infoProc['cpu_percent'] > 0 and infoProc['name'] != 'System Idle Process':
                 listaProcessos.append(infoProc)
 
         def func(e):
@@ -111,10 +111,14 @@ def dashboard():
 
         listaProcessos.sort(key=func, reverse=True)
 
-        processos.text = f"{'Nome':<25}CPU"
-
+        print('\n'f"{'Nome':<10}{'CPU':<10}MEMÓRIA")
         for proc in listaProcessos[:10]:
-            processos.text += f"\n{proc['name']:<25} {proc['cpu_percent']}"
+            nomeProcesso = proc['name']
+            cpuProcesso = proc['cpu_percent']
+            ramProcesso = round(proc['memory_percent'],2)
+            print("{} {} {}".format(nomeProcesso, cpuProcesso, ramProcesso))
+
+        time.sleep(5)
 
         os.system(codeCleaner)
 
