@@ -1,6 +1,13 @@
 from psutil import *
 
-placa = net_if_addrs()['eno1']
+placa = net_if_addrs()
+
+for i in enumerate(placa):
+
+    if(i[0] == 1):
+        minha_placa = i[1]
+
+placa = net_if_addrs()[minha_placa]
 
 print(placa)
 print("-"*50)
