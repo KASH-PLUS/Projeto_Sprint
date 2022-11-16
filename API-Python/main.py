@@ -2,7 +2,7 @@ from functions import divisaoComponentes, metricasMaximas, monitorar, info, plot
 from psutil import * 
 import time
 import os
-from functions import verificarComponentes, codeCleaner, insertPeriodico, plotar, metricasMaximas
+from functions import verificarComponentes, codeCleaner, insertPeriodico, plotar, metricasMaximas, cadastroRede
 from login import login
 from dash import dashboard
 import threading
@@ -93,6 +93,7 @@ def main():
         idDisco = componentes[1]
         idRam = componentes[2]
         metricasMaximas(idCpu, idDisco, idRam)
+        cadastroRede(serialNumber)
         menu(serialNumber, nome, idCpu, idDisco, idRam)
     elif opcao1tela == "2":
         print("Obrigado por utilizar nossos serviços")

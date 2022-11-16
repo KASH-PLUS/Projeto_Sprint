@@ -23,4 +23,3 @@ print("-"*50)
 print(net_io_counters())
 
 print("-"*50)
-
