@@ -176,7 +176,7 @@
 													style="color: green;">Bom</span></div>
 										</div>
 										<div class="col-auto">
-											<svg class="fa-2x" xmlns="http://www.w3.org/2000/svg" width="1.5em"
+											<svg id="svg_status" class="fa-2x" xmlns="http://www.w3.org/2000/svg" width="1.5em"
 												height="1.5em" viewBox="0 0 24 24" fill="none"
 												style="color: var(--bs-green)">
 												<path
@@ -197,7 +197,7 @@
 							<div class="card shadow mb-4" id="card_cpu" style="display: none;">
 								<div class="card-header d-flex justify-content-between align-items-center">
 									<h6 class="text-primary fw-bold m-0">Uso da CPU(%)</h6>
-								</div>
+								</div> 
 								<div class="card-body">
 									<div class="chart-area"
 										style="display: flex; align-items: center; justify-content: center;">
@@ -270,6 +270,8 @@
 
 </html>
 <script>
+	pesoCpu = 0;
+
 	setTimeout(addListeners, 500);
 
 	let proximaAtualizacao;
@@ -366,7 +368,6 @@
 
 	function atualizarGraficoCpu(serialNumber, dados, myChartCpu) {
 
-
 		fetch(`/medidas/tempo-realCpu/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
 			if (response.ok) {
 				response.json().then(function (novoRegistro) {
@@ -404,6 +405,7 @@
 	}
 
 	function obterDadosGraficoRam(serialNumber) {
+
 		document.getElementById("myChartRam").remove();
 
 		var divGrafico = document.getElementById("grafico_ram");
@@ -535,6 +537,8 @@
 	}
 
 	function obterDadosGraficoDisco(serialNumber) {
+
+		span_usoDisco.innerHTML = "";
 
 		document.getElementById('myChartDisco').remove();
 		var divGrafico = document.getElementById("grafico_disco");

@@ -12,8 +12,7 @@ from random import randint
 from matplotlib.animation import FuncAnimation
 import matplotlib.pyplot as plt  # Definindo um "apelido" para a biblioteca
 import openpyxl
-from slack import chamadoSlack
-from wordCloud import cloud
+#from wordCloud import cloud
 
 if os.name == "nt":
     sistema = "Windows"
@@ -250,19 +249,8 @@ def insertPeriodico(idCpu, idDisco, idRam, serialNumber, nome):
             queryRam = f"INSERT INTO tbRegistro(fkComponente, registro, dataHora) VALUES ('{i}', '{usoAtualMemoria}', '{dataHora}');"
             insert(queryRam)
 
-        if (float(usoDisco) > float(discoTotal[0]) * 0.69):
-            msg = f"USO DO DISCO FORA DO IDEAL!\nSerialNumber: {serialNumber}\nUso: {usoDisco}GB\nIdeal: {float(discoTotal[0]) * 0.69}GB"
-            chamadoSlack(msg, nome)
+        time.sleep(30)
 
-        if (float(usoAtualMemoriaPorc) > 69):
-            msg = f"USO DE MEMORIA FORA DO IDEAL!\nSerialNumber: {serialNumber}\nUso: {usoAtualMemoriaPorc}%\nIdeal: 0 ~ 69.9%"
-            chamadoSlack(msg, nome)
-
-        if (int(usoCpuPorc) > 69):
-            msg = f"USO DA CPU FORA DO IDEAL!\nSerialNumber: {serialNumber}\nUso: {usoCpuPorc}%\nIdeal: 0 ~ 69.9%"
-            chamadoSlack(msg, nome)
-
-        time.sleep(5)
 
 
 def relatorio():
