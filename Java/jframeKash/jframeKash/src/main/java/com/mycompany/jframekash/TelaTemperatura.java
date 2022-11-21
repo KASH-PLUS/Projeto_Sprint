@@ -8,6 +8,8 @@ import banco.TbUsuario;
 import com.github.britooo.looca.api.core.Looca;
 import com.github.britooo.looca.api.group.sistema.Sistema;
 import com.github.britooo.looca.api.group.temperatura.Temperatura;
+import java.util.Timer;
+import java.util.TimerTask;
 import javax.swing.ImageIcon;
 
 /**
@@ -20,16 +22,24 @@ public class TelaTemperatura extends javax.swing.JFrame {
     Sistema sistema = looca.getSistema();
     ImageIcon img = new ImageIcon("src/main/resources/logoWhite.png");
     TbUsuario usuario = new TbUsuario();
-    /**
-     * Creates new form TesteProcessos
-     */
+    
     public TelaTemperatura() {
         initComponents();
+        
+        Timer timer = new Timer();
+        
         if (sistema.getSistemaOperacional().equalsIgnoreCase("Windows")) {
             lblAviso.setText("Aviso: O Windows não tem dá permissão para capturarmos a temperatura!");
+        } else {
+            timer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    lblTemperatura.setText("Temperatura Atual: ");
+                    lblTemperatura.setText(lblTemperatura.getText() + temperatura.getTemperatura());
+                    prgTemperatura.setValue((temperatura.getTemperatura()).intValue());
+                }
+            }, 00, 5000);
         }
-        lblTemperatura.setText(lblTemperatura.getText() + temperatura.getTemperatura());
-        prgTemperatura.setValue((temperatura.getTemperatura()).intValue());
         
         img.setImage(img.getImage().getScaledInstance(lblLogo.getWidth(), lblLogo.getHeight(), 1));
         lblLogo.setIcon(img);
