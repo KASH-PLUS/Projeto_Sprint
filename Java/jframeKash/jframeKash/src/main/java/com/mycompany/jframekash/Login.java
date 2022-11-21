@@ -3,12 +3,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package com.mycompany.jframekash;
-//import javax.swing.JFrame;
 
-import banco.TbMaquina;
 import banco.TbMaquinaCrud;
-import banco.TbUsuario;
-import banco.TbUsuarioCrud;
+import banco.TbMaquina;
 import javax.swing.ImageIcon;
 
 /**
@@ -16,6 +13,8 @@ import javax.swing.ImageIcon;
  * @author User
  */
 public class Login extends javax.swing.JFrame {
+    ImageIcon img = new ImageIcon("src/main/resources/logoWhite.png");
+    
     public Login() {
         initComponents();
         ImageIcon img = new ImageIcon("src/main/resources/logoWhite.png");
@@ -32,23 +31,26 @@ public class Login extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        lblLogo = new javax.swing.JLabel();
+        lblTitulo = new javax.swing.JLabel();
         lblLogin = new javax.swing.JLabel();
         txtSerial = new javax.swing.JTextField();
         btnEntrar = new javax.swing.JButton();
-        lblLogo = new javax.swing.JLabel();
-        lblAlerta = new javax.swing.JLabel();
         lblErro = new javax.swing.JLabel();
-        lblTitulo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setBackground(new java.awt.Color(6, 35, 53));
-        setMaximizedBounds(new java.awt.Rectangle(0, 0, 381, 290));
-        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        setMaximumSize(new java.awt.Dimension(380, 300));
+
+        lblLogo.setFont(new java.awt.Font("Comic Sans MS", 3, 24)); // NOI18N
+        lblLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/logoWhite.png"))); // NOI18N
+        lblLogo.setText("Kash+");
+
+        lblTitulo.setFont(new java.awt.Font("Comic Sans MS", 0, 24)); // NOI18N
+        lblTitulo.setText("LOGIN");
 
         lblLogin.setFont(new java.awt.Font("Comic Sans MS", 0, 18)); // NOI18N
         lblLogin.setText("SerialNumber");
         lblLogin.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        getContentPane().add(lblLogin, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 100, -1, 21));
 
         txtSerial.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         txtSerial.setHorizontalAlignment(javax.swing.JTextField.CENTER);
@@ -57,7 +59,6 @@ public class Login extends javax.swing.JFrame {
                 txtSerialActionPerformed(evt);
             }
         });
-        getContentPane().add(txtSerial, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 140, 97, -1));
 
         btnEntrar.setBackground(new java.awt.Color(6, 35, 53));
         btnEntrar.setFont(new java.awt.Font("Comic Sans MS", 0, 18)); // NOI18N
@@ -68,34 +69,73 @@ public class Login extends javax.swing.JFrame {
                 btnEntrarActionPerformed(evt);
             }
         });
-        getContentPane().add(btnEntrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(152, 215, -1, -1));
-
-        lblLogo.setFont(new java.awt.Font("Comic Sans MS", 3, 24)); // NOI18N
-        lblLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/logoWhite.png"))); // NOI18N
-        lblLogo.setText("Kash+");
-        getContentPane().add(lblLogo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 100, 45));
-        getContentPane().add(lblAlerta, new org.netbeans.lib.awtextra.AbsoluteConstraints(1121, 6, -1, -1));
 
         lblErro.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         lblErro.setText("   ");
-        getContentPane().add(lblErro, new org.netbeans.lib.awtextra.AbsoluteConstraints(47, 251, -1, -1));
 
-        lblTitulo.setFont(new java.awt.Font("Comic Sans MS", 0, 24)); // NOI18N
-        lblTitulo.setText("LOGIN");
-        getContentPane().add(lblTitulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 20, -1, -1));
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(60, 60, 60)
+                        .addComponent(lblTitulo)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
+                        .addComponent(lblErro, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(67, 67, 67))))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblLogin)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(24, 24, 24)
+                        .addComponent(btnEntrar))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addComponent(txtSerial, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(113, 113, 113))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(34, 34, 34)
+                .addComponent(lblTitulo)
+                .addGap(44, 44, 44)
+                .addComponent(lblLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(11, 11, 11)
+                .addComponent(txtSerial, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnEntrar)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
+                .addComponent(lblErro)
+                .addGap(33, 33, 33))
+        );
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    private void txtSerialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSerialActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtSerialActionPerformed
+
     private void btnEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntrarActionPerformed
         TbMaquinaCrud maquinaCrud = new TbMaquinaCrud();
         TbMaquina validacao = new TbMaquina();
         String serialNumber = txtSerial.getText();
-        
+
         validacao = maquinaCrud.selecionar(serialNumber);
-        
-        
+
         if (validacao != null) {
             System.out.println("Deu select");
             if (serialNumber.equalsIgnoreCase(validacao.getSerialNumber())) {
@@ -105,21 +145,16 @@ public class Login extends javax.swing.JFrame {
                 in.setSerialNumber(serialNumber);
                 this.dispose();
             }else {
-                lblErro.setText("ERRO - Login/Senha inválidos");
-                System.out.println("Erro no select");
+                lblErro.setText("Desculpe, mas não encontramos seu cadastro");
             }
         }
         else {
-            lblErro.setText("Desculpe, mas não encontramos seu cadastro");
-            System.out.println("Erro no cadastro");
+            lblErro.setText("ERRO - Login/Senha inválidos");
+            System.out.println("Erro no select");
         }
-        
+
     }//GEN-LAST:event_btnEntrarActionPerformed
 
-    private void txtSerialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSerialActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtSerialActionPerformed
-    
     /**
      * @param args the command line arguments
      */
@@ -158,7 +193,6 @@ public class Login extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnEntrar;
-    private javax.swing.JLabel lblAlerta;
     private javax.swing.JLabel lblErro;
     private javax.swing.JLabel lblLogin;
     private javax.swing.JLabel lblLogo;
