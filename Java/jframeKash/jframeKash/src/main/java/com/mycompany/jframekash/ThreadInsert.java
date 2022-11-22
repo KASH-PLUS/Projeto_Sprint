@@ -6,6 +6,7 @@ package com.mycompany.jframekash;
 
 import banco.Conexao;
 import banco.ConexaoAzure;
+import banco.Pipefy;
 import banco.TbComponente;
 import banco.TbComponenteCrud;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -15,6 +16,7 @@ import com.github.britooo.looca.api.group.discos.DiscoGrupo;
 import com.github.britooo.looca.api.group.discos.Volume;
 import com.github.britooo.looca.api.group.memoria.Memoria;
 import com.github.britooo.looca.api.group.processador.Processador;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -42,7 +44,11 @@ public class ThreadInsert extends Thread {
     @Override
     public void run() {
         while (true) {
-            getComponentes();
+            try {
+                getComponentes();
+            } catch (IOException ex) {
+                Logger.getLogger(ThreadInsert.class.getName()).log(Level.SEVERE, null, ex);
+            }
             try {
                 Thread.sleep(30000); // tempo de cada insert
             } catch (InterruptedException ex) {
@@ -51,7 +57,7 @@ public class ThreadInsert extends Thread {
         }
     }
 
-    private void getComponentes() {
+    private void getComponentes() throws IOException {
         List<TbComponente> componentes = componeteCrud.selecionar(serialNumber);
 
         for (TbComponente componente : componentes) {
@@ -59,7 +65,7 @@ public class ThreadInsert extends Thread {
         }
     }
 
-    private void insertRegistro(Integer fkComponente, String tipo) {
+    private void insertRegistro(Integer fkComponente, String tipo) throws IOException {
 
         DateFormat dateFormat = new SimpleDateFormat("yyy/MM/dd HH:mm:ss");
         Date date = new Date();
@@ -79,6 +85,10 @@ public class ThreadInsert extends Thread {
         double usoMemoria = (double) longUsoMemoria;
 
         usoMemoria = usoMemoria / 1024 / 1024 / 1024;
+        
+        if (usoCpu > 1) {
+            Pipefy.criarCard();
+        }
 
         if (tipo.equals("disco")) {
             cursor.update(String.format("INSERT INTO tbRegistro(fkComponente, registro, dataHora) VALUES ( '%s', '%d', '%s' )", fkComponente, usoDisco, dataHora));
