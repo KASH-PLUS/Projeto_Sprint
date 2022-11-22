@@ -232,17 +232,22 @@ def insertPeriodico(idCpu, idDisco, idRam, serialNumber, nome):
             queryRam = f"INSERT INTO tbRegistro(fkComponente, registro, dataHora) VALUES ('{i}', '{usoAtualMemoria}', '{dataHora}');"
             insert(queryRam)
 
-        url = "https://app.pipefy.com/graphql"
+        # SITE PARA PEGAR ID DE CADA FIELD DO CARD PIPEFY
+        # https://app.pipefy.com/graphiql
+        url = "https://api.pipefy.com/graphql"
 
-        payload = {"query": "mutation{ createCard( input: { pipe_id: \"302821637\" fields_attributes: [ 	{field_id: \"colaborador_libraport_ou_externo_terceirizado\", field_value: \"Colaborador Libraport\"}   {field_id: \"solicitante\", field_value: \"404475106\"}   {field_id: \"Kash +\", field_value: \"Dinobot\"} {field_id: \"selecione_um_servi_o\", field_value: \"Telefonia\"}   {field_id: \"equipamento_de_telefonia\", field_value: \"Contact Center – Call\"}   {field_id: \"op_es_telefonia\", field_value: \"Configuração\"}   {field_id: \"descreva_sua_solicita_o\", field_value: \"Dinobot criar sabe\"} ] } )  }"}
+        data = {"query": "mutation{ createCard( input: { pipe_id: \"302821637\" fields_attributes: [ {field_id: \"aviso\", field_value: \"Sua CPU está fora do ideal\"} {field_id: \"serial_number\", field_value: \"AQUI VIRÁ O SERIAL NUMBER\"} {field_id: \"uso\", field_value: \"AQUI VIRÁ O USO DA CPU\"} {field_id: \"data_hora\", field_value: \"08/11/2022 00:00\"} ] } ) {clientMutationId card {id title }}}"}
+
+
         headers = {
-            "Authorization": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c2VyIjp7ImlkIjozMDIxNzYyNTMsImVtYWlsIjoiMjIyLTFjY28tZ3J1cG8xMEBiYW5kdGVjLmNvbS5iciIsImFwcGxpY2F0aW9uIjozMDAyMTM5MzZ9fQ.0tGf0vFw46qavWz3tae_SLtdJKIb9IGYjXTJHRve11V62YfFCTNlMpMvTdHYbfwiHU0bRHn35zypQSaALjZq2g",
-            "Content-Type": "application/json"
-        }
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c2VyIjp7ImlkIjozMDIxNzYyNTMsImVtYWlsIjoiMjIyLTFjY28tZ3J1cG8xMEBiYW5kdGVjLmNvbS5iciIsImFwcGxpY2F0aW9uIjozMDAyMTQwMDV9fQ.zV0vqSFmSDOMiHXQ2QsOhfjt_khTh5EJ_0myF0dbD8dzebwTL-nJ2wo7HR-sIrG6mkR0RdZV7uEIdY-c4aUfww",
+            "Content-Type": "application/json"}
 
-        response = requests.request("POST", url, json=payload, headers=headers)
+        response = requests.request("POST", url, json=data, headers=headers)
 
-        print(response.text)
+        print(response)
+
+        print(response.text, "oi")
         
         time.sleep(30)
 
