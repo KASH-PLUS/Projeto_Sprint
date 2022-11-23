@@ -85,21 +85,26 @@ public class ThreadInsert extends Thread {
         double usoMemoria = (double) longUsoMemoria;
 
         usoMemoria = usoMemoria / 1024 / 1024 / 1024;
-        
-        if (usoCpu > 1) {
-            Pipefy.criarCard();
-        }
 
         if (tipo.equals("disco")) {
             cursor.update(String.format("INSERT INTO tbRegistro(fkComponente, registro, dataHora) VALUES ( '%s', '%d', '%s' )", fkComponente, usoDisco, dataHora));
             System.out.println("Insert realizado");
+            if (usoMemoria > 70) {
+                Pipefy.criarCardRam();
+            }
         } else if (tipo.equals("ram")) {
             cursor.update(String.format("INSERT INTO tbRegistro(fkComponente, registro, dataHora) VALUES ( '%s', '%.2f', '%s' )", fkComponente, usoMemoria, dataHora));
             System.out.println("Insert realizado");
+            if (usoDisco > 60) {
+                Pipefy.criarCardDisco();
+            }
 
         } else if (tipo.equals("cpu")) {
             cursor.update(String.format("INSERT INTO tbRegistro(fkComponente, registro, dataHora) VALUES ( '%s', '%.2f', '%s' )", fkComponente, usoCpu, dataHora));
             System.out.println("Insert realizado");
+            if (usoCpu > 70) {
+                Pipefy.criarCardCpu();
+            }
         }
     }
 

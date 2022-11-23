@@ -39,7 +39,6 @@ public class Login extends javax.swing.JFrame {
         lblErro = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMaximumSize(new java.awt.Dimension(380, 300));
 
         lblLogo.setFont(new java.awt.Font("Comic Sans MS", 3, 24)); // NOI18N
         lblLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/logoWhite.png"))); // NOI18N
