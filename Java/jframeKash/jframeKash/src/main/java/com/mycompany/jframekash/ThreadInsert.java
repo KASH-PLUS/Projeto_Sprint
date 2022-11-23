@@ -95,8 +95,8 @@ public class ThreadInsert extends Thread {
         } else if (tipo.equals("ram")) {
             cursor.update(String.format("INSERT INTO tbRegistro(fkComponente, registro, dataHora) VALUES ( '%s', '%.2f', '%s' )", fkComponente, usoMemoria, dataHora));
             System.out.println("Insert realizado");
-            if (usoDisco > 60) {
-                Pipefy.criarCardDisco();
+            if (usoDisco > 10) {
+                Pipefy.criarCardDisco(usoDisco, this.serialNumber);
             }
 
         } else if (tipo.equals("cpu")) {

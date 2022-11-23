@@ -27,11 +27,11 @@ public class Pipefy {
         System.out.println(response);
     }
     
-     public static void criarCardDisco() throws IOException {
+     public static void criarCardDisco(Long usoDisco, String serialNumber ) throws IOException {
         OkHttpClient client = new OkHttpClient();
 
         MediaType mediaType = MediaType.parse("application/json");
-        RequestBody body = RequestBody.create(mediaType, "{\"query\": \"mutation{ createCard( input: { pipe_id: \\\"302821637\\\" fields_attributes: [ {field_id: \\\"aviso\\\", field_value: \\\"O uso de seu disco está fora do ideal\\\"} {field_id: \\\"serial_number\\\", field_value: \\\"AQUI VIRÁ O SERIAL NUMBER\\\"} {field_id: \\\"uso\\\", field_value: \\\"AQUI VIRÁ O USO DO DISCO\\\"} {field_id: \\\"data_hora\\\", field_value: \\\"08/11/2022 00:00\\\"} ] } ) {clientMutationId card {id title }}}\"}");
+        RequestBody body = RequestBody.create(mediaType, String.format( "{\"query\": \"mutation{ createCard( input: { pipe_id: \\\"302821637\\\" fields_attributes: [ {field_id: \\\"aviso\\\", field_value: \\\"O uso de seu disco está fora do ideal\\\"} {field_id: \\\"serial_number\\\", field_value: \\\"%s\\\"} {field_id: \\\"uso\\\", field_value: \\\"%d\\\"} {field_id: \\\"data_hora\\\", field_value: \\\"08/11/2022 00:00\\\"} ] } ) {clientMutationId card {id title }}}\"}", serialNumber, usoDisco));
         Request request = new Request.Builder()
                 .url("https://api.pipefy.com/graphql")
                 .post(body)
