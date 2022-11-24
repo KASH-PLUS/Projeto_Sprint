@@ -21,7 +21,7 @@ public class Pipefy {
         OkHttpClient client = new OkHttpClient();
 
         MediaType mediaType = MediaType.parse("application/json");
-        RequestBody body = RequestBody.create(mediaType, String.format("{\"query\": \"mutation{ createCard( input: { pipe_id: \\\"302821637\\\" phase_id: \\\"317555598\\\" title:\\\"Alerta de uso de CPU - Máquina %s\\\" fields_attributes: [ {field_id: \\\"aviso\\\", field_value: \\\"Sua CPU está fora do ideal\\\"} {field_id: \\\"serial_number\\\", field_value: \\\"%s\\\"} {field_id: \\\"uso\\\", field_value: \\\"%.2f\\\"} {field_id: \\\"data_hora\\\", field_value: \\\"%s\\\"} ] } ) {clientMutationId card {id title }}}\"}", serialNumber, serialNumber, usoCpu, dataHora));
+        RequestBody body = RequestBody.create(mediaType, String.format("{\"query\": \"mutation{ createCard( input: { pipe_id: \\\"302821637\\\" phase_id: \\\"317555598\\\" title:\\\"Alerta de uso de CPU - Máquina %s\\\" fields_attributes: [ {field_id: \\\"aviso\\\", field_value: \\\"Sua CPU está fora do ideal\\\"} {field_id: \\\"serial_number\\\", field_value: \\\"%s\\\"} {field_id: \\\"uso\\\", field_value: \\\"%.2f%% \\\"} {field_id: \\\"data_hora\\\", field_value: \\\"%s\\\"} ] } ) {clientMutationId card {id title }}}\"}", serialNumber, serialNumber, usoCpu, dataHora));
         Request request = new Request.Builder()
                 .url("https://api.pipefy.com/graphql")
                 .post(body)
@@ -42,7 +42,7 @@ public class Pipefy {
         OkHttpClient client = new OkHttpClient();
 
         MediaType mediaType = MediaType.parse("application/json");
-        RequestBody body = RequestBody.create(mediaType, String.format("{\"query\": \"mutation{ createCard( input: { pipe_id: \\\"302821637\\\" phase_id: \\\"317566487\\\" title:\\\"Alerta de uso de Disco - Máquina %s\\\" fields_attributes: [ {field_id: \\\"aviso\\\", field_value: \\\"O uso de seu disco está fora do ideal\\\"} {field_id: \\\"serial_number\\\", field_value: \\\"%s\\\"} {field_id: \\\"uso\\\", field_value: \\\"%d\\\"} {field_id: \\\"data_hora\\\", field_value: \\\"%s\\\"} ] } ) {clientMutationId card {id title }}}\"}", serialNumber, serialNumber, usoDisco, dataHora));
+        RequestBody body = RequestBody.create(mediaType, String.format("{\"query\": \"mutation{ createCard( input: { pipe_id: \\\"302821637\\\" phase_id: \\\"317566487\\\" title:\\\"Alerta de uso de Disco - Máquina %s\\\" fields_attributes: [ {field_id: \\\"aviso\\\", field_value: \\\"O uso de seu disco está fora do ideal\\\"} {field_id: \\\"serial_number\\\", field_value: \\\"%s\\\"} {field_id: \\\"uso\\\", field_value: \\\"%d GB\\\"} {field_id: \\\"data_hora\\\", field_value: \\\"%s\\\"} ] } ) {clientMutationId card {id title }}}\"}", serialNumber, serialNumber, usoDisco, dataHora));
         Request request = new Request.Builder()
                 .url("https://api.pipefy.com/graphql")
                 .post(body)
@@ -63,7 +63,7 @@ public class Pipefy {
         OkHttpClient client = new OkHttpClient();
 
         MediaType mediaType = MediaType.parse("application/json");
-        RequestBody body = RequestBody.create(mediaType, String.format("{\"query\": \"mutation{ createCard( input: { pipe_id: \\\"302821637\\\" phase_id: \\\"317574217\\\" title:\\\"Alerta de uso de RAM - Máquina %s\\\" fields_attributes: [ {field_id: \\\"aviso\\\", field_value: \\\"Sua RAM está fora do ideal\\\"} {field_id: \\\"serial_number\\\", field_value: \\\"%s\\\"} {field_id: \\\"uso\\\", field_value: \\\"%.2f\\\"} {field_id: \\\"data_hora\\\", field_value: \\\"%s\\\"} ] } ) {clientMutationId card {id title }}}\"}", serialNumber, serialNumber, usoMemoria, dataHora));
+        RequestBody body = RequestBody.create(mediaType, String.format("{\"query\": \"mutation{ createCard( input: { pipe_id: \\\"302821637\\\" phase_id: \\\"317574217\\\" title:\\\"Alerta de uso de RAM - Máquina %s\\\" fields_attributes: [ {field_id: \\\"aviso\\\", field_value: \\\"Sua RAM está fora do ideal\\\"} {field_id: \\\"serial_number\\\", field_value: \\\"%s\\\"} {field_id: \\\"uso\\\", field_value: \\\"%.2f %% \\\"} {field_id: \\\"data_hora\\\", field_value: \\\"%s\\\"} ] } ) {clientMutationId card {id title }}}\"}", serialNumber, serialNumber, usoMemoria, dataHora));
         Request request = new Request.Builder()
                 .url("https://api.pipefy.com/graphql")
                 .post(body)
