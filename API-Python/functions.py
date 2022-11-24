@@ -93,7 +93,12 @@ def cadastroRede(serialNumber):
 
     macAddress = placa[2].address
 
-    query = f"INSERT INTO tbRede(macAddress, fkMaquina) VALUES ('{macAddress}', '{serialNumber}');"
+    ipv4 = placa[0].address;
+    netmask4 = placa[0].netmask;
+    ipv6 = placa[1].address[:25]
+    netmask6 = placa[1].netmask
+
+    query = f"INSERT INTO tbRede(macAddress, ipv4, ipv6, netmask4, netmask6, fkMaquina) VALUES ('{macAddress}', '{ipv4}', '{ipv6}', '{netmask4}', '{netmask6}', '{serialNumber}');"
 
     insert(query)
 
@@ -249,7 +254,7 @@ def insertPeriodico(idCpu, idDisco, idRam, serialNumber, nome):
             queryRam = f"INSERT INTO tbRegistro(fkComponente, registro, dataHora) VALUES ('{i}', '{usoAtualMemoria}', '{dataHora}');"
             insert(queryRam)
 
-        time.sleep(30)
+        time.sleep(1)
 
 
 
@@ -284,6 +289,7 @@ def relatorio():
         arquivo.write("\n━━━━━ MEMÓRIA RAM ━━━━━\n\nMemória total: {} \nMemória disponivel: {} \nUso atual: {} \nPorcentagem de uso: {}%\n".format(
             memoriaTotal, memoriaDisponivel, usoAtualMemoria, memoriaEmUsoPerc))
 
+    freqCpu = float(round(cpu_freq().current, 0))
     usoCpuPorc = f'{cpu_percent()}%'
     usoPorCore = cpu_percent(percpu=True)
     qtdCores = cpu_count()
