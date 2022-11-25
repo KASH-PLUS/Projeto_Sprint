@@ -67,7 +67,7 @@ public class ThreadInsert extends Thread {
 
     private void insertRegistro(Integer fkComponente, String tipo) throws IOException {
 
-        DateFormat dateFormat = new SimpleDateFormat("yyy/MM/dd HH:mm:ss");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
         String dataHora = dateFormat.format(date);
 
@@ -83,27 +83,33 @@ public class ThreadInsert extends Thread {
 
         Long usoDisco = (totalDisco - discoDisponivel) / 1024 / 1024 / 1024;
         double usoMemoria = (double) longUsoMemoria;
+        
+        Long longMemoriaTotal = memoria.getTotal();
+        double usoMemoriaTotal = (double) longMemoriaTotal;
 
         usoMemoria = usoMemoria / 1024 / 1024 / 1024;
-
+        usoMemoriaTotal = usoMemoriaTotal  / 1024 / 1024 / 1024;
+        
+        Double usoMemoriaPercent = usoMemoria / usoMemoriaTotal * 100;
+        
         if (tipo.equals("disco")) {
             cursor.update(String.format("INSERT INTO tbRegistro(fkComponente, registro, dataHora) VALUES ( '%s', '%d', '%s' )", fkComponente, usoDisco, dataHora));
             System.out.println("Insert realizado");
-            if (usoMemoria > 70) {
-                Pipefy.criarCardRam();
+            if (usoDisco > 70) {
+                Pipefy.criarCardDisco(usoDisco, this.serialNumber, date);
             }
         } else if (tipo.equals("ram")) {
             cursor.update(String.format("INSERT INTO tbRegistro(fkComponente, registro, dataHora) VALUES ( '%s', '%.2f', '%s' )", fkComponente, usoMemoria, dataHora));
             System.out.println("Insert realizado");
-            if (usoDisco > 10) {
-                Pipefy.criarCardDisco(usoDisco, this.serialNumber);
+            if (usoMemoriaPercent > 10) {
+                Pipefy.criarCardRam(usoMemoriaPercent, this.serialNumber, date);
             }
 
         } else if (tipo.equals("cpu")) {
             cursor.update(String.format("INSERT INTO tbRegistro(fkComponente, registro, dataHora) VALUES ( '%s', '%.2f', '%s' )", fkComponente, usoCpu, dataHora));
             System.out.println("Insert realizado");
-            if (usoCpu > 70) {
-                Pipefy.criarCardCpu();
+            if (usoCpu > 1) {
+                Pipefy.criarCardCpu(usoCpu, this.serialNumber, date);
             }
         }
     }

@@ -1,6 +1,9 @@
 package banco;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import okhttp3.OkHttpClient;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -10,11 +13,15 @@ import okhttp3.Response;
 
 public class Pipefy {
 
-    public static void criarCardCpu() throws IOException {
+    public static void criarCardCpu(Double usoCpu, String serialNumber, Date date) throws IOException {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        String dataHora = dateFormat.format(date);
+
+        serialNumber = serialNumber.toUpperCase();
         OkHttpClient client = new OkHttpClient();
 
         MediaType mediaType = MediaType.parse("application/json");
-        RequestBody body = RequestBody.create(mediaType, "{\"query\": \"mutation{ createCard( input: { pipe_id: \\\"302821637\\\" fields_attributes: [ {field_id: \\\"aviso\\\", field_value: \\\"Sua CPU está fora do ideal\\\"} {field_id: \\\"serial_number\\\", field_value: \\\"AQUI VIRÁ O SERIAL NUMBER\\\"} {field_id: \\\"uso\\\", field_value: \\\"AQUI VIRÁ O USO DA CPU\\\"} {field_id: \\\"data_hora\\\", field_value: \\\"08/11/2022 00:00\\\"} ] } ) {clientMutationId card {id title }}}\"}");
+        RequestBody body = RequestBody.create(mediaType, String.format("{\"query\": \"mutation{ createCard( input: { pipe_id: \\\"302821637\\\" phase_id: \\\"317555598\\\" title:\\\"Alerta de uso de CPU - Máquina %s\\\" fields_attributes: [ {field_id: \\\"aviso\\\", field_value: \\\"Sua CPU está fora do ideal\\\"} {field_id: \\\"serial_number\\\", field_value: \\\"%s\\\"} {field_id: \\\"uso\\\", field_value: \\\"%.2f%% \\\"} {field_id: \\\"data_hora\\\", field_value: \\\"%s\\\"} ] } ) {clientMutationId card {id title }}}\"}", serialNumber, serialNumber, usoCpu, dataHora));
         Request request = new Request.Builder()
                 .url("https://api.pipefy.com/graphql")
                 .post(body)
@@ -26,12 +33,16 @@ public class Pipefy {
         Response response = client.newCall(request).execute();
         System.out.println(response);
     }
-    
-     public static void criarCardDisco(Long usoDisco, String serialNumber ) throws IOException {
+
+    public static void criarCardDisco(Long usoDisco, String serialNumber, Date date) throws IOException {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        String dataHora = dateFormat.format(date);
+
+        serialNumber = serialNumber.toUpperCase();
         OkHttpClient client = new OkHttpClient();
 
         MediaType mediaType = MediaType.parse("application/json");
-        RequestBody body = RequestBody.create(mediaType, String.format( "{\"query\": \"mutation{ createCard( input: { pipe_id: \\\"302821637\\\" fields_attributes: [ {field_id: \\\"aviso\\\", field_value: \\\"O uso de seu disco está fora do ideal\\\"} {field_id: \\\"serial_number\\\", field_value: \\\"%s\\\"} {field_id: \\\"uso\\\", field_value: \\\"%d\\\"} {field_id: \\\"data_hora\\\", field_value: \\\"08/11/2022 00:00\\\"} ] } ) {clientMutationId card {id title }}}\"}", serialNumber, usoDisco));
+        RequestBody body = RequestBody.create(mediaType, String.format("{\"query\": \"mutation{ createCard( input: { pipe_id: \\\"302821637\\\" phase_id: \\\"317566487\\\" title:\\\"Alerta de uso de Disco - Máquina %s\\\" fields_attributes: [ {field_id: \\\"aviso\\\", field_value: \\\"O uso de seu disco está fora do ideal\\\"} {field_id: \\\"serial_number\\\", field_value: \\\"%s\\\"} {field_id: \\\"uso\\\", field_value: \\\"%d GB\\\"} {field_id: \\\"data_hora\\\", field_value: \\\"%s\\\"} ] } ) {clientMutationId card {id title }}}\"}", serialNumber, serialNumber, usoDisco, dataHora));
         Request request = new Request.Builder()
                 .url("https://api.pipefy.com/graphql")
                 .post(body)
@@ -43,12 +54,16 @@ public class Pipefy {
         Response response = client.newCall(request).execute();
         System.out.println(response);
     }
-     
-      public static void criarCardRam() throws IOException {
+
+    public static void criarCardRam(Double usoMemoria, String serialNumber, Date date) throws IOException {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        String dataHora = dateFormat.format(date);
+
+        serialNumber = serialNumber.toUpperCase();
         OkHttpClient client = new OkHttpClient();
 
         MediaType mediaType = MediaType.parse("application/json");
-        RequestBody body = RequestBody.create(mediaType, "{\"query\": \"mutation{ createCard( input: { pipe_id: \\\"302821637\\\" fields_attributes: [ {field_id: \\\"aviso\\\", field_value: \\\"Sua RAM está fora do ideal\\\"} {field_id: \\\"serial_number\\\", field_value: \\\"AQUI VIRÁ O SERIAL NUMBER\\\"} {field_id: \\\"uso\\\", field_value: \\\"AQUI VIRÁ O USO DA RAM\\\"} {field_id: \\\"data_hora\\\", field_value: \\\"08/11/2022 00:00\\\"} ] } ) {clientMutationId card {id title }}}\"}");
+        RequestBody body = RequestBody.create(mediaType, String.format("{\"query\": \"mutation{ createCard( input: { pipe_id: \\\"302821637\\\" phase_id: \\\"317574217\\\" title:\\\"Alerta de uso de RAM - Máquina %s\\\" fields_attributes: [ {field_id: \\\"aviso\\\", field_value: \\\"Sua RAM está fora do ideal\\\"} {field_id: \\\"serial_number\\\", field_value: \\\"%s\\\"} {field_id: \\\"uso\\\", field_value: \\\"%.2f %% \\\"} {field_id: \\\"data_hora\\\", field_value: \\\"%s\\\"} ] } ) {clientMutationId card {id title }}}\"}", serialNumber, serialNumber, usoMemoria, dataHora));
         Request request = new Request.Builder()
                 .url("https://api.pipefy.com/graphql")
                 .post(body)
