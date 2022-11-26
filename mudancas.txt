@@ -1,5 +1,0 @@
-Dash - Adicionando Ram e Cpu nos processos
-Database - Producao e Desenvolvimento
-Functions - Slack
-Slack - Tudo
-

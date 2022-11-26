@@ -48,10 +48,9 @@ idRegistro INT PRIMARY KEY AUTO_INCREMENT
 CREATE TABLE tbProcesso(
 idProcesso INT PRIMARY KEY AUTO_INCREMENT
 ,fkMaquina VARCHAR(30), FOREIGN KEY(fkMaquina) REFERENCES tbMaquina(serialNumber)
-, idRegistro INT 
-, processo VARCHAR(50)
-, usoCpu VARCHAR(45)
-, usoRam VARCHAR(45)
+,processo VARCHAR(60)
+,usoCpu VARCHAR(45)
+,usoRam VARCHAR(45)
 ,dataHora DATETIME
 );
 

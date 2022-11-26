@@ -97,27 +97,6 @@ def dashboard():
                 porcentagemOcupados[j[0]]
             )
 
-        # Processos
-        processos = ui.items[0].items[1].items[1]
-        listaProcessos = []
-
-        for proc in process_iter():
-            infoProc = proc.as_dict(['name','cpu_percent', 'memory_percent'])
-            if infoProc['cpu_percent'] > 0 and infoProc['name'] != 'System Idle Process':
-                listaProcessos.append(infoProc)
-
-        def func(e):
-            return e['cpu_percent']
-
-        listaProcessos.sort(key=func, reverse=True)
-
-        print('\n'f"{'Nome':<10}{'CPU':<10}MEMÓRIA")
-        for proc in listaProcessos[:10]:
-            nomeProcesso = proc['name']
-            cpuProcesso = proc['cpu_percent']
-            ramProcesso = round(proc['memory_percent'],2)
-            print("{} {} {}".format(nomeProcesso, cpuProcesso, ramProcesso))
-
         time.sleep(5)
 
         os.system(codeCleaner)

@@ -248,7 +248,29 @@ def insertPeriodico(idCpu, idDisco, idRam, serialNumber, nome):
         #   msg = f"USO DA CPU FORA DO IDEAL!\nSerialNumber: {serialNumber}\nUso: {usoCpuPorc}%\nIdeal: 0 ~ 69.9%"
         #   chamadoSlack(msg, nome)
 
-        # time.sleep(10)
+        # Processos
+        listaProcessos = []
+
+        for proc in process_iter():
+            infoProc = proc.as_dict(['name','cpu_percent', 'memory_percent'])
+            if infoProc['cpu_percent'] > 0 and infoProc['name'] != 'System Idle Process':
+                listaProcessos.append(infoProc)
+
+        def func(e):
+            return e['cpu_percent']
+
+        listaProcessos.sort(key=func, reverse=True)
+
+        for proc in listaProcessos[:2]:
+            nomeProcesso = proc['name']
+            cpuProcesso = proc['cpu_percent']
+            ramProcesso = round(proc['memory_percent'],2)
+            
+            queryProc = f"INSERT INTO tbProcesso(fkMaquina, processo, usoCpu, usoRam, dataHora) VALUES ('{serialNumber}', '{nomeProcesso}', '{cpuProcesso}', '{ramProcesso}', '{dataHora}');"
+            insert(queryProc)
+
+        time.sleep(10)
+
 
 
 
