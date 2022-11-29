@@ -82,6 +82,10 @@ def metricasMaximas(idCpu, idDisco, idRam):
 
 
 def cadastroRede(serialNumber):
+    query = f"SELECT * FROM tbRede WHERE fkMaquina = '{serialNumber}'"
+
+    dados = select(query)
+
     placa = net_if_addrs()
 
     for i in enumerate(placa):
@@ -98,15 +102,22 @@ def cadastroRede(serialNumber):
     ipv6 = placa[1].address[:25]
     netmask6 = placa[1].netmask
 
-    query = f"INSERT INTO tbRede(macAddress, ipv4, ipv6, netmask4, netmask6, fkMaquina) VALUES ('{macAddress}', '{ipv4}', '{ipv6}', '{netmask4}', '{netmask6}', '{serialNumber}');"
+    if type(dados) == type(None):
+        query = f"INSERT INTO tbRede(macAddress, ipv4, ipv6, netmask4, netmask6, fkMaquina) VALUES ('{macAddress}', '{ipv4}', '{ipv6}', '{netmask4}', '{netmask6}', '{serialNumber}');"
+    else:
+        query = f"UPDATE tbRede SET macAddress = '{macAddress}', ipv4 = '{ipv4}', ipv6 = '{ipv6}', netmask4 = '{netmask4}', netmask6 = '{netmask6}' WHERE fkMaquina = '{serialNumber}';"
 
     insert(query)
 
     return 0
 
 
+def getMac(serialNumber):
+    query = f"SELECT macAddress FROM tbRede WHERE fkMaquina = '{serialNumber}'"
 
-
+    dados = select(query);
+    
+    return dados
 
 def monitorar():
     while (True):
@@ -212,8 +223,12 @@ def info():
     return 0
 
 
-def insertPeriodico(idCpu, idDisco, idRam, serialNumber, nome):
-    time.sleep(5)
+def insertPeriodico(idCpu, idDisco, idRam, macAddress):
+    intervaloInsert = 2 # em segundos
+
+    ultimosRecebidos = net_io_counters().bytes_recv
+    ultimosEnviados = net_io_counters().bytes_sent
+
     while True:
         usoAtualMemoria = conversao_bytes(virtual_memory().used, 3)
         usoCpuPorc = cpu_percent()
@@ -254,7 +269,30 @@ def insertPeriodico(idCpu, idDisco, idRam, serialNumber, nome):
             queryRam = f"INSERT INTO tbRegistro(fkComponente, registro, dataHora) VALUES ('{i}', '{usoAtualMemoria}', '{dataHora}');"
             insert(queryRam)
 
-        time.sleep(1)
+        # Pegando dados de rede
+
+        bytesRecebidos = net_io_counters().bytes_recv
+        bytesEnviados = net_io_counters().bytes_sent
+
+        novosRecebidos = bytesRecebidos - ultimosRecebidos
+        novosEnviados = bytesEnviados - ultimosEnviados
+
+        mbRecebidos = novosRecebidos / 1024 / 1024
+        mbEnviados = novosEnviados / 1024 / 1024
+
+        bytesEnviados = bytesEnviados / 1024 / 1024
+        bytesRecebidos = bytesRecebidos / 1024 / 1024
+
+
+        queryRede = f"INSERT INTO tbRegistroRede(fkPlaca, mbEnviados, mbRecebidos, totalEnviado, totalRecebido, dataHora) VALUES ('{macAddress}', {mbEnviados:.2f}, {mbRecebidos:.2f}, {bytesEnviados:.2f}, {bytesEnviados:.2f},'{dataHora}');"
+        
+        insert(queryRede)
+
+        mbRecebidos = novosRecebidos / 1024 / 1024
+        mbEnviados = novosEnviados / 1024 / 1024
+
+
+        time.sleep(intervaloInsert)
 
 
 

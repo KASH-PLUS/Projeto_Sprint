@@ -6,6 +6,7 @@ from functions import codeCleaner, sistema
 import math
 from itertools import cycle
 
+
 def dashboard():
 
     ui = HSplit(
@@ -41,8 +42,9 @@ def dashboard():
                 title="CPU",
                 border_color=5,
             ),
-            VSplit(
-                HBrailleChart(border_color=2, color=2),
+            HSplit(
+                border_color=8,
+                title='Rede',
             ),
         )
     )
@@ -119,12 +121,15 @@ def dashboard():
         for proc in listaProcessos[:10]:
             processos.text += f"\n{proc['name']:<25} {proc['cpu_percent']}"
 
+        # Rede
 
-        #Rede 
+        rede = ui.items[1].items[1]
 
-        # rede = ui.items[1].items[1].items[0]
-        # rede.append()
+        bytesEnviados = net_io_counters().bytes_sent
+        bytesRecebidos = net_io_counters().bytes_recv
 
+        bytesEnviados = bytesEnviados / 1024 / 1024
+        bytesRecebidos = bytesRecebidos / 1024 / 1024
 
         os.system(codeCleaner)
 
@@ -134,3 +139,5 @@ def dashboard():
         except KeyboardInterrupt:
             return "0"
 
+
+dashboard()

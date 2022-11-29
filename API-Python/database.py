@@ -41,6 +41,7 @@ if ambiente == 'desenvolvimento':
                 cursor.close()
                 cnx.close()
                 return dados
+
 else:
     cnx = pyodbc.connect(
         #Para windows

@@ -238,6 +238,7 @@ function addListeners() {
             obterDadosGraficoDisco(key);
             obterDadosGraficoRam(key);
             obterDadosGraficoCpu(key);
+            obterDadosGraficoRede(key)
             setRamMax(key);
 
             document.getElementById("span_serialNumber").innerHTML = key
