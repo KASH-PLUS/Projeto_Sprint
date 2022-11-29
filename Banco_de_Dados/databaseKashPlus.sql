@@ -126,3 +126,18 @@ CREATE VIEW vwFuncionario AS
         tbUsuario ON cnpj = fkEmpresa        
 ;
 
+CREATE VIEW vwRede AS
+    SELECT 
+    	idRegistroRede as ID
+    	,mbEnviados
+		,mbRecebidos
+		,dataHora
+		,macAddress
+		,fkMaquina
+    FROM
+        tbRegistroRede
+            JOIN
+        tbRede ON fkPlaca = macAddress 
+;
+
+

@@ -138,6 +138,3 @@ def dashboard():
             time.sleep(1)
         except KeyboardInterrupt:
             return "0"
-
-
-dashboard()

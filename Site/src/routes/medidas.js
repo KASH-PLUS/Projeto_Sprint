@@ -35,4 +35,8 @@ router.get("/ultimasRede/:serialNumber", function (req, res) {
     medidaController.buscarUltimasMedidasRede(req, res);
 });
 
+router.get("/tempo-realRede/:serialNumber", function (req, res) {
+    medidaController.buscarMedidasEmTempoRealRede(req, res);
+});
+
 module.exports = router;

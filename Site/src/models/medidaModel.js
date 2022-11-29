@@ -71,23 +71,25 @@ function buscarUltimasMedidasDisco(serialNumber) {
     return database.executar(instrucaoSql);
 }
 
-function buscarUltimasMedidasRede(macAddress, limite_linhas) {
+function buscarUltimasMedidasRede(seralNumber, limite_linhas) {
 
     var instrucaoSql = ''
 
     if (process.env.AMBIENTE_PROCESSO == "producao") {
         instrucaoSql = `SELECT top ${limite_linhas}
                         mbEnviados, 
+                        mbRecebidos,
                         CONVERT(varchar, dataHora, 108) as momento_grafico
-                    FROM tbRegistroRede
-                    WHERE fkPlaca = '${macAddress}' AND Componente = 'ram'
+                    FROM vwRede
+                    WHERE fkMaquina = '${seralNumber}'
                     ORDER BY ID DESC`;
     } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
         instrucaoSql = `SELECT 
-                        mbEnviados, 
+                        mbEnviados,
+                        mbRecebidos, 
                         DATE_FORMAT(dataHora,'%H:%i:%s') as momento_grafico
-                    FROM tbRegistroRede
-                    WHERE fkPlaca = '${macAddress}' AND Componente = 'ram'
+                    FROM vwRede
+                    WHERE fkMaquina = '${seralNumber}'
                     ORDER BY ID DESC LIMIT ${limite_linhas}`;
     } else {
         console.log("\nO AMBIENTE (produção OU desenvolvimento) NÃO FOI DEFINIDO EM app.js\n");
@@ -187,6 +189,34 @@ function buscarMedidasEmTempoRealRam(serialNumber) {
     return database.executar(instrucaoSql);
 }
 
+function buscarMedidasEmTempoRealRede(serialNumber) {
+
+    instrucaoSql = ''
+
+    if (process.env.AMBIENTE_PROCESSO == "producao") {
+        instrucaoSql = `SELECT top 1
+                        mbEnviados,
+                        mbRecebidos, 
+                        CONVERT(varchar, dataHora, 108) as momento_grafico 
+                        FROM vwRede where fkMaquina = '${serialNumber}'
+                    order by ID desc`;
+
+    } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
+        instrucaoSql = `SELECT 
+                        mbEnviados,
+                        mbRecebidos, 
+                        DATE_FORMAT(dataHora,'%H:%i:%s') as momento_grafico 
+                        FROM vwRede where fkMaquina = '${serialNumber}'
+                    ORDER BY ID DESC LIMIT 1`;
+    } else {
+        console.log("\nO AMBIENTE (produção OU desenvolvimento) NÃO FOI DEFINIDO EM app.js\n");
+        return
+    }
+
+    console.log("Executando a instrução SQL: \n" + instrucaoSql);
+    return database.executar(instrucaoSql);
+}
+
 
 module.exports = {
     buscarUltimasMedidasCpu,
@@ -195,6 +225,7 @@ module.exports = {
     buscarUltimasMedidasRede,
     buscarMedidasEmTempoRealRam,
     buscarUltimasMedidasDisco,
+    buscarMedidasEmTempoRealRede,
     buscarMaxDisco,
     buscarMaxRam,
 }

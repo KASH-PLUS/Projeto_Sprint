@@ -39,8 +39,8 @@
                         </div>
                     </li>
                 </ul>
-                <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0"
-                        id="sidebarToggle" type="button"></button></div>
+                <div class="text-center d-none d-md-inline"><button onclick="movaNav()"
+                        class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
             </div>
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
@@ -157,6 +157,7 @@
             </div>
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/js/script.min.js"></script>
     <script src="../js/funcoes.js"></script>
@@ -167,7 +168,8 @@
 </html>
 <script>
 
-
+    verifyNav()
+    
     var lati = []
     var long = []
     var latLon = { "latitude": lati, "longitude": long };
@@ -442,6 +444,26 @@
         }
 
     }
+
+
+
+    function movaNav() {
+        if (localStorage.getItem("mode") != "aberto" && localStorage.getItem("mode") != "fechado") {
+            localStorage.setItem("mode", "fechado");
+        } else if (localStorage.getItem("mode") == "aberto") {
+            localStorage.setItem("mode", "fechado");
+        } else if (localStorage.getItem("mode") == "fechado") {
+            localStorage.setItem("mode", "aberto");
+        }
+    }
+
+    function verifyNav() {
+        if (localStorage.getItem("mode") == "aberto") {
+            $("#sidebarToggle").click();
+            localStorage.setItem("mode", "aberto");
+        }
+    }
+
 
     setTimeout(gerarMapa, 1000)
 

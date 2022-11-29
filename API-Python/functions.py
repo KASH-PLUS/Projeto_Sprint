@@ -228,6 +228,7 @@ def insertPeriodico(idCpu, idDisco, idRam, macAddress):
 
     ultimosRecebidos = net_io_counters().bytes_recv
     ultimosEnviados = net_io_counters().bytes_sent
+    total = ultimosRecebidos + ultimosEnviados
 
     while True:
         usoAtualMemoria = conversao_bytes(virtual_memory().used, 3)
@@ -280,17 +281,16 @@ def insertPeriodico(idCpu, idDisco, idRam, macAddress):
         mbRecebidos = novosRecebidos / 1024 / 1024
         mbEnviados = novosEnviados / 1024 / 1024
 
-        bytesEnviados = bytesEnviados / 1024 / 1024
-        bytesRecebidos = bytesRecebidos / 1024 / 1024
+        mbEnviadosTotal = bytesEnviados / 1024 / 1024
+        mbRecebidosTotal = bytesRecebidos / 1024 / 1024
 
 
-        queryRede = f"INSERT INTO tbRegistroRede(fkPlaca, mbEnviados, mbRecebidos, totalEnviado, totalRecebido, dataHora) VALUES ('{macAddress}', {mbEnviados:.2f}, {mbRecebidos:.2f}, {bytesEnviados:.2f}, {bytesEnviados:.2f},'{dataHora}');"
-        
-        insert(queryRede)
+        queryRede = f"INSERT INTO tbRegistroRede(fkPlaca, mbEnviados, mbRecebidos, totalEnviado, totalRecebido, dataHora) VALUES ('{macAddress}', {mbEnviados:.2f}, {mbRecebidos:.2f}, {mbEnviadosTotal:.2f}, {mbRecebidosTotal:.2f},'{dataHora}');"
 
-        mbRecebidos = novosRecebidos / 1024 / 1024
-        mbEnviados = novosEnviados / 1024 / 1024
+        insert(queryRede)       
 
+        ultimosRecebidos = bytesRecebidos
+        ultimosEnviados = bytesEnviados
 
         time.sleep(intervaloInsert)
 

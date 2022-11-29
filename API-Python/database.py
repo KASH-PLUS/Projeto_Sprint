@@ -5,8 +5,8 @@ ambiente = 'desenvolvimento'
 # ambiente = 'producao'
 
 if ambiente == 'desenvolvimento':
-    cnx = mysql.connector.connect(user="root",
-                                  password="Vila2004",
+    cnx = mysql.connector.connect(user="kashUser",
+                                  password="kash",
                                   host="localhost",
                                   database="dbkashplus",
                                   autocommit=True)
@@ -47,7 +47,7 @@ else:
         #Para windows
         #"DRIVER={SQL Server}; Server=kashmonitoramento.database.windows.net;Database=dbkashplus; Port=myport;UID=kashplus ;PWD=1cco*grupo10")
         #Para Linux
-        "DRIVER={ODBC Driver 18 for SQL Server}; Server=kashmonitoramento.database.windows.net;Database=dbkashplus; Port=myport;UID=kashplus ;PWD=1cco*grupo10")
+        "DRIVER={ODBC Driver 17 for SQL Server}; Server=kashmonitoramento.database.windows.net;Database=dbkashplus; Port=myport;UID=kashplus ;PWD=1cco*grupo10")
         
     def insert(query):
         cursor = cnx.cursor()
