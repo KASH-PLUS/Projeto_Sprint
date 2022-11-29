@@ -1,5 +1,5 @@
-CREATE USER 'kashUser'@'localhost' IDENTIFIED BY 'kash';
-GRANT ALL PRIVILEGES ON dbkashplus.* TO 'kashUser'@'localhost';
+CREATE USER 'kashUser'@'%' IDENTIFIED BY 'kash';
+GRANT ALL PRIVILEGES ON dbkashplus.* TO 'kashUser'@'%';
 create database dbkashplus;
 use dbkashplus;
 
@@ -29,6 +29,14 @@ serialNumber VARCHAR(30) PRIMARY KEY
 ,regiao VARCHAR(15)
 );
 
+CREATE TABLE tbOciosidade(
+idRegistro INT PRIMARY KEY AUTO_INCREMENT
+,fkMaquina VARCHAR(30), FOREIGN KEY(fkMaquina) REFERENCES tbMaquina(serialNumber)
+,usoUsuario VARCHAR(50)
+,usoOcioso VARCHAR(50)
+,datahora DATETIME
+);
+
 CREATE TABLE tbComponente(
 idComponente INT PRIMARY KEY AUTO_INCREMENT
 ,fkMaquina VARCHAR(30), FOREIGN KEY(fkMaquina) REFERENCES tbMaquina(serialNumber)
@@ -44,6 +52,16 @@ idRegistro INT PRIMARY KEY AUTO_INCREMENT
 ,dataHora DATETIME
 );
 
+INSERT INTO tbEmpresa VALUES('40858022000101', 'Empresa1', 'empresa1@email.com', '', ''); 
+INSERT INTO tbUsuario VALUES(null, '40858022000101', 'Administrador', 'adm@email.com', '123', 'ADM');
+INSERT INTO tbMaquina VALUES('BR1231', '40858022000101', 'Maquina 1', '09570600', 'São Caetano do Sul', 'Sudeste');
+INSERT INTO tbMaquina VALUES('BR1232', '40858022000101', 'Maquina 2', '09560600', 'São Caetano do Sul', 'Sudeste');
+INSERT INTO tbMaquina VALUES('BR1233', '40858022000101', 'Maquina 3', '09550600', 'São Caetano do Sul', 'Sudeste');
+INSERT INTO tbComponente VALUES (null, 'BR1231', 'cpu', '%', null);
+
+select * from tbMaquina;
+
+INSERT INTO tbOciosidade(fkMaquina, usoUsuario, usoOcioso, datahora) VALUES ('BR1231', '33', '23', '2003-12-01 00:00:00');
 -- Criando Views --
 
 CREATE VIEW vwMaquina AS
