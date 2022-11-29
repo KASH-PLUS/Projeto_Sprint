@@ -12,7 +12,6 @@ from random import randint
 from matplotlib.animation import FuncAnimation
 import matplotlib.pyplot as plt # Definindo um "apelido" para a biblioteca
 import openpyxl
-from slack import chamadoSlack
 from wordCloud import cloud
 
 if os.name == "nt":
@@ -194,6 +193,8 @@ def insertPeriodico(idCpu, idDisco, idRam, serialNumber, nome):
         usoAtualMemoria = conversao_bytes(virtual_memory().used, 3)
         usoCpuPorc = cpu_percent()
         usoAtualMemoriaPorc = virtual_memory().percent
+        usoOciosidade = (cpu_times(percpu=False).idle / 3600)
+        usoUsuario = (cpu_times(percpu=False).user / 3600)
 
         particoes = []
         if sistema == "Windows":
@@ -220,6 +221,9 @@ def insertPeriodico(idCpu, idDisco, idRam, serialNumber, nome):
         dataHora = datetime.datetime.now()
         dataHora = datetime.datetime.strftime(dataHora, "%Y-%m-%d %H:%M:%S")
 
+        queryTempoUso = f"INSERT INTO tbOciosidade(fkMaquina, usoUsuario, usoOcioso, datahora) VALUES ('{serialNumber}', '{usoUsuario}', '{usoOciosidade}', '{dataHora}');"
+        insert(queryTempoUso)
+
         for i in idCpu:
             queryCpu = f"INSERT INTO tbRegistro(fkComponente, registro, dataHora) VALUES ('{i}', '{usoCpuPorc}', '{dataHora}');"
             insert(queryCpu)
@@ -231,18 +235,6 @@ def insertPeriodico(idCpu, idDisco, idRam, serialNumber, nome):
         for i in idRam:
             queryRam = f"INSERT INTO tbRegistro(fkComponente, registro, dataHora) VALUES ('{i}', '{usoAtualMemoria}', '{dataHora}');"
             insert(queryRam)
-
-        if(float(usoDisco) > float(discoTotal[0]) * 0.69):
-            msg = f"USO DO DISCO FORA DO IDEAL!\nSerialNumber: {serialNumber}\nUso: {usoDisco}GB\nIdeal: {float(discoTotal[0]) * 0.69}GB"
-            chamadoSlack(msg, nome)
-
-        if(float(usoAtualMemoriaPorc) > 69):
-            msg = f"USO DE MEMORIA FORA DO IDEAL!\nSerialNumber: {serialNumber}\nUso: {usoAtualMemoriaPorc}%\nIdeal: 0 ~ 69.9%"
-            chamadoSlack(msg, nome)
-        
-        if(int(usoCpuPorc) > 69):
-            msg = f"USO DA CPU FORA DO IDEAL!\nSerialNumber: {serialNumber}\nUso: {usoCpuPorc}%\nIdeal: 0 ~ 69.9%"
-            chamadoSlack(msg, nome)
 
         time.sleep(30)
 

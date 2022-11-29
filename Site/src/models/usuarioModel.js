@@ -21,6 +21,27 @@ function listarCaixas(cnpj) {
     return database.executar(instrucao)
 }
 
+function selecionarMaquinas(cnpj) {
+    console.log("ACESSEI O USUARIO MODEL \n \n\t\t >> Se aqui der erro de 'Error: connect ECONNREFUSED',\n \t\t >> verifique suas credenciais de acesso ao banco\n \t\t >> e se o servidor de seu BD está rodando corretamente. \n\n function listar()");
+
+    var instrucao = '';
+
+    if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
+        var instrucao = `
+            SELECT Maquina, NumeroSerial, Cep FROM vwMaquina where Cnpj = '${cnpj}' GROUP BY NumeroSerial;
+        `;
+    }
+    else if (process.env.AMBIENTE_PROCESSO == "producao") {
+        var instrucao = `
+        SELECT Maquina, NumeroSerial, Cep FROM vwMaquina where Cnpj = '${cnpj}' 
+        GROUP BY NumeroSerial, Maquina, Cep;
+        `;
+    }
+
+    console.log("Executando a instrução SQL: \n" + instrucao);
+    return database.executar(instrucao)
+}
+
 function selectCargo(query) {
     console.log("ACESSEI O USUARIO MODEL \n \n\t\t >> Se aqui der erro de 'Error: connect ECONNREFUSED',\n \t\t >> verifique suas credenciais de acesso ao banco\n \t\t >> e se o servidor de seu BD está rodando corretamente. \n\n function listar()");
     var instrucao = `
@@ -178,5 +199,6 @@ module.exports = {
     criarMapaCaixas,
     deletarRegistros,
     deletarComponentes,
-    deletarCaixa
+    deletarCaixa,
+    selecionarMaquinas
 };

@@ -1,14 +1,14 @@
 import mysql.connector
 import pyodbc
 
-# ambiente = 'desenvolvimento'
-ambiente = 'producao'
+ambiente = 'desenvolvimento'
+# ambiente = 'producao'
 
 if ambiente == 'desenvolvimento':
     cnx = mysql.connector.connect(user="kashUser",
                                   password="kash",
                                   host="localhost",
-                                  database="dbKashPlus",
+                                  database="dbkashplus",
                                   autocommit=True)
 
     def insert(query):
