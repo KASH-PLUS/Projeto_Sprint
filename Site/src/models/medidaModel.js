@@ -160,7 +160,6 @@ function buscarMedidasEmTempoRealRam(serialNumber) {
     return database.executar(instrucaoSql);
 }
 
-
 module.exports = {
     buscarUltimasMedidasCpu,
     buscarUltimasMedidasRam,

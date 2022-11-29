@@ -76,23 +76,6 @@
 							</li>
 						</ul>
 					</div>
-					<div class="row">
-						<div class="card shadow mb-4" id="card_cpu" style="display: none;">
-							<div class="card-header d-flex justify-content-between align-items-center">
-								<h6 class="text-primary fw-bold m-0">Uso da CPU(%)</h6>
-							</div>
-							<div class="card-body">
-								<div class="chart-area"
-									style="display: flex; align-items: center; justify-content: center;">
-									<div class="chart-container" id="grafico_cpu"
-										style="position: relative; width: 45vw;">
-										<canvas id="myChartCpu">
-										</canvas>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
 				</nav>
 				<div class="container-fluid">
 					<div class="d-sm-flex justify-content-between align-items-center mb-4">
@@ -111,13 +94,13 @@
                                                     <div>
                                                         <label class="form-label"><strong id="strong_titulo">Escolha uma máquina</strong><br /></label>
                                                         <select class="form-select" id="slct_caixas">
-															<option>--Escolha uma máquina--</option>
+															<option value="0">--Escolha uma máquina--</option>
                                                         </select>
                                                     </div>
 													<div id="teste"></div>
                                                     <div class="text-center mb-3"><button class="btn btn-primary btn-sm"
-                                                            style="margin-top: 2%;">Ver</button>
-															<!-- onclick="recuperarDados()" id="btn_cadastro"  -->
+														onclick="obterDadosGraficoCpu()" id="btn_ver" style="margin-top: 2%;">Ver</button>
+															
                                                     </div>
                                                 </div>
                                             </div>
@@ -128,6 +111,10 @@
                         </div>
                     </div>
                 </div>
+				<div class="chart-container" id="grafico_cpu"style="position: relative; width: 45vw;">
+					<canvas id="myChartCpu">
+					</canvas>
+				</div>
 				<footer class="bg-white sticky-footer">
 					<div class="container my-auto">
 						<div class="text-center my-auto copyright"><span>Copyright © KASH+&nbsp;2022</span></div>
@@ -139,55 +126,225 @@
 		<script src="assets/js/script.min.js"></script>
 		<script src="../js/funcoes.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+		<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </body>
 
 </html>
 <script>
-	
-	
-function gerarSelect() {
+	let proximaAtualizacao;
 
-	var cnpjVar = sessionStorage.BANCO_ID;
+	function gerarSelect() {
 
-	fetch("/usuarios/gerarSelect", {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json"
-		},
-		body: JSON.stringify({
-			cnpjServer: cnpjVar
+		var cnpjVar = sessionStorage.BANCO_ID;
+
+		fetch("/usuarios/gerarSelect", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify({
+				cnpjServer: cnpjVar
+			})
+		}).then(function (resposta) {
+			console.log("ESTOU NO THEN DO select!")
+			console.log(resposta);
+			if (resposta.ok) {
+				resposta.json().then(json => {
+					serial = json[0].serialNumber;
+					nome = json[0].nome;
+
+					const select = document.querySelector('#slct_caixas');
+					
+					for (let i = 0; i < json.length; i++) {
+						select.options[select.options.length] = new Option(json[i].nome + ' - ' + json[i].serialNumber, json[i].serialNumber);
+					}
+
+				});
+
+			} else {
+				console.log("Houve um erro ao tentar gerar o select!");
+
+				resposta.text().then(texto => {
+					console.log(texto)
+				});
+			}
+
+		}).catch(function (erro) {
+			console.log(erro);
 		})
-	}).then(function (resposta) {
-		console.log("ESTOU NO THEN DO select!")
-		console.log(resposta);
-		if (resposta.ok) {
-			resposta.json().then(json => {
-				serial = json[0].serialNumber;
-                nome = json[0].nome;
 
-				const select = document.querySelector('#slct_caixas');
-				
-				for (let i = 0; i < json.length; i++) {
-					select.options[select.options.length] = new Option(json[i].nome + ' - ' + json[i].serialNumber);
-				}
+		return false;
+	}
 
-			});
+	function obterDadosGraficoCpu() {
+		
+		serialNumber = slct_caixas.value;
+		
+		document.getElementById("myChartCpu").remove();
 
-		} else {
-			console.log("Houve um erro ao tentar gerar o select!");
+		var divGrafico = document.getElementById("grafico_cpu");
+		var canvas = document.createElement("canvas");
+		canvas.id = "myChartCpu";
 
-			resposta.text().then(texto => {
-				console.log(texto)
-			});
+		divGrafico.appendChild(canvas);
+
+		if (proximaAtualizacao != undefined) {
+			clearTimeout(proximaAtualizacao);
 		}
 
-	}).catch(function (erro) {
-		console.log(erro);
-	})
+		fetch(`/medidas/ultimasCpu/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
+			if (response.ok) {
+				response.json().then(function (resposta) {
+					console.log(`Dados recebidos: ${JSON.stringify(resposta)}`);
+					resposta.reverse();
 
-	return false;
-}
+					plotarGraficoCpu(resposta, serialNumber);
+				});
+			} else {
+				console.error('Nenhum dado encontrado ou erro na API');
+			}
+		})
+			.catch(function (error) {
+				console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
+			});
+	}
+
+	function plotarGraficoCpu(resposta, serialNumber) {
+		console.log('iniciando plotagem do gráfico...');
+		console.log(serialNumber);
+
+		let labels = [];
+
+		var dados = {
+			labels: labels,
+			datasets: [
+				{
+					yAxisID: 'y-usoCpu',
+					label: 'Uso da cpu',
+					lineTension: 0.3,
+					backgroundColor: "rgba(78, 115, 223, 0.5)",
+					borderColor: "rgba(78, 115, 223, 1)",
+					pointRadius: 3,
+					pointBackgroundColor: "rgba(78, 115, 223, 1)",
+					pointBorderColor: "rgba(78, 115, 223, 1)",
+					pointHoverRadius: 3,
+					pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+					pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+					pointHitRadius: 10,
+					pointBorderWidth: 2,
+					data: [0, 50, 20, 45, 10, 30, 22, 55, 35, 10, 95, 50],
+					fill: true,
+					data: [],
+				},
+			],
+			options: {
+				maintainAspectRatio: false,
+				responsive: true
+			}
+		};
+
+		for (i = 0; i < resposta.length; i++) {
+			var registro = resposta[i];
+			labels.push(registro.momento_grafico);
+			dados.datasets[0].data.push(registro.Registro);
+		}
+
+		console.log(JSON.stringify(dados));
+
+		const config = {
+			type: 'line',
+			data: dados,
+			options: {
+				maintainAspectRatio: false,
+				responsive: true,
+			}
+		};
+
+		let myChartCpu = new Chart(
+			document.getElementById('myChartCpu'),
+			config
+		);
+
+
+		setTimeout(() => atualizarGraficoCpu(serialNumber, dados, myChartCpu), 2000);
+	}
+
+	function atualizarGraficoCpu(serialNumber, dados, myChartCpu) {
+
+
+		fetch(`/medidas/tempo-realCpu/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
+			if (response.ok) {
+				response.json().then(function (novoRegistro) {
+
+					console.log(`Dados recebidos: ${JSON.stringify(novoRegistro)}`);
+					console.log(`Dados atuais do gráfico: ${dados}`);
+
+					span_usoCpu.innerHTML = novoRegistro[0].Registro + "%";
+
+					CpuCor(novoRegistro[0].Registro);
+
+					// tirando e colocando valores no gráfico
+					dados.labels.shift(); // apagar o primeiro
+					dados.labels.push(novoRegistro[0].momento_grafico); // incluir um novo momento
+
+					dados.datasets[0].data.shift();
+					dados.datasets[0].data.push((novoRegistro[0].Registro));
+
+					myChartCpu.update();
+
+
+					// Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
+					proximaAtualizacao = setTimeout(() => atualizarGraficoCpu(serialNumber, dados, myChartCpu), 2000);
+				});
+			} else {
+				console.error('Nenhum dado encontrado ou erro na API');
+				// Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
+				proximaAtualizacao = setTimeout(() => atualizarGraficoCpu(serialNumber, dados, myChartCpu), 2000);
+			}
+		})
+			.catch(function (error) {
+				console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
+			});
+
+	}
+
+		// const labels = [
+		// 	'12:00',
+		// 	'13:00',
+		// 	'14:00',
+		// 	'15:00',
+		// 	'16:00',
+		// 	'17:00',
+		// ];
+
+		// const data = {
+		// 	labels: labels,
+		// 	datasets: [{
+		// 		label: 'Temperatura',
+		// 		backgroundColor: 'rgb(255, 99, 132)',
+		// 		borderColor: 'rgb(255, 99, 132)',
+		// 		data: [30, 29, 28, 25, 22, 23],
+		// 	},
+		// 	{
+		// 		label: 'Umidade',
+		// 		backgroundColor: 'rgb(75, 115, 224)',
+		// 		borderColor: 'rgb(75, 115, 224)',
+		// 		data: [80, 82, 80, 85, 80, 83],
+		// 	}
+		// 	]
+		// };
+
+		// const config = {
+		// 	type: 'line',
+		// 	data: data,
+		// 	options: {}
+		// };
+	
+		// const myChart = new Chart(
+		// 	document.getElementById('mychart1'),
+		// 	config
+		// );
 
 
 </script>
