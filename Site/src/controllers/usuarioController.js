@@ -229,7 +229,6 @@ function cadastrarComponente(req, res) {
 
 }
 
-
 function enviarEmailCadastro(email, senha, emailBanco) {
     var transporter = nodemailer.createTransport({
         service: 'outlook',
@@ -257,7 +256,6 @@ function enviarEmailCadastro(email, senha, emailBanco) {
         }
     })
 }
-
 
 function enviarEmailContato(req, res) {
     const emailRecebedor = "pipe302766815@mail.pipefy.com"

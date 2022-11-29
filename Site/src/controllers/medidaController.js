@@ -161,12 +161,12 @@ function buscarUltimasMedidasTemp(req, res) {
 }
 
 function buscarMedidasEmTempoRealTemp(req, res) {
+    
+    var serialNumberVar = req.params.serialNumber;
 
     console.log(`Recuperando medidas em tempo real`);
 
-    var serialNumber = req.params.serialNumber;
-
-    medidaModel.buscarMedidasEmTempoRealTemp(serialNumber).then(function (resultado) {
+    medidaModel.buscarMedidasEmTempoRealTemp(serialNumberVar).then(function (resultado) {
         if (resultado.length > 0) {
             res.status(200).json(resultado);
         } else {
@@ -174,7 +174,7 @@ function buscarMedidasEmTempoRealTemp(req, res) {
         }
     }).catch(function (erro) {
         console.log(erro);
-        console.log("Houve um erro ao buscar as ultimas medidas.", erro.sqlMessage);
+        console.log("Houve um erro ao buscar as medidas em tempo real.", erro.sqlMessage);
         res.status(500).json(erro.sqlMessage);
     });
 }

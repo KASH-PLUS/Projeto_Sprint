@@ -169,7 +169,8 @@ function buscarUltimasMedidasTemp(serialNumber, limite_linhas) {
                             Temperatura, 
                             CONVERT(varchar, Horario, 108) as momento_grafico
                             from vwTemp
-                            WHERE NumeroSerial = '${serialNumber}';
+                            WHERE NumeroSerial = '${serialNumber}'
+                            ORDER BY momento_grafico DESC;
                         `;
     } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
         instrucaoSql = `SELECT 
@@ -177,6 +178,7 @@ function buscarUltimasMedidasTemp(serialNumber, limite_linhas) {
                             DATE_FORMAT(Horario,'%H:%i:%s') as momento_grafico
                             FROM vwTemp 
                             WHERE NumeroSerial = '${NumeroSerial}'
+                            ORDER BY momento_grafico DESC
                             LIMIT ${limite_linhas};
                         `;
     } else {
@@ -188,24 +190,25 @@ function buscarUltimasMedidasTemp(serialNumber, limite_linhas) {
     return database.executar(instrucaoSql);
 }
 
-function buscarMedidasEmTempoRealTemp(NumeroSerial) {
+function buscarMedidasEmTempoRealTemp(serialNumber) {
     
     instrucaoSql = ''
     
     if (process.env.AMBIENTE_PROCESSO == "producao") {       
-        instrucaoSql = `SELECT top 1
+        instrucaoSql = `SELECT TOP 1
                             Temperatura, 
                             CONVERT(varchar, Horario, 108) as momento_grafico
                             from vwTemp
-                            WHERE NumeroSerial = '${serialNumber}';
-                        `;
+                            WHERE NumeroSerial = '${serialNumber}'
+                            ORDER BY momento_grafico DESC;`
         
     } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
         instrucaoSql = `SELECT 
                             Temperatura, 
                             DATE_FORMAT(Horario,'%H:%i:%s') as momento_grafico
                             FROM vwTemp 
-                            WHERE NumeroSerial = '${NumeroSerial}'
+                            WHERE NumeroSerial = '${serialNumber}'
+                            ORDER BY momento_grafico DESC
                             LIMIT 1;
                         `;
     } else {
