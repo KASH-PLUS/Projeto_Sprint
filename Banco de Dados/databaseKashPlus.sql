@@ -115,3 +115,8 @@ SELECT * FROM tbComponente;
 SELECT * FROM tbRegistro;
 SELECT * FROM tbProcesso;
 
+SELECT tbRegistro.dataHora, registro, processo, usoCpu FROM tbRegistro, tbComponente, tbProcesso WHERE fkComponente = idComponente 
+    AND tipo = 'cpu' AND tbComponente.fkMaquina = 'BRJ123' AND tbRegistro.dataHora = tbProcesso.dataHora ORDER BY idRegistro DESC;
+    
+SELECT tbRegistro.dataHora, registro, processo, usoRam FROM tbRegistro, tbComponente, tbProcesso WHERE fkComponente = idComponente 
+    AND tipo = 'ram' AND tbComponente.fkMaquina = 'BRJ123' AND tbRegistro.dataHora = tbProcesso.dataHora ORDER BY idRegistro DESC;

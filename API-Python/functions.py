@@ -261,7 +261,7 @@ def insertPeriodico(idCpu, idDisco, idRam, serialNumber, nome):
 
         listaProcessos.sort(key=func, reverse=True)
 
-        for proc in listaProcessos[:2]:
+        for proc in listaProcessos[:1]:
             nomeProcesso = proc['name']
             cpuProcesso = proc['cpu_percent']
             ramProcesso = round(proc['memory_percent'],2)
