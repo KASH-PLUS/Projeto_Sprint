@@ -1,7 +1,7 @@
 import datetime
 from dis import disco
 from pickletools import read_int4
-import time
+import time, json
 from psutil import *
 import os
 import platform
@@ -245,6 +245,9 @@ def insertPeriodico(idCpu, idDisco, idRam, serialNumber, nome):
 
         response = requests.request("POST", url, json=data, headers=headers)
 
+        if os.name == "nt":
+            capturaTemp(serialNumber)
+
         print(response)
 
         print(response.text, "oi")
@@ -252,6 +255,23 @@ def insertPeriodico(idCpu, idDisco, idRam, serialNumber, nome):
         time.sleep(30)
 
 
+def capturaTemp(serialNumber):
+    try:
+        url = "http://192.168.0.109:9000/data.json"
+        req = requests.get(url)
+        jsonText= req.text.encode("utf8")
+        data = json.loads(jsonText)
+
+        tempDados = int(data["Children"][0]["Children"][0]["Children"][1]["Children"][0]["Value"][:2])
+        clockDado = int(data["Children"][0]["Children"][0]["Children"][0]["Children"][1]["Value"][:4])
+        
+        dataHora = datetime.datetime.now()
+        dataHora = datetime.datetime.strftime(dataHora, "%Y-%m-%d %H:%M:%S")
+        query = f"INSERT INTO tbTemperatura(fkMaquina, tempAtual, clock, dataHora) VALUES ('{serialNumber}', '{tempDados}', '{clockDado}', '{dataHora}');"
+        insert(query)
+    except:
+        print('Erro ao capturar a temperatura')
+        print('Por favor ligue o open hardware monitor na porta 9000')
 
 def relatorio():
     os.system(codeCleaner)
