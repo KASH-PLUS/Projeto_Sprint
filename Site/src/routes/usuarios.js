@@ -52,4 +52,8 @@ router.post("/criarMapaCaixas", function (req, res) {
     usuarioController.criarMapaCaixas(req, res);
 })
 
+router.post("/gerarSelect", function (req, res) {
+    usuarioController.gerarSelect(req, res);
+})
+
 module.exports = router;

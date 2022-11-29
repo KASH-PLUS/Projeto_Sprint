@@ -14,7 +14,7 @@
 		integrity="sha256-sA+zWATbFveLLNqWO2gtiw3HL/lh1giY/Inf1BJ0z14=" crossorigin="" />
 </head>
 
-<body id="page-top" onload="validarSessao(), listarCaixas(), verificarCargo(), plotarGraficoCpu()">
+<body id="page-top" onload="validarSessao(), listarCaixas(), verificarCargo(), gerarSelect()">
 	<div id="wrapper">
 		<nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
 			style="background: rgb(0, 132, 156);">
@@ -99,8 +99,35 @@
 						<h3 class="text-dark mb-0" id="h3_titulo">Dashboard - Processos<span id="span_serialNumber"></span></h3>
 					</div>
 				</div>
-
-
+				<div class="container-fluid">
+                    <div class="row mb-3">
+                        <div class="col-auto col-lg-8 col-xl-12">
+                            <div class="row">
+                                <div class="col-lg-12 col-xl-12 offset-lg-3 offset-xl-0">
+                                    <div class="card shadow mb-3">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div>
+                                                        <label class="form-label"><strong id="strong_titulo">Escolha uma máquina</strong><br /></label>
+                                                        <select class="form-select" id="slct_caixas">
+															<option>--Escolha uma máquina--</option>
+                                                        </select>
+                                                    </div>
+													<div id="teste"></div>
+                                                    <div class="text-center mb-3"><button class="btn btn-primary btn-sm"
+                                                            style="margin-top: 2%;">Ver</button>
+															<!-- onclick="recuperarDados()" id="btn_cadastro"  -->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 				<footer class="bg-white sticky-footer">
 					<div class="container my-auto">
 						<div class="text-center my-auto copyright"><span>Copyright © KASH+&nbsp;2022</span></div>
@@ -112,40 +139,55 @@
 		<script src="assets/js/script.min.js"></script>
 		<script src="../js/funcoes.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-		<script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js"
-			integrity="sha256-o9N1jGDZrf5tS+Ft4gbIK7mYMipq9lqpVJ91xHSyKhg=" crossorigin=""></script>
-		<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </body>
 
 </html>
 <script>
 	
-	function plotarGraficoCpu() {
-		
-		const labels = ['Jan', 'Fev', 'Mar'];
-		const data = {
-			labels: labels,
-			datasets: [{
-				label: 'My First Dataset',
-				data: [56, 55, 40],
-				fill: false,
-				borderColor: 'rgb(75, 192, 192)',
-				tension: 0.1
-			}]
-		};
+	
+function gerarSelect() {
 
-		const config = {
-			type: 'line',
-			data: data,
-		};
+	var cnpjVar = sessionStorage.BANCO_ID;
 
-		let myChartCpu = new Chart(
-			document.getElementById('myChartCpu'),
-			config
-		);
+	fetch("/usuarios/gerarSelect", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify({
+			cnpjServer: cnpjVar
+		})
+	}).then(function (resposta) {
+		console.log("ESTOU NO THEN DO select!")
+		console.log(resposta);
+		if (resposta.ok) {
+			resposta.json().then(json => {
+				serial = json[0].serialNumber;
+                nome = json[0].nome;
 
-	}
+				const select = document.querySelector('#slct_caixas');
+				
+				for (let i = 0; i < json.length; i++) {
+					select.options[select.options.length] = new Option(json[i].nome + ' - ' + json[i].serialNumber);
+				}
+
+			});
+
+		} else {
+			console.log("Houve um erro ao tentar gerar o select!");
+
+			resposta.text().then(texto => {
+				console.log(texto)
+			});
+		}
+
+	}).catch(function (erro) {
+		console.log(erro);
+	})
+
+	return false;
+}
 
 
 </script>

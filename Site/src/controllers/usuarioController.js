@@ -381,6 +381,31 @@ function criarMapaCaixas(req, res) {
         );
 }
 
+function gerarSelect(req, res) {
+    var cnpj = req.body.cnpjServer;
+
+    if (cnpj == undefined) {
+        res.status(400).send("Seu cnpj está undefined!");
+    }
+    else {
+        usuarioModel.listarSelect(cnpj)
+            .then(function (resultado) {
+                if (resultado.length > 0) {
+                    res.status(200).json(resultado);
+                } else {
+                    res.status(204).send("Nenhum resultado encontrado!")
+                }
+            }).catch(
+                function (erro) {
+                    console.log(erro);
+                    console.log("Houve um erro ao realizar a consulta! Erro: ", erro.sqlMessage);
+                    res.status(500).json(erro.sqlMessage);
+                }
+            );
+    }
+
+}
+
 module.exports = {
     entrar,
     cadastrar,
@@ -393,5 +418,6 @@ module.exports = {
     listarMaquinasRegiao,
     verificarComponentes,
     enviarEmailContato,
-    criarMapaCaixas
+    criarMapaCaixas,
+    gerarSelect
 }
