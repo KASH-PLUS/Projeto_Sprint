@@ -108,6 +108,89 @@
                             </div>
                         </div>
                     </div>
+                    
+                        <div class="row">
+                            <div class="col-md-6 col-xl-3 mb-4">
+                                <div id="cpu_cor" class="card shadow border-start-primary py-2">
+                                    <div class="card-body">
+                                        <div class="row align-items-center no-gutters">
+                                            <div class="col me-2">
+                                                <div class="text-uppercase text-primary fw-bold text-l mb-1">
+                                                    <span>CPU</span>
+                                                </div>
+                                                <div class="text-dark fw-bold h5 mb-0"><span id="span_usoCpu"></span></div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <svg class="bi bi-cpu-fill fa-2x text-black-300"
+                                                    xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
+                                                    fill="currentColor" viewBox="0 0 16 16">
+                                                    <path
+                                                        d="M6.5 6a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3z">
+                                                    </path>
+                                                    <path
+                                                        d="M5.5.5a.5.5 0 0 0-1 0V2A2.5 2.5 0 0 0 2 4.5H.5a.5.5 0 0 0 0 1H2v1H.5a.5.5 0 0 0 0 1H2v1H.5a.5.5 0 0 0 0 1H2v1H.5a.5.5 0 0 0 0 1H2A2.5 2.5 0 0 0 4.5 14v1.5a.5.5 0 0 0 1 0V14h1v1.5a.5.5 0 0 0 1 0V14h1v1.5a.5.5 0 0 0 1 0V14h1v1.5a.5.5 0 0 0 1 0V14a2.5 2.5 0 0 0 2.5-2.5h1.5a.5.5 0 0 0 0-1H14v-1h1.5a.5.5 0 0 0 0-1H14v-1h1.5a.5.5 0 0 0 0-1H14v-1h1.5a.5.5 0 0 0 0-1H14A2.5 2.5 0 0 0 11.5 2V.5a.5.5 0 0 0-1 0V2h-1V.5a.5.5 0 0 0-1 0V2h-1V.5a.5.5 0 0 0-1 0V2h-1V.5zm1 4.5h3A1.5 1.5 0 0 1 11 6.5v3A1.5 1.5 0 0 1 9.5 11h-3A1.5 1.5 0 0 1 5 9.5v-3A1.5 1.5 0 0 1 6.5 5z">
+                                                    </path>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-xl-3 mb-4">
+                                <div id="ram_cor" class="card shadow border-start-success py-2">
+                                    <div class="card-body">
+                                        <div class="row align-items-center no-gutters">
+                                            <div class="col me-2">
+                                                <div class="text-uppercase text-success fw-bold text-l mb-1">
+                                                    <span>RAM</span>
+                                                </div>
+                                                <div class="text-dark fw-bold h5 mb-0"><span id="span_usoRam"></span> /
+                                                    <span id="span_ramMaxima"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-auto"><i class="fas fa-memory fa-2x text-black-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-xl-3 mb-4">
+                                <div id="disco_cor" class="card shadow border-start-info py-2">
+                                    <div class="card-body">
+                                        <div class="row align-items-center no-gutters">
+                                            <div class="col me-2">
+                                                <div class="text-uppercase text-info fw-bold text-l mb-1"><span>Disco</span>
+                                                </div>
+                                                <div class="row g-0 align-items-center">
+                                                    <div class="col-auto">
+                                                        <div class="text-dark fw-bold h5 mb-0 me-3"><span
+                                                                id="span_usoDisco"></span></div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="progress progress-sm">
+                                                            <div class="progress-bar bg-info" id="barra_usoDisco"
+                                                                aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"
+                                                                style="width: 50%;">
+                                                            </div>
+                                                            <div></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-auto"><svg class="fa-2x text-black-300"
+                                                    xmlns="http://www.w3.org/2000/svg" viewBox="-32 0 512 512" width="1em"
+                                                    height="1em" fill="currentColor">
+                                                    <path
+                                                        d="M433.1 129.1l-83.9-83.9C342.3 38.32 327.1 32 316.1 32H64C28.65 32 0 60.65 0 96v320c0 35.35 28.65 64 64 64h320c35.35 0 64-28.65 64-64V163.9C448 152.9 441.7 137.7 433.1 129.1zM224 416c-35.34 0-64-28.66-64-64s28.66-64 64-64s64 28.66 64 64S259.3 416 224 416zM320 208C320 216.8 312.8 224 304 224h-224C71.16 224 64 216.8 64 208v-96C64 103.2 71.16 96 80 96h224C312.8 96 320 103.2 320 112V208z">
+                                                    </path>
+                                                </svg></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    
                     <footer class="bg-white sticky-footer">
                         <div class="container my-auto">
                             <div class="text-center my-auto copyright"><span>Copyright © KASH+&nbsp;2022</span></div>
