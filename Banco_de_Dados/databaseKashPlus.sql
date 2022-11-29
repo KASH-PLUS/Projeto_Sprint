@@ -44,6 +44,14 @@ idRegistro INT PRIMARY KEY AUTO_INCREMENT
 ,dataHora DATETIME
 );
 
+CREATE TABLE tbTemperatura (
+id INT PRIMARY KEY AUTO_INCREMENT,
+fkMaquina VARCHAR(30), FOREIGN KEY(fkMaquina) REFERENCES tbMaquina(serialNumber),
+tempAtual INT,
+clock INT,
+dataHora DATETIME
+);
+
 -- Criando Views --
 
 CREATE VIEW vwMaquina AS
@@ -90,4 +98,15 @@ CREATE VIEW vwFuncionario AS
         tbEmpresa
             JOIN
         tbUsuario ON cnpj = fkEmpresa
+;
+
+CREATE VIEW vwTemp AS 
+	SELECT
+		serialNumber AS 'NumeroSerial',
+		tempAtual AS 'Temperatura',
+        clock,
+        dataHora AS 'Horario'
+	FROM 
+		tbTemperatura JOIN tbMaquina 
+        ON fkMaquina = serialNumber
 ;
