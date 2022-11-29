@@ -195,7 +195,7 @@
 							<!-- <div class="card shadow mb-4" id="card_cpu" style="display: none;"> -->
 								<div class="card-header d-flex justify-content-between align-items-center">
 									<h6 class="text-primary fw-bold m-0">Uso da CPU(%)</h6>
-									<button class="btn btn-sm btn-outline-secondary ">Ver temperatura</button>
+									<div class="btn btn-sm btn-outline-secondary" onclick="ver_temp()">Ver temperatura</div>
 								</div> 
 								<div class="card-body">
 									<div class="chart-area"
@@ -274,6 +274,10 @@
 	setTimeout(addListeners, 500);
 
 	let proximaAtualizacao;
+
+	function ver_temp() {
+		window.location.href = "dashTemperatura.html";
+	}
 
 	function obterDadosGraficoCpu(serialNumber) {
 		document.getElementById("myChartCpu").remove();

@@ -158,7 +158,6 @@ function recuperarDados(cep) {
 
 }
 
-
 function performGeocodingRequest(conteudo) {
     const APIKEY = "2e20e7f8-9be2-4e04-a213-75b2a2040023";
 
@@ -222,7 +221,6 @@ function gerarMapa(latitude, longitude) {
         .bindPopup('')
 }
 
-
 function addListeners() {
     var caixas = JSON.parse(sessionStorage.INFO_CAIXA);
 
@@ -253,4 +251,134 @@ function addListeners() {
             recuperarDados(cep)
         })
     }
+}
+
+function addListeners2() {
+    var caixas = JSON.parse(sessionStorage.INFO_CAIXA);
+
+    var numberReference = caixas.nome; 
+
+    for (var i = 0; i < numberReference.length; i++) {
+        var serialNumber = caixas.serialNumber[i];
+        String(serialNumber)
+        document.getElementById(serialNumber).addEventListener("click", function () {
+            key = this.id;
+
+            verificarTemperatura(key);
+            obterDadosGraficoTemp(key);
+
+            document.getElementById("span_serialNumber").innerHTML = key
+        })
+    }
+}
+
+function listarCaixas2() {
+
+    var cnpjVar = sessionStorage.BANCO_ID;
+
+    fetch("/usuarios/listarCaixas", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            cnpjServer: cnpjVar
+        })
+    }).then(function (resposta) {
+        console.log("ESTOU NO THEN DO listar2()!")
+        console.log(resposta);
+
+        if (resposta.status == 204) {
+            var divCaixas = document.getElementById("div_caixas");
+
+            var item = document.createElement('li');
+            item.className = "nav-item";
+            divCaixas.appendChild(item);
+
+            var link = document.createElement('a');
+            link.className = "nav-link";
+            item.appendChild(link);
+
+
+            var span = document.createElement('span');
+            span.innerHTML = "Nenhum caixa cadastrado";
+            link.appendChild(span);
+        }
+        else if (resposta.ok) {
+            console.log(resposta);
+
+            resposta.json().then(json => {
+                console.log(json);
+                console.log(JSON.stringify(json));
+
+                if (json.length > 0) {
+                    var divCaixas = document.getElementById("div_caixas");
+
+                    var item = document.createElement('li');
+                    item.className = "nav-item";
+                    divCaixas.appendChild(item);
+
+                    var caixas = {
+                        "nome": [],
+                        "serialNumber": [],
+                        "cep": []
+                    }
+
+                    for (var i = 0; i < json.length; i++) {
+                        maquina = json[i].Maquina;
+                        serialNumber = json[i].NumeroSerial;
+                        cep = json[i].Cep;
+
+                        var link = document.createElement('a');
+                        link.className = "nav-link";
+
+                        if (window.location == "http://localhost:3333/dashboard/dashTemperatura.html") {
+                            link.id = serialNumber;
+                            link.focus = cep
+                        }
+                        else {
+                            link.href = "dashTemperatura.html"
+                        }
+
+                        item.appendChild(link);
+
+                        var icon = document.createElement('i');
+                        icon.className = "fas fa-donate";
+                        link.appendChild(icon);
+
+                        var span = document.createElement('span');
+                        span.innerHTML = maquina;
+                        link.appendChild(span);
+
+                        caixas.nome.push(maquina);
+                        caixas.serialNumber.push(serialNumber);
+                        caixas.cep.push(cep);
+
+                    }
+
+                    sessionStorage.INFO_CAIXA = JSON.stringify(caixas);
+
+                    verificarTemperatura(caixas.serialNumber[0]);
+                    obterDadosGraficoTemp(caixas.serialNumber[0]);
+                    
+                    document.getElementById("span_serialNumber").innerHTML = caixas.serialNumber[0]
+                }
+
+            });
+
+
+
+        } else {
+            console.log("Houve um erro ao tentar listar os caixas!");
+
+            resposta.text().then(texto => {
+                console.log(texto)
+            });
+        }
+
+    }).catch(function (erro) {
+        console.log(erro);
+    })
+
+    return false;
 }

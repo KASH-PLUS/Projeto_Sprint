@@ -160,6 +160,62 @@ function buscarMedidasEmTempoRealRam(serialNumber) {
     return database.executar(instrucaoSql);
 }
 
+function buscarUltimasMedidasTemp(serialNumber, limite_linhas) {
+    
+    var instrucaoSql = ''
+    
+    if (process.env.AMBIENTE_PROCESSO == "producao") {
+        instrucaoSql = `SELECT top ${limite_linhas}
+                            Temperatura, 
+                            CONVERT(varchar, Horario, 108) as momento_grafico
+                            from vwTemp
+                            WHERE NumeroSerial = '${serialNumber}';
+                        `;
+    } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
+        instrucaoSql = `SELECT 
+                            Temperatura, 
+                            DATE_FORMAT(Horario,'%H:%i:%s') as momento_grafico
+                            FROM vwTemp 
+                            WHERE NumeroSerial = '${NumeroSerial}'
+                            LIMIT ${limite_linhas};
+                        `;
+    } else {
+        console.log("\nO AMBIENTE (produção OU desenvolvimento) NÃO FOI DEFINIDO EM app.js\n");
+        return
+    }
+    
+    console.log("Executando a instrução SQL: \n" + instrucaoSql);
+    return database.executar(instrucaoSql);
+}
+
+function buscarMedidasEmTempoRealTemp(NumeroSerial) {
+    
+    instrucaoSql = ''
+    
+    if (process.env.AMBIENTE_PROCESSO == "producao") {       
+        instrucaoSql = `SELECT top 1
+                            Temperatura, 
+                            CONVERT(varchar, Horario, 108) as momento_grafico
+                            from vwTemp
+                            WHERE NumeroSerial = '${serialNumber}';
+                        `;
+        
+    } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
+        instrucaoSql = `SELECT 
+                            Temperatura, 
+                            DATE_FORMAT(Horario,'%H:%i:%s') as momento_grafico
+                            FROM vwTemp 
+                            WHERE NumeroSerial = '${NumeroSerial}'
+                            LIMIT 1;
+                        `;
+    } else {
+        console.log("\nO AMBIENTE (produção OU desenvolvimento) NÃO FOI DEFINIDO EM app.js\n");
+        return
+    }
+
+    console.log("Executando a instrução SQL: \n" + instrucaoSql);
+    return database.executar(instrucaoSql);
+}
 
 module.exports = {
     buscarUltimasMedidasCpu,
@@ -169,4 +225,6 @@ module.exports = {
     buscarUltimasMedidasDisco,
     buscarMaxDisco,
     buscarMaxRam,
+    buscarUltimasMedidasTemp,
+    buscarMedidasEmTempoRealTemp
 }

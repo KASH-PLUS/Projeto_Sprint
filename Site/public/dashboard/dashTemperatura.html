@@ -6,6 +6,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
 	<title>Dashboard - KASH+</title>
 	<link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <script src="https://kit.fontawesome.com/083e15ef36.js" crossorigin="anonymous"></script>
 	<link rel="stylesheet"
 		href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i&amp;display=swap">
 	<link rel="stylesheet" href="assets/fonts/fontawesome-all.min.css">
@@ -13,33 +14,391 @@
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.2/dist/leaflet.css"
 		integrity="sha256-sA+zWATbFveLLNqWO2gtiw3HL/lh1giY/Inf1BJ0z14=" crossorigin="" />
 </head>
-<body>
-    <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
-        style="background: rgb(0, 132, 156);">
-        <div class="container-fluid d-flex flex-column p-0"><a
-                class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
-                <div class="sidebar-brand-icon"><img src="assets/img/logo/logoWhite.png" width="60%"
-                        style="margin-top: 10%;"></div>
-            </a>
-            <hr class="sidebar-divider my-0">
-            <ul id="accordionSidebar" class="navbar-nav text-light">
-                <li class="nav-item"><a class="nav-link" href="listarUser.html" id="link_list_user"><i
-                            class="fas fa-user"></i><span>Lista de usuários</span></a><a class="nav-link"
-                        href="addUser.html" id="link_add_user"><i class="fas fa-user-plus"></i><span>Adicionar
-                            Usuário</span></a><a class="nav-link" href="addCaixa.html" id="link_add_caixa"><i
-                            class="fas fa-server"></i><span>Cadastrar Caixa</span></a><a class="nav-link"
-                        href="dashMapa.html" id="link_dash_mapa"><i class="fas fa-map"></i><span>Dash -
-                            Região</span></a></li>
-                <li class="nav-item"><a id="link_dash" class="nav-link" data-bs-toggle="collapse" href="#div_caixas"
-                        role="button" aria-expanded="false" aria-controls="div_caixas"><i
-                            class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
-                    <div class="collapse show" id="div_caixas">
-                    </div>
-                </li>
-            </ul>
-            <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0"
-                    id="sidebarToggle" type="button"></button></div>
-        </div>
-    </nav>
+
+<body id="page-top" onload="listarCaixas2(), obterDadosGraficoTemp(serialNumber)">
+<!-- <body id="page-top" onload="validarSessao(), listarCaixas(), verificarCargo()"> -->
+	<div id="wrapper">
+		<nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
+			style="background: rgb(0, 132, 156);">
+			<div class="container-fluid d-flex flex-column p-0"><a
+					class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
+					<div class="sidebar-brand-icon"><img src="assets/img/logo/logoWhite.png" width="60%"
+							style="margin-top: 10%;"></div>
+				</a>
+				<hr class="sidebar-divider my-0">
+				<ul id="accordionSidebar" class="navbar-nav text-light">
+					<li class="nav-item"><a class="nav-link" href="listarUser.html" id="link_list_user"><i
+								class="fas fa-user"></i><span>Lista de usuários</span></a><a class="nav-link"
+							href="addUser.html" id="link_add_user"><i class="fas fa-user-plus"></i><span>Adicionar
+								Usuário</span></a><a class="nav-link" href="addCaixa.html" id="link_add_caixa"><i
+								class="fas fa-server"></i><span>Cadastrar Caixa</span></a><a class="nav-link"
+							href="dashMapa.html" id="link_dash_mapa"><i class="fas fa-map"></i><span>Dash -
+								Região</span></a></li>
+					<li class="nav-item"><a id="link_dash" class="nav-link" data-bs-toggle="collapse" href="#div_caixas"
+							role="button" aria-expanded="false" aria-controls="div_caixas"><i
+								class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+						<div class="collapse show" id="div_caixas">
+						</div>
+					</li>
+				</ul>
+				<div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0"
+						id="sidebarToggle" type="button"></button></div>
+			</div>
+		</nav>
+		<div class="d-flex flex-column" id="content-wrapper">
+			<div id="content">
+				<nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top">
+					<div class="container-fluid">
+						<h5 style="color: var(--bs-navbar-brand-color);" id="titulo_cargo">Administrador</h5>
+						<ul class="navbar-nav flex-nowrap ms-auto">
+							<li class="nav-item dropdown no-arrow mx-1"></li>
+							<li class="nav-item dropdown no-arrow mx-1">
+								<div class="shadow dropdown-list dropdown-menu dropdown-menu-end"
+									aria-labelledby="alertsDropdown"></div>
+							</li>
+							<div class="d-none d-sm-block topbar-divider"></div>
+							<li class="nav-item dropdown no-arrow">
+								<div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
+										aria-expanded="false" data-bs-toggle="dropdown" href="#"><span
+											class="d-none d-lg-inline me-2 text-gray-600 small" id="span_user">Kash
+											User</span><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
+											viewBox="0 0 24 24" fill="none" style="font-size: 33px;">
+											<path
+												d="M5.12104 17.8037C7.15267 16.6554 9.4998 16 12 16C14.5002 16 16.8473 16.6554 18.879 17.8037M15 10C15 11.6569 13.6569 13 12 13C10.3431 13 9 11.6569 9 10C9 8.34315 10.3431 7 12 7C13.6569 7 15 8.34315 15 10ZM21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
+												stroke="currentColor" stroke-width="2" stroke-linecap="round"
+												stroke-linejoin="round"></path>
+										</svg></a>
+									<div class="dropdown-menu shadow dropdown-menu-end animated--grow-in"><a
+											class="dropdown-item" onclick="limparSessao()"><i
+												class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Sair</a>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</nav>
+				<div class="container-fluid">
+					<div class="d-sm-flex justify-content-between align-items-center mb-4">
+						<h3 class="text-dark mb-0" id="h3_titulo">Dashboard - Temperatura - <span id="span_serialNumber"></span></h3>
+						<button class="btn btn-danger btn-sm"><a class="btn_voltar" href="index.html">Voltar</a></button>
+					</div>
+					<div class="row">
+					<!-- <div class="column"> // DELETAR --> 
+						<div class="col-md-6 col-xl-3 mb-4">
+							<div id="temp_cor" class="card shadow border-start-success py-2">
+								<div class="card-body">
+									<div class="row align-items-center no-gutters">
+										<div class="col me-2">
+											<div class="text-uppercase text-warning fw-bold text-l mb-1">
+												<span>Status</span>
+											</div>
+											<div class="text-dark fw-bold h5 mb-0"><span id="span_status"
+													style="color: green;">Bom</span></div>
+										</div>
+										<div class="col-auto">
+											<svg id="svg_status" class="fa-2x" xmlns="http://www.w3.org/2000/svg" width="1.5em"
+												height="1.5em" viewBox="0 0 24 24" fill="none"
+												style="color: var(--bs-green)">
+												<path
+													d="M5.63604 18.3639C2.12132 14.8492 2.12132 9.15071 5.63604 5.63599M18.364 5.63599C21.8787 9.15071 21.8787 14.8492 18.364 18.3639M8.46447 15.5355C6.51184 13.5829 6.51184 10.417 8.46447 8.46441M15.5355 8.46441C17.4882 10.417 17.4882 13.5829 15.5355 15.5355M13 11.9999C13 12.5522 12.5523 12.9999 12 12.9999C11.4477 12.9999 11 12.5522 11 11.9999C11 11.4477 11.4477 10.9999 12 10.9999C12.5523 10.9999 13 11.4477 13 11.9999Z"
+													stroke="currentColor" stroke-width="2" stroke-linecap="round"
+													stroke-linejoin="round"></path>
+											</svg>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+                        <div class="col-md-6 col-xl-3 mb-4">
+							<div id="clock_cor" class="card shadow border-start-success py-2">
+								<div class="card-body">
+									<div class="row align-items-center no-gutters">
+										<div class="col me-2">
+											<div class="text-uppercase text-success fw-bold text-l mb-1">
+												<span>Clock</span>
+											</div>
+											<div class="text-dark fw-bold h5 mb-0">
+                                                <span id="span_clock">0.00</span>
+												<span id="span_hertz">Hz</span>
+											</div>
+										</div>
+										<div class="col-auto">
+                                            <i class="fas fa-clock fa-2x text-black-300"></i>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="w-100"></div>
+					</div>
+					<div class="row">
+						<div class="col-lg-7 col-xl-8">
+							<div class="card shadow mb-4" id="card_temp">
+								<div class="card-header d-flex justify-content-between align-items-center">
+									<h6 class="text-primary fw-bold m-0">Temperatura (°C)</h6>
+								</div> 
+								<div class="card-body">
+									<div class="chart-area"
+										style="display: flex; align-items: center; justify-content: center;">
+										<div class="chart-container" id="grafico_temp"
+											style="position: relative; width: 45vw;">
+											<canvas id="myChartTemp">
+											</canvas>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<footer class="bg-white sticky-footer">
+					<div class="container my-auto">
+						<div class="text-center my-auto copyright"><span>Copyright © KASH+&nbsp;2022</span></div>
+					</div>
+				</footer>
+			</div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+		</div>
+		<script src="assets/bootstrap/js/bootstrap.min.js"></script>
+		<script src="assets/js/script.min.js"></script>
+		<script src="../js/funcoes.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+		<script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js"
+			integrity="sha256-o9N1jGDZrf5tS+Ft4gbIK7mYMipq9lqpVJ91xHSyKhg=" crossorigin=""></script>
+		<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </body>
+
 </html>
+<script>
+	setTimeout(addListeners2, 500);
+
+	let proximaAtualizacao;
+	serial = sessionStorage.serialNumber;
+
+	function obterDadosGraficoTemp(serialNumber) {
+        alert('obter grafico: ' + serialNumber);
+		document.getElementById("myChartTemp").remove();
+
+		var divGrafico = document.getElementById("grafico_temp");
+		var canvas = document.createElement("canvas");
+		canvas.id = "myChartTemp";
+
+		divGrafico.appendChild(canvas);
+
+		if (proximaAtualizacao != undefined) {
+			clearTimeout(proximaAtualizacao);
+		}
+
+		fetch(`/medidas/ultimasTemp/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
+			if (response.ok) {
+				response.json().then(function (resposta) {
+					console.log(`Dados recebidos: ${JSON.stringify(resposta)}`);
+					resposta.reverse();
+
+					plotarGraficoTemp(resposta, serialNumber);
+				});
+			} else {
+				console.error('Nenhum dado encontrado ou erro na API');
+			}
+		})
+			.catch(function (error) {
+				console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
+			});
+	}
+
+	function plotarGraficoTemp(resposta, serialNumber) {
+		alert('plotando... ' + serialNumber);
+		console.log('iniciando plotagem do gráfico...');
+        console.log(serialNumber)
+
+		let labels = [];
+
+		var dados = {
+			labels: labels,
+			datasets: [
+				{
+					yAxisID: 'y-usoTemp',
+					label: 'Uso da temp',
+					lineTension: 0.3,
+					backgroundColor: "rgba(167, 57, 60, 0.5)",
+					borderColor: "rgba(167, 57, 60, 1)",
+					pointRadius: 3,
+					pointBackgroundColor: "rgba(167, 57, 60, 1)",
+					pointBorderColor: "rgba(167, 57, 60, 1)",
+					pointHoverRadius: 3,
+					pointHoverBackgroundColor: "rgba(167, 57, 60, 1)",
+					pointHoverBorderColor: "rgba(167, 57, 60, 1)",
+					pointHitRadius: 10,
+					pointBorderWidth: 2,
+					data: [0, 50, 20, 45, 10, 30, 22, 55, 35, 10, 95, 50],
+					fill: true,
+					data: [],
+				},  
+			],
+			options: {
+				maintainAspectRatio: false,
+				responsive: true
+			}
+		};
+
+		for (i = 0; i < resposta.length; i++) {
+			var registro = resposta[i];
+			labels.push(registro.momento_grafico);
+			dados.datasets[0].data.push(registro.Registro);
+		}
+
+		console.log(JSON.stringify(dados));
+
+		const config = {
+			type: 'line',
+			data: dados,
+			options: {
+				maintainAspectRatio: false,
+				responsive: true,
+			}
+		};
+
+		let myChartTemp = new Chart(
+			document.getElementById('myChartTemp'),
+			config
+		);
+
+
+		setTimeout(() => atualizarGraficoTemp(serialNumber, dados, myChartTemp), 2000);
+	}
+
+	function atualizarGraficoTemp(serialNumber, dados, myChartTemp) {
+		alert('atualizando: '+ serialNumber);
+
+		fetch(`/medidas/tempo-realTemp/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
+			if (response.ok) {
+				response.json().then(function (novoRegistro) {
+
+					console.log(`Dados recebidos: ${JSON.stringify(novoRegistro)}`);
+					console.log(`Dados atuais do gráfico: ${dados}`);
+
+					span_clock.innerHTML = novoRegistro[0].Registro;
+
+					TempCor(novoRegistro[0].Registro);
+
+					// tirando e colocando valores no gráfico
+					dados.labels.shift(); // apagar o primeiro
+					dados.labels.push(novoRegistro[0].momento_grafico); // incluir um novo momento
+
+					dados.datasets[0].data.shift();
+					dados.datasets[0].data.push((novoRegistro[0].Registro));
+
+					myChartTemp.update();
+
+
+					// Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
+					proximaAtualizacao = setTimeout(() => atualizarGraficoTemp(serialNumber, dados, myChartTemp), 2000);
+				});
+			} else {
+				console.error('Nenhum dado encontrado ou erro na API');
+				// Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
+				proximaAtualizacao = setTimeout(() => atualizarGraficoTemp(serialNumber, dados, myChartTemp), 2000);
+			}
+		})
+			.catch(function (error) {
+				console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
+			});
+
+	}
+
+	function verificarTemperatura(serialNumber) {
+
+		document.getElementById("card_temp").style.display = "none";
+
+		fetch("/usuarios/verificarTemperatura", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify({
+				serialNumberServer: serialNumber
+			})
+		}).then(function (resposta) {
+			console.log("ESTOU NO THEN DO listar()_T!")
+
+			if (resposta.ok) {
+				console.log(resposta);
+
+				resposta.json().then(json => {
+					console.log(json);
+					console.log(JSON.stringify(json));
+
+					alert('To no Then');
+					alert(json);
+					for (let i = 0; i < json.length; i++) {
+						var temperatura = json[i].Temperatura;
+						alert(temperatura);
+
+						if (temperatura != null && temperatura != '') {
+							document.getElementById("card_temp").style.display = "block";
+							// document.getElementById("aviso_componente").style.display = "none";
+						}
+					}
+
+				});
+
+			} else {
+
+				console.log("Houve um erro ao tentar realizar o login!");
+
+				resposta.text().then(texto => {
+					mensagem_erro.classList.add("erro")
+					mensagem_erro.style.display = "flex";
+					mensagem_erro.innerHTML = texto;
+					setTimeout(() => {
+						mensagem_erro.style.display = "none";
+						mensagem_erro.classList.remove("alerta");
+						mensagem_erro.innerHTML = "";
+					}, "5000")
+				});
+			}
+
+		}).catch(function (erro) {
+			console.log(erro);
+		})
+
+	}
+
+	function TempCor(registroTemp) {
+
+		if (registroTemp <= 10.0) {
+			cor = "red";
+			pesoTemp = 8;
+		} else if (registroTemp >= 85.0) {
+			cor = "red";
+			pesoTemp = 4;
+		} else if (registroTemp >= 70.0) {
+			cor = "yellow";
+			pesoTemp = 2;
+		} else {
+			cor = "green";
+			pesoTemp = 0;
+		}
+		temp_cor.style = "border-bottom: 3px solid " + cor;
+	}
+	function StatusCor() {
+
+		peso = pesoTemp;
+
+		if (peso >= 8) {
+			status_texto = "Crítico";
+			status_cor = "red"
+		} else if (peso >= 4) {
+			status_texto = "Alerta";
+			status_cor = "yellow"
+		} else {
+			status_texto = "Bom";
+			status_cor = "green"
+		}
+
+		span_status.innerHTML = status_texto;
+		span_status.style = "color: " + status_cor;
+		svg_status.style = "color: var(--bs-" + status_cor + ")";
+
+	}
+</script>

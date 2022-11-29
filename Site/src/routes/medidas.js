@@ -31,5 +31,12 @@ router.get("/maxRam/:serialNumber", function (req, res) {
     medidaController.buscarMaxRam(req, res);
 });
 
+router.get("/ultimasTemp/:serialNumber", function (req, res) { 
+    medidaController.buscarUltimasMedidasTemp(req, res);
+});
+
+router.get("/tempo-realTemp/:serialNumber", function (req, res) {
+    medidaController.buscarMedidasEmTempoRealTemp(req, res);
+});
 
 module.exports = router;

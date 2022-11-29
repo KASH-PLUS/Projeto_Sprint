@@ -139,6 +139,46 @@ function buscarMedidasEmTempoRealRam(req, res) {
     });
 }
 
+function buscarUltimasMedidasTemp(req, res) {
+
+    const limite_linhas = 8;
+
+    var serialNumber = req.params.serialNumber;
+
+    console.log(`Recuperando as ultimas ${limite_linhas} medidas`);
+
+    medidaModel.buscarUltimasMedidasTemp(serialNumber, limite_linhas).then(function (resultado) {
+        if (resultado.length > 0) {
+            res.status(200).json(resultado);
+        } else {
+            res.status(204).send("Nenhum resultado encontrado!")
+        }
+    }).catch(function (erro) {
+        console.log(erro);
+        console.log("Houve um erro ao buscar as ultimas medidas.", erro.sqlMessage);
+        res.status(500).json(erro.sqlMessage);
+    });
+}
+
+function buscarMedidasEmTempoRealTemp(req, res) {
+
+    console.log(`Recuperando medidas em tempo real`);
+
+    var serialNumber = req.params.serialNumber;
+
+    medidaModel.buscarMedidasEmTempoRealTemp(serialNumber).then(function (resultado) {
+        if (resultado.length > 0) {
+            res.status(200).json(resultado);
+        } else {
+            res.status(204).send("Nenhum resultado encontrado!")
+        }
+    }).catch(function (erro) {
+        console.log(erro);
+        console.log("Houve um erro ao buscar as ultimas medidas.", erro.sqlMessage);
+        res.status(500).json(erro.sqlMessage);
+    });
+}
+
 module.exports = {
     buscarUltimasMedidasCpu,
     buscarUltimasMedidasRam,
@@ -146,5 +186,7 @@ module.exports = {
     buscarMedidasEmTempoRealRam,
     buscarUltimasMedidasDisco,
     buscarMaxDisco,
-    buscarMaxRam
+    buscarMaxRam,
+    buscarUltimasMedidasTemp,
+    buscarMedidasEmTempoRealTemp
 }

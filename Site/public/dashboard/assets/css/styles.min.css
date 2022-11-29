@@ -62,3 +62,26 @@ h6:hover{color:#000}
   }
  
 }
+
+.btn_temp {
+  text-decoration: none;
+  color: #7a7979;
+  /* transition: 1.5s; */
+}
+
+.btn_temp:hover {
+  color: #FFFFFF;
+}
+
+.btn_voltar {
+  text-decoration: none;
+  color: #FFFFFF;
+}
+
+.btn_voltar:hover {
+  color: #FFFFFF;
+}
+
+.icon_clock {
+  width: 20%;
+}
