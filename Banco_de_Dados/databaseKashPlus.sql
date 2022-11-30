@@ -74,6 +74,8 @@ CREATE TABLE tbRegistroRede(
  ,mbRecebidos DECIMAL(8,2)
  ,totalEnviado DECIMAL(8,2)
  ,totalRecebido DECIMAL(8,2)
+ ,pacotesEnviados INT
+ ,pacotesRecebidos INT
  ,dataHora DATETIME
  , FOREIGN KEY(fkPlaca) REFERENCES tbRede(macAddress)
 )
@@ -131,6 +133,8 @@ CREATE VIEW vwRede AS
     	idRegistroRede as ID
     	,mbEnviados
 		,mbRecebidos
+		,pacotesEnviados
+		,pacotesRecebidos
 		,dataHora
 		,macAddress
 		,fkMaquina
