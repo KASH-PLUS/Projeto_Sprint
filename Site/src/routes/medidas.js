@@ -39,4 +39,8 @@ router.get("/tempo-realRede/:serialNumber", function (req, res) {
     medidaController.buscarMedidasEmTempoRealRede(req, res);
 });
 
+router.get("/obterDadosPlacaRede/:serialNumber", function (req, res) {
+    medidaController.obterDadosPlacaRede(req, res);
+});
+
 module.exports = router;

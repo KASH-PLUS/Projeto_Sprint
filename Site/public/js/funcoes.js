@@ -123,6 +123,7 @@ function listarCaixas() {
                     obterDadosGraficoCpu(caixas.serialNumber[0]);
                     obterDadosGraficoDisco(caixas.serialNumber[0]);
                     obterDadosGraficoRede(caixas.serialNumber[0]);
+                    obterDadosPlacaDeRede(caixas.serialNumber[0]);
                     setRamMax(caixas.serialNumber[0]);
                     recuperarDados(caixas.cep[0]);
                     document.getElementById("span_serialNumber").innerHTML = caixas.serialNumber[0]
@@ -239,7 +240,8 @@ function addListeners() {
             obterDadosGraficoDisco(key);
             obterDadosGraficoRam(key);
             obterDadosGraficoCpu(key);
-            obterDadosGraficoRede(key)
+            obterDadosGraficoRede(key);
+            obterDadosPlacaDeRede(key);
             setRamMax(key);
 
             document.getElementById("span_serialNumber").innerHTML = key

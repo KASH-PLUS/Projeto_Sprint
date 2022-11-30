@@ -265,12 +265,26 @@
 			<div class="modal-dialog modal-dialog-centered">
 				<div class="modal-content">
 					<div class="modal-header">
-						<h5 class="modal-title" id="exampleModalLabel">
-							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						<h5 class="modal-title" id="exampleModalLabel">Monitoramento de banda de rede</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="container">
+						<div class="row" style="margin-top: 2vh;">
+							<div class="col-sm">
+								<h6>IPV4: <span id="span_ipv4"></span></h6>
+							</div>
+							<div class="col-sm">
+								<h6>Mac Address: <span id="span_macAddress"></span></h6>
+							</div>
+							<div class="col-sm">
+								<h6>Máscara de rede: <span id="span_netmask"></span></h6>
+							</div>
+						</div>
 					</div>
 					<div id="grafico_rede" class="modal-body">
 						<div id="myChartRede"></div>
 					</div>
+
 				</div>
 			</div>
 		</div>
@@ -296,11 +310,26 @@
 
 	verifyNav()
 
-	function obterDadosGraficoRede(serialNumber) {
+	function obterDadosPlacaDeRede(serialNumber) {
+		fetch(`/medidas/obterDadosPlacaRede/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
+			if (response.ok) {
+				response.json().then(function (resposta) {
+					console.log(`Dados recebidos: ${JSON.stringify(resposta)}`);
+					
+					span_ipv4.innerHTML = resposta[0].ipv4;
+					span_macAddress.innerHTML = resposta[0].macAddress;
+					span_netmask.innerHTML = resposta[0].netmask4;
 
-		if (proximaAtualizacao != undefined) {
-			clearTimeout(proximaAtualizacao);
-		}
+				});
+			} else {
+				console.error('Nenhum dado encontrado ou erro na API');
+			}
+		}).catch(function (error) {
+			console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
+		});
+	}
+
+	function obterDadosGraficoRede(serialNumber) {
 
 		fetch(`/medidas/ultimasRede/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
 			if (response.ok) {
@@ -308,7 +337,7 @@
 					console.log(`Dados recebidos: ${JSON.stringify(resposta)}`);
 					resposta.reverse();
 
-					plotarGraficoRede(resposta);
+					plotarGraficoRede(resposta, serialNumber);
 				});
 			} else {
 				console.error('Nenhum dado encontrado ou erro na API');
@@ -319,7 +348,7 @@
 
 	}
 
-	function plotarGraficoRede(resposta) {
+	function plotarGraficoRede(resposta, serialNumber) {
 		var dadosEnviados = []
 		var dadosRecebidos = []
 		var labels = []
@@ -333,7 +362,13 @@
 					dynamicAnimation: {
 						speed: 1000
 					}
-				}
+				},
+				toolbar: {
+					show: false
+				},
+			},
+			stroke: {
+				curve: 'smooth',
 			},
 			series: [
 				{
@@ -347,7 +382,8 @@
 			],
 			colors: ["#FF1654", "#247BA0"],
 			xaxis: {
-				categories: labels
+				categories: labels,
+				range: 7
 			},
 			yaxis: [
 				{
@@ -405,50 +441,43 @@
 
 		chart.render();
 
-		atualizarGraficoRede(chart, dadosEnviados, dadosRecebidos, labels)
+		atualizarGraficoRede(chart, dadosEnviados, dadosRecebidos, labels, serialNumber)
 	}
 
 
-	function atualizarGraficoRede(chart, dadosEnviados, dadosRecebidos, labels) {
+	function atualizarGraficoRede(chart, dadosEnviados, dadosRecebidos, labels, serialNumber) {
 
 		fetch(`/medidas/tempo-realRede/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
 			if (response.ok) {
 				response.json().then(function (novoRegistro) {
 
 					console.log(`Dados recebidos: ${JSON.stringify(novoRegistro)}`);
-					console.log(`Dados atuais do gráfico: ${dados}`);
 
-					dadosEnviados.shift()
-					dadosRecebidos.shift()
 
 					dadosEnviados.push(novoRegistro[0].mbEnviados)
 					dadosRecebidos.push(novoRegistro[0].mbRecebidos)
 
-					labels.shift()
 					labels.push(novoRegistro[0].momento_grafico)
 
 
-					chart.appendSeries(
+					chart.updateSeries(
 						[
 							{
-								name: 'MB Enviados',
 								data: dadosEnviados
 							},
 							{
-								name: 'MB Recebidos',
 								data: dadosRecebidos
 							}
 						],
 
 					)
 
-
-					proximaAtualizacao = setTimeout(() => atualizarGraficoRede(chart, dadosEnviados, dadosRecebidos, labels), 2000);
+					proximaAtualizacao = setTimeout(() => atualizarGraficoRede(chart, dadosEnviados, dadosRecebidos, labels, serialNumber), 1000);
 				});
 			} else {
 				console.error('Nenhum dado encontrado ou erro na API');
 				// Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
-				proximaAtualizacao = setTimeout(() => atualizarGraficoRede(chart, dadosEnviados, dadosRecebidos, labels), 2000);
+				proximaAtualizacao = setTimeout(() => atualizarGraficoRede(chart, dadosEnviados, dadosRecebidos, labels, serialNumber), 1000);
 			}
 		}).catch(function (error) {
 			console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
@@ -727,8 +756,8 @@
 		divGrafico.appendChild(canvas);
 
 
-		var valorMaximo = 0;
-		var usoDisco = 0;
+		var valorMaximo;
+		var usoDisco;
 
 		if (proximaAtualizacao != undefined) {
 			clearTimeout(proximaAtualizacao);

@@ -210,12 +210,39 @@ function buscarMedidasEmTempoRealRede(serialNumber) {
                     ORDER BY ID DESC LIMIT 1`;
     } else {
         console.log("\nO AMBIENTE (produção OU desenvolvimento) NÃO FOI DEFINIDO EM app.js\n");
-        return
+        return  
     }
 
     console.log("Executando a instrução SQL: \n" + instrucaoSql);
     return database.executar(instrucaoSql);
 }
+
+function obterDadosPlacaRede(serialNumber) {
+
+    instrucaoSql = ''
+
+    if (process.env.AMBIENTE_PROCESSO == "producao") {
+        instrucaoSql = `SELECT 
+                        macAddress,
+                        ipv4,
+                        netmask4
+                        FROM tbRede where fkMaquina = '${serialNumber}'`;
+
+    } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
+        instrucaoSql = `SELECT 
+                        macAddress,
+                        ipv4,
+                        netmask4 
+                        FROM tbRede where fkMaquina = '${serialNumber}'`;
+    } else {
+        console.log("\nO AMBIENTE (produção OU desenvolvimento) NÃO FOI DEFINIDO EM app.js\n");
+        return  
+    }
+
+    console.log("Executando a instrução SQL: \n" + instrucaoSql);
+    return database.executar(instrucaoSql);
+}
+
 
 
 module.exports = {
@@ -226,6 +253,7 @@ module.exports = {
     buscarMedidasEmTempoRealRam,
     buscarUltimasMedidasDisco,
     buscarMedidasEmTempoRealRede,
+    obterDadosPlacaRede,
     buscarMaxDisco,
     buscarMaxRam,
 }
