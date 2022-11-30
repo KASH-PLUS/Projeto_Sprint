@@ -205,11 +205,13 @@
 
 		fetch(`/medidas/ultimasCpu/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
 			if (response.ok) {
-				response.json().then(function (resposta) {
-					console.log(`Dados recebidos: ${JSON.stringify(resposta)}`);
-					resposta.reverse();
-
-					plotarGraficoCpu(resposta, serialNumber);
+				response.json().then(json => { 
+					
+						hora = json[0].dataHora;
+						uso = json[0].usoCpu
+						
+			
+					plotarGraficoCpu(hora, uso, serialNumber);
 				});
 			} else {
 				console.error('Nenhum dado encontrado ou erro na API');
@@ -220,10 +222,9 @@
 			});
 	}
 
-	function plotarGraficoCpu(resposta, serialNumber) {
+	function plotarGraficoCpu(hora, uso, serialNumber) {
 		console.log('iniciando plotagem do gráfico...');
 		console.log(serialNumber);
-
 		let labels = [];
 
 		var dados = {
@@ -254,10 +255,8 @@
 			}
 		};
 
-		for (i = 0; i < resposta.length; i++) {
-			var registro = resposta[i];
-			labels.push(registro.momento_grafico);
-			dados.datasets[0].data.push(registro.Registro);
+		for (i = 0; i < uso.length; i++) {
+			graficos.innerHTML += uso[i]
 		}
 
 		console.log(JSON.stringify(dados));

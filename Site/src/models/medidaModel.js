@@ -12,12 +12,7 @@ function buscarUltimasMedidasCpu(serialNumber, limite_linhas) {
                     WHERE NumeroSerial = '${serialNumber}' AND Componente = 'cpu'
                     ORDER BY ID DESC`;
     } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
-        instrucaoSql = `SELECT 
-                        Registro, 
-                        DATE_FORMAT(Horario,'%H:%i:%s') as momento_grafico
-                    FROM vwConsumo
-                    WHERE NumeroSerial = '${serialNumber}' AND Componente = 'cpu'
-                    ORDER BY ID DESC LIMIT ${limite_linhas}`;
+        instrucaoSql = `SELECT tbRegistro.dataHora, registro, processo, usoCpu FROM tbRegistro, tbComponente, tbProcesso WHERE fkComponente =   idComponente AND tipo = 'cpu' AND tbComponente.fkMaquina = '${serialNumber}' AND tbRegistro.dataHora = tbProcesso.dataHora ORDER   BY idRegistro DESC;`;
     } else {
         console.log("\nO AMBIENTE (produção OU desenvolvimento) NÃO FOI DEFINIDO EM app.js\n");
         return
