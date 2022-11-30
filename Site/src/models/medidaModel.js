@@ -27,6 +27,29 @@ function buscarUltimasMedidasCpu(serialNumber, limite_linhas) {
     return database.executar(instrucaoSql);
 }
 
+
+function buscarUltimasMedidasOciosidade(serialNumber, limite_linhas) {
+    
+    var instrucaoSql = ''
+    
+    if (process.env.AMBIENTE_PROCESSO == "producao") {
+        instrucaoSql = `SELECT top ${limite_linhas}
+                        Registro, 
+                        CONVERT(varchar, Horario, 108) as momento_grafico
+                    FROM vwConsumo
+                    WHERE NumeroSerial = '${serialNumber}' AND Componente = 'cpu'
+                    ORDER BY ID DESC`;
+    } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
+        instrucaoSql = `select usoUsuario, usoOcioso, datahora from tbOciosidade where fkMaquina = 'BR1231' order by idRegistro desc limit 8;`;
+    } else {
+        console.log("\nO AMBIENTE (produção OU desenvolvimento) NÃO FOI DEFINIDO EM app.js\n");
+        return
+    }
+    
+    console.log("Executando a instrução SQL: \n" + instrucaoSql);
+    return database.executar(instrucaoSql);
+}
+
 function buscarUltimasMedidasRam(serialNumber, limite_linhas) {
     
     var instrucaoSql = ''
@@ -169,4 +192,5 @@ module.exports = {
     buscarUltimasMedidasDisco,
     buscarMaxDisco,
     buscarMaxRam,
+    buscarUltimasMedidasOciosidade
 }

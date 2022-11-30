@@ -90,15 +90,14 @@
                                             <div class="row">
                                                 <div class="col">
                                                     <div id="div_primeiro_componente">
-                                                        <select class="form-select" id="slct_componente">
+                                                        <select class="form-select" id="slct_maquinas">
                                                             
                                                         </select>
                                                     </div>
 
                                                     <div class="text-center mb-3"><button class="btn btn-primary btn-sm"
-                                                            onclick="recuperarDados()" id="btn_cadastro"
-                                                            style="margin-top: 2%;">Cadastrar
-                                                            Máquina</button>
+                                                            onclick="obterDadosGraficosOciosidade()" id="btn_cadastro"
+                                                            style="margin-top: 2%;">Mostrar Maquina</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -136,6 +135,7 @@
                                     </div>
                                 </div>
                             </div>
+
                             <div class="col-md-6 col-xl-3 mb-4">
                                 <div id="ram_cor" class="card shadow border-start-success py-2">
                                     <div class="card-body">
@@ -154,6 +154,8 @@
                                     </div>
                                 </div>
                             </div>
+
+                            
                             <div class="col-md-6 col-xl-3 mb-4">
                                 <div id="disco_cor" class="card shadow border-start-info py-2">
                                     <div class="card-body">
@@ -189,6 +191,30 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Inicio Gráficos -->
+
+                            <div class="row">
+                                <div class="col-lg-7 col-xl-8">
+                                    <h3 id="aviso_componente">Nenhum componente cadastrado para essa máquina</h3>
+                                    <div class="card shadow mb-4" id="card_cpu" style="display: none;">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <h6 class="text-primary fw-bold m-0">Ultilização do usuário</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="chart-area"
+                                                style="display: flex; align-items: center; justify-content: center;">
+                                                <div class="chart-container" id="grafico_ociosidade"
+                                                    style="position: relative; width: 45vw;">
+                                                    <canvas id="myChartOciosidade">
+                                                    </canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>                               
+                            </div>
+
                         </div>
                     
                     <footer class="bg-white sticky-footer">
@@ -206,6 +232,8 @@
 
 </html>
 <script>
+
+    let proximaAtualizacao;
 
     function selecionarMaquinas() {
         
@@ -230,20 +258,14 @@
                     console.log(JSON.stringify(json));
 
                     serialNumber = json[0].serialNumber;
-                    nome = json[0].nome;
+                    nome = json[0].nome;verificarCargo
 
-                    const select = document.querySelector('#slct_componente');
+                    const select = document.querySelector('#slct_maquinas');
 
                     for(let i = 0; i < json.length; i++){
                         select.options[select.options.length] = new Option(json[i].nome, json[i].serialNumber);
-                    }
-                    
-
-                    
-                    
+                    } 
                 });
-
-
 
             } else {
 
@@ -266,7 +288,42 @@
         })
 
         return false;
-
     }
+
+    function obterDadosGraficosOciosidade() {
+        serialNumber = slct_maquinas.value;
+
+		document.getElementById("myChartOciosidade").remove();
+
+
+
+		var divGrafico = document.getElementById("grafico_ociosidade");
+		var canvas = document.createElement("canvas");
+		canvas.id = "myChartOciosidade";
+
+		divGrafico.appendChild(canvas);
+
+		if (proximaAtualizacao != undefined) {
+			clearTimeout(proximaAtualizacao);
+		}
+
+		fetch(`/medidas/ultimasOciosidade/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
+			if (response.ok) {
+				response.json().then(function (resposta) {
+                    resposta.reverse();
+
+                    plotarGraficoTempoUsuario(resposta, serialNumber);
+
+				});
+			} else {
+				console.error('Nenhum dado encontrado ou erro na API');
+			}
+		})
+			.catch(function (error) {
+				console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
+			});
+	}
+
+
 
 </script>
