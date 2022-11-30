@@ -247,6 +247,19 @@ def insertPeriodico(idCpu, idDisco, idRam, serialNumber, nome):
 
         if os.name == "nt":
             capturaTemp(serialNumber)
+        # else:
+            import psutil
+            # Temperatura - Linux
+            tempInfo = psutil.sensors_temperatures()
+            tempAtual = int(tempInfo['coretemp'][0][1])
+            # print('\n\nAtual: ' + str(tempAtual))
+
+            #Clock - Linux
+            clock = int(psutil.cpu_freq().current)
+            # print('Clock: ' + str(clock) + '\n\n')
+
+            query = f"INSERT INTO tbTemperatura(fkMaquina, tempAtual, clock, dataHora) VALUES ('{serialNumber}', '{tempAtual}', '{clock}', '{dataHora}');"
+            insert(query)
 
         print(response)
 
@@ -257,7 +270,7 @@ def insertPeriodico(idCpu, idDisco, idRam, serialNumber, nome):
 
 def capturaTemp(serialNumber):
     try:
-        url = "http://192.168.0.109:9000/data.json"
+        url = "http://10.18.32.98:9000/data.json"
         req = requests.get(url)
         jsonText= req.text.encode("utf8")
         data = json.loads(jsonText)
@@ -271,8 +284,9 @@ def capturaTemp(serialNumber):
         insert(query)
     except:
         print('Erro ao capturar a temperatura')
-        print('Por favor ligue o open hardware monitor na porta 9000')
-
+        print('Por favor ligue o open hardware monitor na url:')
+        print(url + '\n\n')
+        
 def relatorio():
     os.system(codeCleaner)
 
