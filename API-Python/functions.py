@@ -247,16 +247,14 @@ def insertPeriodico(idCpu, idDisco, idRam, serialNumber, nome):
 
         if os.name == "nt":
             capturaTemp(serialNumber)
-        # else:
+        else:
             import psutil
             # Temperatura - Linux
             tempInfo = psutil.sensors_temperatures()
             tempAtual = int(tempInfo['coretemp'][0][1])
-            # print('\n\nAtual: ' + str(tempAtual))
 
             #Clock - Linux
             clock = int(psutil.cpu_freq().current)
-            # print('Clock: ' + str(clock) + '\n\n')
 
             query = f"INSERT INTO tbTemperatura(fkMaquina, tempAtual, clock, dataHora) VALUES ('{serialNumber}', '{tempAtual}', '{clock}', '{dataHora}');"
             insert(query)
