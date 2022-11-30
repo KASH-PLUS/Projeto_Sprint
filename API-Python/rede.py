@@ -34,6 +34,10 @@ print("MAC Address: " + placa[2].address)
 
 print("-"*50)
 
+print(net_io_counters())
+
+print("-"*50)
+
 mbytesEnviados = net_io_counters().bytes_sent
 mbytesRecebidos = net_io_counters().bytes_recv
 
@@ -50,16 +54,6 @@ ultimosEnviados = net_io_counters().bytes_sent
 total = ultimosRecebidos + ultimosEnviados
 
 while True:
-    # time.sleep(1)
-    # # get the stats again
-    # io_2 = net_io_counters()
-    # # new - old stats gets us the speed
-    # us, ds = io_2.bytes_sent - bytes_sent, io_2.bytes_recv - bytes_recv
-    # # print the total download/upload along with current speeds
-    # print(f"Upload: {get_size(io_2.bytes_sent)}   "
-    #       f", Download: {get_size(io_2.bytes_recv)}   ", end="\r")
-    # # update the bytes_sent and bytes_recv for next iteration
-    # bytes_sent, bytes_recv = io_2.bytes_sent, io_2.bytes_recv
 
     bytesRecebidos = net_io_counters().bytes_recv
     bytesEnviados = net_io_counters().bytes_sent

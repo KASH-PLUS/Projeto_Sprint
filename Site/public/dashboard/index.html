@@ -79,7 +79,7 @@
 					<div class="d-sm-flex justify-content-between align-items-center mb-4">
 						<h3 class="text-dark mb-0" id="h3_titulo">Dashboard - <span id="span_serialNumber"></span></h3>
 						<div>
-							<button class="btn btn-success btn-sm" data-bs-toggle="modal"
+							<button class="btn btn-success btn-sm" style="color: white;" data-bs-toggle="modal"
 								data-bs-target="#exampleModal">Informações de rede</button>
 							<button class="btn btn-danger btn-sm" onclick="deletarCaixa()">Deletar Caixa</button>
 						</div>
@@ -315,7 +315,7 @@
 			if (response.ok) {
 				response.json().then(function (resposta) {
 					console.log(`Dados recebidos: ${JSON.stringify(resposta)}`);
-					
+
 					span_ipv4.innerHTML = resposta[0].ipv4;
 					span_macAddress.innerHTML = resposta[0].macAddress;
 					span_netmask.innerHTML = resposta[0].netmask4;
@@ -366,6 +366,10 @@
 				toolbar: {
 					show: false
 				},
+			},
+			title: {
+				text: 'Quantidade de dados enviados e recebidos',
+				align: 'left'
 			},
 			stroke: {
 				curve: 'smooth',
