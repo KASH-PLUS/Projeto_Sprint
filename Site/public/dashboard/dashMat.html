@@ -141,6 +141,7 @@
 
 </html>
 <script>
+	
 	let proximaAtualizacao;
 
 	function gerarSelect() {
@@ -185,12 +186,13 @@
 
 		return false;
 	}
+	
 
 	function obterDadosGraficoCpu() {
-		
+
 		serialNumber = slct_caixas.value;
 		graficos.style.display = 'block';
-		
+
 		document.getElementById("myChartCpu").remove();
 
 		var divGrafico = document.getElementById("grafico_cpu");
@@ -203,15 +205,16 @@
 			clearTimeout(proximaAtualizacao);
 		}
 
-		fetch(`/medidas/ultimasCpu/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
+		fetch(`/medidas/ultimasProcCpu/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
 			if (response.ok) {
-				response.json().then(json => { 
-					
-						hora = json[0].dataHora;
-						uso = json[0].usoCpu
-						
+				response.json().then(function (resposta) {
+
 			
-					plotarGraficoCpu(hora, uso, serialNumber);
+					resposta.reverse();
+
+					var jsonVar = resposta
+
+					plotarGraficoCpu(jsonVar, serialNumber);
 				});
 			} else {
 				console.error('Nenhum dado encontrado ou erro na API');
@@ -222,9 +225,10 @@
 			});
 	}
 
-	function plotarGraficoCpu(hora, uso, serialNumber) {
+	function plotarGraficoCpu(jsonVar, serialNumber) {
 		console.log('iniciando plotagem do gráfico...');
 		console.log(serialNumber);
+
 		let labels = [];
 
 		var dados = {
@@ -244,22 +248,35 @@
 					pointHoverBorderColor: "rgba(78, 115, 223, 1)",
 					pointHitRadius: 10,
 					pointBorderWidth: 2,
-					data: [0, 50, 20, 45, 10, 30, 22, 55, 35, 10, 95, 50],
+					fill: true,
+					data: [],
+				},
+				{
+					yAxisID: 'y-usoCpu',
+					label: 'Uso da cpu pelo processo',
+					lineTension: 0.3,
+					backgroundColor: "rgba(255,0, 0, 0.5)",
+					borderColor: "rgba(255,0, 0, 1)",
+					pointRadius: 3,
+					pointBackgroundColor: "rgba(255,0, 0, 1)",
+					pointBorderColor: "rgba(255,0, 0, 1)",
+					pointHoverRadius: 3,
+					pointHoverBackgroundColor: "rgba(255,0, 0, 1)",
+					pointHoverBorderColor: "rgba(255,0, 0, 1)",
+					pointHitRadius: 10,
+					pointBorderWidth: 2,
 					fill: true,
 					data: [],
 				},
 			],
-			options: {
-				maintainAspectRatio: false,
-				responsive: true
-			}
 		};
 
-		for (i = 0; i < uso.length; i++) {
-			graficos.innerHTML += uso[i]
+		for (let i = 0; i < jsonVar.length; i++) {
+			var registro = jsonVar[i];
+			labels.push(registro.processo + "\n" + registro.dataHora);
+			dados.datasets[0].data.push(registro.registro); 
+			dados.datasets[1].data.push(((registro.usoCpu * registro.registro) / 100)); 
 		}
-
-		console.log(JSON.stringify(dados));
 
 		const config = {
 			type: 'line',
@@ -275,7 +292,8 @@
 			config
 		);
 
-		setTimeout(() => atualizarGraficoCpu(serialNumber, dados, myChartCpu), 5000);
+
+		setTimeout(() => atualizarGraficoCpu(serialNumber, dados, myChartCpu), 10000);
 	}
 
 	function atualizarGraficoCpu(serialNumber, dados, myChartCpu) {
@@ -296,13 +314,14 @@
 
 					myChartCpu.update();
 
+
 					// Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
-					proximaAtualizacao = setTimeout(() => atualizarGraficoCpu(serialNumber, dados, myChartCpu), 5000);
+					proximaAtualizacao = setTimeout(() => atualizarGraficoCpu(serialNumber, dados, myChartCpu), 10000);
 				});
 			} else {
 				console.error('Nenhum dado encontrado ou erro na API');
 				// Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
-				proximaAtualizacao = setTimeout(() => atualizarGraficoCpu(serialNumber, dados, myChartCpu), 5000);
+				proximaAtualizacao = setTimeout(() => atualizarGraficoCpu(serialNumber, dados, myChartCpu), 10000);
 			}
 		})
 			.catch(function (error) {
@@ -315,7 +334,7 @@
 
 		serialNumber = slct_caixas.value;
 		graficos.style.display = 'block';
-
+		
 		document.getElementById("myChartRam").remove();
 
 		var divGrafico = document.getElementById("grafico_ram");
@@ -331,7 +350,7 @@
 		fetch(`/medidas/ultimasRam/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
 			if (response.ok) {
 				response.json().then(function (resposta) {
-					console.log(`Dados recebidos: ${JSON.stringify(resposta)}`);
+			
 					resposta.reverse();
 
 					plotarGraficoRam(resposta, serialNumber);
@@ -402,7 +421,8 @@
 			configRam
 		);
 
-		setTimeout(() => atualizarGraficoRam(serialNumber, dados, myChartRam), 5000);
+
+		setTimeout(() => atualizarGraficoRam(serialNumber, dados, myChartRam), 10000);
 	}
 
 	function atualizarGraficoRam(serialNumber, dados, myChartRam) {
@@ -427,12 +447,12 @@
 					myChartRam.update();
 
 					// Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
-					proximaAtualizacao = setTimeout(() => atualizarGraficoRam(serialNumber, dados, myChartRam), 5000);
+					proximaAtualizacao = setTimeout(() => atualizarGraficoRam(serialNumber, dados, myChartRam), 10000);
 				});
 			} else {
 				console.error('Nenhum dado encontrado ou erro na API');
 				// Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
-				proximaAtualizacao = setTimeout(() => atualizarGraficoRam(serialNumber, dados, myChartRam), 5000);
+				proximaAtualizacao = setTimeout(() => atualizarGraficoRam(serialNumber, dados, myChartRam), 10000);
 			}
 		})
 			.catch(function (error) {

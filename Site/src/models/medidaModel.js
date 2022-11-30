@@ -12,7 +12,12 @@ function buscarUltimasMedidasCpu(serialNumber, limite_linhas) {
                     WHERE NumeroSerial = '${serialNumber}' AND Componente = 'cpu'
                     ORDER BY ID DESC`;
     } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
-        instrucaoSql = `SELECT tbRegistro.dataHora, registro, processo, usoCpu FROM tbRegistro, tbComponente, tbProcesso WHERE fkComponente =   idComponente AND tipo = 'cpu' AND tbComponente.fkMaquina = '${serialNumber}' AND tbRegistro.dataHora = tbProcesso.dataHora ORDER   BY idRegistro DESC;`;
+        instrucaoSql = `SELECT 
+                        Registro, 
+                        DATE_FORMAT(Horario,'%H:%i:%s') as momento_grafico
+                    FROM vwConsumo
+                    WHERE NumeroSerial = '${serialNumber}' AND Componente = 'cpu'
+                    ORDER BY ID DESC LIMIT ${limite_linhas}`;
     } else {
         console.log("\nO AMBIENTE (produção OU desenvolvimento) NÃO FOI DEFINIDO EM app.js\n");
         return
@@ -155,6 +160,31 @@ function buscarMedidasEmTempoRealRam(serialNumber) {
     return database.executar(instrucaoSql);
 }
 
+function buscarUltimasMedidasProcCpu(serialNumber, limite_linhas) {
+    
+    var instrucaoSql = ''
+    
+    if (process.env.AMBIENTE_PROCESSO == "producao") {
+        instrucaoSql = `SELECT top ${limite_linhas}
+                        Registro, 
+                        CONVERT(varchar, Horario, 108) as momento_grafico
+                    FROM vwConsumo
+                    WHERE NumeroSerial = '${serialNumber}' AND Componente = 'cpu'
+                    ORDER BY ID DESC`;
+    } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
+        instrucaoSql = `SELECT DATE_FORMAT(tbRegistro.dataHora,'%H:%i:%s') AS dataHora, registro, processo, usoCpu 
+                        FROM tbRegistro, tbComponente, tbProcesso 
+                        WHERE fkComponente = idComponente AND tipo = 'cpu' AND tbComponente.fkMaquina = '${serialNumber}' AND tbRegistro.dataHora = tbProcesso.dataHora 
+                        ORDER BY idRegistro DESC LIMIT ${limite_linhas}`;
+    } else {
+        console.log("\nO AMBIENTE (produção OU desenvolvimento) NÃO FOI DEFINIDO EM app.js\n");
+        return
+    }
+    
+    console.log("Executando a instrução SQL: \n" + instrucaoSql);
+    return database.executar(instrucaoSql);
+}
+
 module.exports = {
     buscarUltimasMedidasCpu,
     buscarUltimasMedidasRam,
@@ -163,4 +193,5 @@ module.exports = {
     buscarUltimasMedidasDisco,
     buscarMaxDisco,
     buscarMaxRam,
+    buscarUltimasMedidasProcCpu
 }

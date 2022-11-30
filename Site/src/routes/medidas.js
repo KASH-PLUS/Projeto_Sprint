@@ -31,5 +31,8 @@ router.get("/maxRam/:serialNumber", function (req, res) {
     medidaController.buscarMaxRam(req, res);
 });
 
+router.get("/ultimasProcCpu/:serialNumber", function (req, res) {
+    medidaController.buscarUltimasMedidasProcCpu(req, res);
+});
 
 module.exports = router;
