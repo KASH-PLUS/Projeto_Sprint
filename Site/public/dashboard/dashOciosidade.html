@@ -312,7 +312,7 @@
 				response.json().then(function (resposta) {
                     resposta.reverse();
 
-                    plotarGraficoTempoUsuario(resposta, serialNumber);
+                    plotarGraficoTempoUso(resposta, serialNumber);
 
 				});
 			} else {
@@ -322,6 +322,67 @@
 			.catch(function (error) {
 				console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
 			});
+	}
+
+    function plotarGraficoTempoUso(resposta, serialNumber) {
+		console.log('iniciando plotagem do gráfico...');
+		console.log(serialNumber);
+        console.log(resposta)
+
+		let labels = [];
+
+		var dados = {
+			labels: labels,
+			datasets: [
+				{
+					yAxisID: 'y-usoCpu',
+					label: 'Uso da cpu',
+					lineTension: 0.3,
+					backgroundColor: "rgba(78, 115, 223, 0.5)",
+					borderColor: "rgba(78, 115, 223, 1)",
+					pointRadius: 3,
+					pointBackgroundColor: "rgba(78, 115, 223, 1)",
+					pointBorderColor: "rgba(78, 115, 223, 1)",
+					pointHoverRadius: 3,
+					pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+					pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+					pointHitRadius: 10,
+					pointBorderWidth: 2,
+					data: [0, 50, 20, 45, 10, 30, 22, 55, 35, 10, 95, 50],
+					fill: true,
+					data: [],
+				},
+			],
+			options: {
+				maintainAspectRatio: false,
+				responsive: true
+			}
+		};
+
+		for (i = 0; i < resposta.length; i++) {
+			var registro = resposta[i];
+			labels.push(registro.momento_grafico);
+			dados.datasets[0].data.push(registro.Registro);
+		}
+
+		console.log(JSON.stringify(dados));
+
+		const config = {
+			type: 'line',
+			data: dados,
+			options: {
+				maintainAspectRatio: false,
+				responsive: true,
+			}
+		};
+
+		let myChartOciosidade = new Chart(
+			document.getElementById('myChartOciosidade'),
+			config
+		);
+
+
+		// setTimeout(() => atualizarGraficoCpu(serialNumber, dados, myChartCpu), 2000);
 	}
 
 
