@@ -40,7 +40,9 @@ function buscarUltimasMedidasOciosidade(serialNumber, limite_linhas) {
                     WHERE NumeroSerial = '${serialNumber}' AND Componente = 'cpu'
                     ORDER BY ID DESC`;
     } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
-        instrucaoSql = `select usoUsuario, usoOcioso, datahora from tbOciosidade where fkMaquina = 'BR1231' order by idRegistro desc limit 8;`;
+        instrucaoSql = `select usoUsuario, usoOcioso,
+        DATE_FORMAT(datahora,'%H:%i:%s') as datahora from tbOciosidade where fkMaquina = '${serialNumber}' 
+         order by idRegistro desc limit ${limite_linhas};`;
     } else {
         console.log("\nO AMBIENTE (produção OU desenvolvimento) NÃO FOI DEFINIDO EM app.js\n");
         return

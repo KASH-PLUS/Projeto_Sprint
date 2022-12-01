@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="assets/css/styles.min.css">
 </head>
 
-<body id="page-top" onload="selecionarMaquinas(), listarCaixas()">
+<body id="page-top" onload="selecionarMaquinas(), listarCaixas(), verificarCargo()">
     <span id="mensagem_erro" class="ms"></span>
     <div id="wrapper">
         <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
@@ -199,24 +199,25 @@
                                     <h3 id="aviso_componente">Nenhum componente cadastrado para essa máquina</h3>
                                     <div class="card shadow mb-4" id="card_cpu" style="display: none;">
                                         <div class="card-header d-flex justify-content-between align-items-center">
-                                            <h6 class="text-primary fw-bold m-0">Ultilização do usuário</h6>
-                                        </div>
+                                            <h6 class="text-primary fw-bold m-0">Uso da CPU(%)</h6>
+                                        </div> 
                                         <div class="card-body">
                                             <div class="chart-area"
                                                 style="display: flex; align-items: center; justify-content: center;">
-                                                <div class="chart-container" id="grafico_ociosidade"
+                                                <div class="chart-container" id="grafico_cpu"
                                                     style="position: relative; width: 45vw;">
-                                                    <canvas id="myChartOciosidade">
+                                                    <canvas id="myChartCpu">
                                                     </canvas>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>                               
+                                </div>
                             </div>
 
+                            <!-- Fim Gráficos -->
+
                         </div>
-                    
                     <footer class="bg-white sticky-footer">
                         <div class="container my-auto">
                             <div class="text-center my-auto copyright"><span>Copyright © KASH+&nbsp;2022</span></div>
@@ -228,6 +229,9 @@
             <script src="assets/js/script.min.js"></script>
             <script src="../js/funcoes.js"></script>
             <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+		    <script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js"
+			integrity="sha256-o9N1jGDZrf5tS+Ft4gbIK7mYMipq9lqpVJ91xHSyKhg=" crossorigin=""></script>
 </body>
 
 </html>
@@ -293,13 +297,11 @@
     function obterDadosGraficosOciosidade() {
         serialNumber = slct_maquinas.value;
 
-		document.getElementById("myChartOciosidade").remove();
+		document.getElementById("myChartCpu").remove();
 
-
-
-		var divGrafico = document.getElementById("grafico_ociosidade");
+		var divGrafico = document.getElementById("grafico_cpu");
 		var canvas = document.createElement("canvas");
-		canvas.id = "myChartOciosidade";
+		canvas.id = "myChartCpu";
 
 		divGrafico.appendChild(canvas);
 
@@ -311,6 +313,9 @@
 			if (response.ok) {
 				response.json().then(function (resposta) {
                     resposta.reverse();
+                    
+                    card_cpu.style.display = "block";
+                    aviso_componente.style.display = "none";
 
                     plotarGraficoTempoUso(resposta, serialNumber);
 
@@ -329,7 +334,7 @@
 		console.log(serialNumber);
         console.log(resposta)
 
-		let labels = [];
+        let labels = [];
 
 		var dados = {
 			labels: labels,
@@ -359,11 +364,13 @@
 			}
 		};
 
-		for (i = 0; i < resposta.length; i++) {
-			var registro = resposta[i];
-			labels.push(registro.momento_grafico);
-			dados.datasets[0].data.push(registro.Registro);
-		}
+        for(i = 0; i < resposta.length; i++){
+            alert(resposta[i].datahora);
+            labels.push(resposta[i].datahora);
+            dados.datasets[0].data.push(resposta[i].usoUsuario);
+        }
+        
+
 
 		console.log(JSON.stringify(dados));
 
@@ -376,8 +383,8 @@
 			}
 		};
 
-		let myChartOciosidade = new Chart(
-			document.getElementById('myChartOciosidade'),
+		let myChartCpu = new Chart(
+			document.getElementById('myChartCpu'),
 			config
 		);
 
