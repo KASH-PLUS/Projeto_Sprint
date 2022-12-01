@@ -159,6 +159,53 @@ function buscarMedidasEmTempoRealCpu(serialNumber) {
     return database.executar(instrucaoSql);
 }
 
+function buscarMedidasEmTempoRealTempoUso(serialNumber) {
+    
+    instrucaoSql = ''
+    
+    if (process.env.AMBIENTE_PROCESSO == "producao") {       
+        instrucaoSql = `SELECT top 1
+                        Registro, 
+                        CONVERT(varchar, Horario, 108) as momento_grafico
+                        FROM vwConsumo where NumeroSerial = '${serialNumber}' and Componente = 'cpu'
+                    order by ID desc`;
+        
+    } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
+        instrucaoSql = `select usoUsuario, usoOcioso,
+        DATE_FORMAT(datahora,'%H:%i:%s') as datahora from tbOciosidade where fkMaquina = '${serialNumber}' 
+         order by idRegistro desc limit 1;`;
+    } else {
+        console.log("\nO AMBIENTE (produção OU desenvolvimento) NÃO FOI DEFINIDO EM app.js\n");
+        return
+    }
+
+    console.log("Executando a instrução SQL: \n" + instrucaoSql);
+    return database.executar(instrucaoSql);
+}
+
+function obterInicioMonitoramento(serialNumber) {
+    
+    instrucaoSql = ''
+    
+    if (process.env.AMBIENTE_PROCESSO == "producao") {       
+        instrucaoSql = `SELECT top 1
+                        Registro, 
+                        CONVERT(varchar, Horario, 108) as momento_grafico
+                        FROM vwConsumo where NumeroSerial = '${serialNumber}' and Componente = 'cpu'
+                    order by ID desc`;
+        
+    } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
+        instrucaoSql = `select datahora
+         from tbOciosidade where fkMaquina = '${serialNumber}' order by idRegistro limit 1;`;
+    } else {
+        console.log("\nO AMBIENTE (produção OU desenvolvimento) NÃO FOI DEFINIDO EM app.js\n");
+        return
+    }
+
+    console.log("Executando a instrução SQL: \n" + instrucaoSql);
+    return database.executar(instrucaoSql);
+}
+
 function buscarMedidasEmTempoRealRam(serialNumber) {
     
     instrucaoSql = ''
@@ -194,5 +241,7 @@ module.exports = {
     buscarUltimasMedidasDisco,
     buscarMaxDisco,
     buscarMaxRam,
-    buscarUltimasMedidasOciosidade
+    buscarUltimasMedidasOciosidade,
+    buscarMedidasEmTempoRealTempoUso,
+    obterInicioMonitoramento
 }

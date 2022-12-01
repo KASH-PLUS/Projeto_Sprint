@@ -11,8 +11,16 @@ router.get("/ultimasOciosidade/:serialNumber", function (req, res) {
     medidaController.buscarUltimasMedidasOciosidade(req, res);
 });
 
+router.get("/obterInicioMonitoramento/:serialNumber", function (req, res) {
+    medidaController.obterInicioMonitoramento(req, res);
+});
+
 router.get("/tempo-realCpu/:serialNumber", function (req, res) {
     medidaController.buscarMedidasEmTempoRealCpu(req, res);
+});
+
+router.get("/tempo-realUso/:serialNumber", function (req, res) {
+    medidaController.buscarMedidasEmTempoRealTempoUso(req, res);
 });
 
 router.get("/ultimasRam/:serialNumber", function (req, res) {

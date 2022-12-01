@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="assets/css/styles.min.css">
 </head>
 
-<body id="page-top" onload="selecionarMaquinas(), listarCaixas(), verificarCargo()">
+<body id="page-top" onload="selecionarMaquinas(), listarCaixas(),selectUser(), verificarCargo()">
     <span id="mensagem_erro" class="ms"></span>
     <div id="wrapper">
         <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
@@ -91,13 +91,14 @@
                                                 <div class="col">
                                                     <div id="div_primeiro_componente">
                                                         <select class="form-select" id="slct_maquinas">
-                                                            
+
                                                         </select>
                                                     </div>
 
                                                     <div class="text-center mb-3"><button class="btn btn-primary btn-sm"
-                                                            onclick="obterDadosGraficosOciosidade()" id="btn_cadastro"
-                                                            style="margin-top: 2%;">Mostrar Maquina</button>
+                                                            onclick="obterDadosGraficosOciosidade(), obterInicioMonitoramento()"
+                                                            id="btn_cadastro" style="margin-top: 2%;">Mostrar
+                                                            Maquina</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -107,131 +108,125 @@
                             </div>
                         </div>
                     </div>
-                    
+
+                    <div class="row">
+                        <div class="col-md-6 col-xl-4 mb-4">
+                            <div id="cpu_cor" class="card shadow border-start-primary py-2">
+                                <div class="card-body">
+                                    <div class="row align-items-center no-gutters">
+                                        <div class="col me-2">
+                                            <div class="text-uppercase text-primary fw-bold text-l mb-1 text-center">
+                                                <span>Inicio do monitoramento</span>
+                                            </div>
+                                            <div class="text-dark fw-bold h5 mb-0 text-center"><span
+                                                    id="span_inicioMonitoramento"></span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-xl-4 mb-4">
+                            <div id="ram_cor" class="card shadow border-start-success py-2">
+                                <div class="card-body">
+                                    <div class="row align-items-center no-gutters">
+                                        <div class="col me-2">
+                                            <div class="text-uppercase text-success fw-bold text-l mb-1 text-center">
+                                                <span style="color: deepskyblue;">Tempo de ultilização</span>
+                                            </div>
+                                            <div class="text-dark fw-bold h5 mb-0 text-center"><span
+                                                    id="span_tempoUso"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-xl-4 mb-4">
+                            <div id="ram_cor" class="card shadow border-start-success py-2">
+                                <div class="card-body">
+                                    <div class="row align-items-center no-gutters">
+                                        <div class="col me-2">
+                                            <div class="text-uppercase text-success fw-bold text-l mb-1 text-center">
+                                                <span>Tempo Ocioso</span>
+                                            </div>
+                                            <div class="text-dark fw-bold h5 mb-0 text-center"><span
+                                                    id="span_tempoOcioso"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Inicio Gráficos -->
+
                         <div class="row">
-                            <div class="col-md-6 col-xl-3 mb-4">
-                                <div id="cpu_cor" class="card shadow border-start-primary py-2">
+                            <div class="col">
+                                <h3 id="aviso_componente">Nenhum componente cadastrado para essa máquina</h3>
+                                <div class="card shadow mb-4" id="card_cpu" style="display: none;">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h6 class="text-primary fw-bold m-0">Média de uso da maquina(Horas)</h6>
+                                    </div>
                                     <div class="card-body">
-                                        <div class="row align-items-center no-gutters">
-                                            <div class="col me-2">
-                                                <div class="text-uppercase text-primary fw-bold text-l mb-1">
-                                                    <span>CPU</span>
-                                                </div>
-                                                <div class="text-dark fw-bold h5 mb-0"><span id="span_usoCpu"></span></div>
-                                            </div>
-                                            <div class="col-auto">
-                                                <svg class="bi bi-cpu-fill fa-2x text-black-300"
-                                                    xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
-                                                    fill="currentColor" viewBox="0 0 16 16">
-                                                    <path
-                                                        d="M6.5 6a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3z">
-                                                    </path>
-                                                    <path
-                                                        d="M5.5.5a.5.5 0 0 0-1 0V2A2.5 2.5 0 0 0 2 4.5H.5a.5.5 0 0 0 0 1H2v1H.5a.5.5 0 0 0 0 1H2v1H.5a.5.5 0 0 0 0 1H2v1H.5a.5.5 0 0 0 0 1H2A2.5 2.5 0 0 0 4.5 14v1.5a.5.5 0 0 0 1 0V14h1v1.5a.5.5 0 0 0 1 0V14h1v1.5a.5.5 0 0 0 1 0V14h1v1.5a.5.5 0 0 0 1 0V14a2.5 2.5 0 0 0 2.5-2.5h1.5a.5.5 0 0 0 0-1H14v-1h1.5a.5.5 0 0 0 0-1H14v-1h1.5a.5.5 0 0 0 0-1H14v-1h1.5a.5.5 0 0 0 0-1H14A2.5 2.5 0 0 0 11.5 2V.5a.5.5 0 0 0-1 0V2h-1V.5a.5.5 0 0 0-1 0V2h-1V.5a.5.5 0 0 0-1 0V2h-1V.5zm1 4.5h3A1.5 1.5 0 0 1 11 6.5v3A1.5 1.5 0 0 1 9.5 11h-3A1.5 1.5 0 0 1 5 9.5v-3A1.5 1.5 0 0 1 6.5 5z">
-                                                    </path>
-                                                </svg>
+                                        <div class="chart-area"
+                                            style="display: flex; align-items: center; justify-content: center;">
+                                            <div class="chart-container" id="grafico_cpu"
+                                                style="position: relative; width: 80vw;">
+                                                <canvas id="myChartCpu">
+                                                </canvas>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="col-md-6 col-xl-3 mb-4">
-                                <div id="ram_cor" class="card shadow border-start-success py-2">
-                                    <div class="card-body">
-                                        <div class="row align-items-center no-gutters">
-                                            <div class="col me-2">
-                                                <div class="text-uppercase text-success fw-bold text-l mb-1">
-                                                    <span>RAM</span>
-                                                </div>
-                                                <div class="text-dark fw-bold h5 mb-0"><span id="span_usoRam"></span> /
-                                                    <span id="span_ramMaxima"></span>
-                                                </div>
-                                            </div>
-                                            <div class="col-auto"><i class="fas fa-memory fa-2x text-black-300"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            
-                            <div class="col-md-6 col-xl-3 mb-4">
-                                <div id="disco_cor" class="card shadow border-start-info py-2">
-                                    <div class="card-body">
-                                        <div class="row align-items-center no-gutters">
-                                            <div class="col me-2">
-                                                <div class="text-uppercase text-info fw-bold text-l mb-1"><span>Disco</span>
-                                                </div>
-                                                <div class="row g-0 align-items-center">
-                                                    <div class="col-auto">
-                                                        <div class="text-dark fw-bold h5 mb-0 me-3"><span
-                                                                id="span_usoDisco"></span></div>
-                                                    </div>
-                                                    <div class="col">
-                                                        <div class="progress progress-sm">
-                                                            <div class="progress-bar bg-info" id="barra_usoDisco"
-                                                                aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"
-                                                                style="width: 50%;">
-                                                            </div>
-                                                            <div></div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-auto"><svg class="fa-2x text-black-300"
-                                                    xmlns="http://www.w3.org/2000/svg" viewBox="-32 0 512 512" width="1em"
-                                                    height="1em" fill="currentColor">
-                                                    <path
-                                                        d="M433.1 129.1l-83.9-83.9C342.3 38.32 327.1 32 316.1 32H64C28.65 32 0 60.65 0 96v320c0 35.35 28.65 64 64 64h320c35.35 0 64-28.65 64-64V163.9C448 152.9 441.7 137.7 433.1 129.1zM224 416c-35.34 0-64-28.66-64-64s28.66-64 64-64s64 28.66 64 64S259.3 416 224 416zM320 208C320 216.8 312.8 224 304 224h-224C71.16 224 64 216.8 64 208v-96C64 103.2 71.16 96 80 96h224C312.8 96 320 103.2 320 112V208z">
-                                                    </path>
-                                                </svg></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Inicio Gráficos -->
-
-                            <div class="row">
-                                <div class="col-lg-7 col-xl-8">
-                                    <h3 id="aviso_componente">Nenhum componente cadastrado para essa máquina</h3>
-                                    <div class="card shadow mb-4" id="card_cpu" style="display: none;">
-                                        <div class="card-header d-flex justify-content-between align-items-center">
-                                            <h6 class="text-primary fw-bold m-0">Uso da CPU(%)</h6>
-                                        </div> 
-                                        <div class="card-body">
-                                            <div class="chart-area"
-                                                style="display: flex; align-items: center; justify-content: center;">
-                                                <div class="chart-container" id="grafico_cpu"
-                                                    style="position: relative; width: 45vw;">
-                                                    <canvas id="myChartCpu">
-                                                    </canvas>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Fim Gráficos -->
-
                         </div>
-                    <footer class="bg-white sticky-footer">
-                        <div class="container my-auto">
-                            <div class="text-center my-auto copyright"><span>Copyright © KASH+&nbsp;2022</span></div>
+
+                        <!-- Fim Gráficos -->
+
+                        <div class="container-fluid">
+                            <h3 class="text-dark mb-4">Lista de Maquinas</h3>
+                            <div class="card shadow">
+                                <div class="card-body">
+                                    <div class="table-responsive table mt-2" id="dataTable" role="grid"
+                                        aria-describedby="dataTable_info">
+                                        <table class="table my-0" id="dataTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Nome</th>
+                                                    <th>Numero serial</th>
+                                                    <th>Média ultilização</th>
+                                                    <th>Inicio monitoramento</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="table_body">
+                                            </tbody>
+                                            <tfoot>
+                                                <tr></tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </footer>
+                    </div>
+
                 </div>
+                <footer class="bg-white sticky-footer">
+                    <div class="container my-auto">
+                        <div class="text-center my-auto copyright"><span>Copyright © KASH+&nbsp;2022</span></div>
+                    </div>
+                </footer>
             </div>
-            <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-            <script src="assets/js/script.min.js"></script>
-            <script src="../js/funcoes.js"></script>
-            <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-		    <script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js"
-			integrity="sha256-o9N1jGDZrf5tS+Ft4gbIK7mYMipq9lqpVJ91xHSyKhg=" crossorigin=""></script>
+        </div>
+        <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+        <script src="assets/js/script.min.js"></script>
+        <script src="../js/funcoes.js"></script>
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js"
+            integrity="sha256-o9N1jGDZrf5tS+Ft4gbIK7mYMipq9lqpVJ91xHSyKhg=" crossorigin=""></script>
 </body>
 
 </html>
@@ -240,7 +235,7 @@
     let proximaAtualizacao;
 
     function selecionarMaquinas() {
-        
+
         var cnpjVar = sessionStorage.BANCO_ID;
 
         fetch("/usuarios/selecionarMaquinas", {
@@ -252,23 +247,19 @@
                 cnpjServer: cnpjVar
             })
         }).then(function (resposta) {
-            console.log("ESTOU NO THEN DO listar()!")
 
             if (resposta.ok) {
-                console.log(resposta);
 
                 resposta.json().then(json => {
-                    console.log(json);
-                    console.log(JSON.stringify(json));
 
                     serialNumber = json[0].serialNumber;
-                    nome = json[0].nome;verificarCargo
+                    nome = json[0].nome; verificarCargo;
 
                     const select = document.querySelector('#slct_maquinas');
 
-                    for(let i = 0; i < json.length; i++){
+                    for (let i = 0; i < json.length; i++) {
                         select.options[select.options.length] = new Option(json[i].nome, json[i].serialNumber);
-                    } 
+                    }
                 });
 
             } else {
@@ -294,103 +285,159 @@
         return false;
     }
 
+    function obterInicioMonitoramento() {
+        serialNumber = slct_maquinas.value;
+
+        fetch(`/medidas/obterInicioMonitoramento/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
+            if (response.ok) {
+                response.json().then(function (resposta) {
+                    dataInicio = new Date(resposta[0].datahora);
+                    span_inicioMonitoramento.innerHTML = dataInicio.getDate() + "/" + dataInicio.getMonth() + "/" + dataInicio.getFullYear() + " " + dataInicio.getHours() + ":" + dataInicio.getMinutes() + ":" + dataInicio.getSeconds();
+
+                });
+            } else {
+                console.error('Nenhum dado encontrado ou erro na API');
+            }
+        })
+            .catch(function (error) {
+                console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
+            });
+
+    }
+
     function obterDadosGraficosOciosidade() {
         serialNumber = slct_maquinas.value;
 
-		document.getElementById("myChartCpu").remove();
+        document.getElementById("myChartCpu").remove();
 
-		var divGrafico = document.getElementById("grafico_cpu");
-		var canvas = document.createElement("canvas");
-		canvas.id = "myChartCpu";
+        var divGrafico = document.getElementById("grafico_cpu");
+        var canvas = document.createElement("canvas");
+        canvas.id = "myChartCpu";
 
-		divGrafico.appendChild(canvas);
+        divGrafico.appendChild(canvas);
 
-		if (proximaAtualizacao != undefined) {
-			clearTimeout(proximaAtualizacao);
-		}
+        if (proximaAtualizacao != undefined) {
+            clearTimeout(proximaAtualizacao);
+        }
 
-		fetch(`/medidas/ultimasOciosidade/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
-			if (response.ok) {
-				response.json().then(function (resposta) {
+        fetch(`/medidas/ultimasOciosidade/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
+            if (response.ok) {
+                response.json().then(function (resposta) {
                     resposta.reverse();
-                    
+
                     card_cpu.style.display = "block";
                     aviso_componente.style.display = "none";
 
+                    span_tempoUso.innerHTML = resposta[7].usoUsuario + "Horas";
+                    span_tempoOcioso.innerHTML = resposta[7].usoOcioso + "Horas";
+
+
+
                     plotarGraficoTempoUso(resposta, serialNumber);
 
-				});
-			} else {
-				console.error('Nenhum dado encontrado ou erro na API');
-			}
-		})
-			.catch(function (error) {
-				console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
-			});
-	}
+                });
+            } else {
+                console.error('Nenhum dado encontrado ou erro na API');
+            }
+        })
+            .catch(function (error) {
+                console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
+            });
+    }
 
     function plotarGraficoTempoUso(resposta, serialNumber) {
-		console.log('iniciando plotagem do gráfico...');
-		console.log(serialNumber);
-        console.log(resposta)
 
         let labels = [];
 
-		var dados = {
-			labels: labels,
-			datasets: [
-				{
-					yAxisID: 'y-usoCpu',
-					label: 'Uso da cpu',
-					lineTension: 0.3,
-					backgroundColor: "rgba(78, 115, 223, 0.5)",
-					borderColor: "rgba(78, 115, 223, 1)",
-					pointRadius: 3,
-					pointBackgroundColor: "rgba(78, 115, 223, 1)",
-					pointBorderColor: "rgba(78, 115, 223, 1)",
-					pointHoverRadius: 3,
-					pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
-					pointHoverBorderColor: "rgba(78, 115, 223, 1)",
-					pointHitRadius: 10,
-					pointBorderWidth: 2,
-					data: [0, 50, 20, 45, 10, 30, 22, 55, 35, 10, 95, 50],
-					fill: true,
-					data: [],
-				},
-			],
-			options: {
-				maintainAspectRatio: false,
-				responsive: true
-			}
-		};
+        var dados = {
+            labels: labels,
+            datasets: [
+                {
+                    yAxisID: 'y-usoCpu',
+                    label: 'Uso da cpu',
+                    lineTension: 0.3,
+                    backgroundColor: "rgba(78, 115, 223, 0.5)",
+                    borderColor: "rgba(78, 115, 223, 1)",
+                    pointRadius: 3,
+                    pointBackgroundColor: "rgba(78, 115, 223, 1)",
+                    pointBorderColor: "rgba(78, 115, 223, 1)",
+                    pointHoverRadius: 3,
+                    pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+                    pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+                    pointHitRadius: 10,
+                    pointBorderWidth: 2,
+                    data: [0, 50, 20, 45, 10, 30, 22, 55, 35, 10, 95, 50],
+                    fill: true,
+                    data: [],
+                },
+            ],
+            options: {
+                maintainAspectRatio: false,
+                responsive: true
+            }
+        };
 
-        for(i = 0; i < resposta.length; i++){
-            alert(resposta[i].datahora);
+        for (i = 0; i < resposta.length; i++) {
             labels.push(resposta[i].datahora);
             dados.datasets[0].data.push(resposta[i].usoUsuario);
         }
-        
+
+        const config = {
+            type: 'line',
+            data: dados,
+            options: {
+                maintainAspectRatio: false,
+                responsive: true,
+            }
+        };
+
+        let myChartCpu = new Chart(
+            document.getElementById('myChartCpu'),
+            config
+        );
+
+        setTimeout(() => atualizarGraficoTempoUso(serialNumber, dados, myChartCpu), 10000);
+    }
+
+    function atualizarGraficoTempoUso(serialNumber, dados, myChartCpu) {
+
+        fetch(`/medidas/tempo-realUso/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
+            if (response.ok) {
+                response.json().then(function (novoRegistro) {
+
+                    span_tempoUso.innerHTML = novoRegistro[0].usoUsuario + "Horas";
+                    span_tempoOcioso.innerHTML = novoRegistro[0].usoOcioso + "Horas";
+
+                    // CpuCor(novoRegistro[0].usoUsuario);
+
+                    // tirando e colocando valores no gráfico
+                    dados.labels.shift(); // apagar o primeiro
+                    dados.labels.push(novoRegistro[0].datahora); // incluir um novo momento
+
+                    dados.datasets[0].data.shift();
+                    dados.datasets[0].data.push((novoRegistro[0].usoUsuario));
+
+                    myChartCpu.update();
 
 
-		console.log(JSON.stringify(dados));
+                    // Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
+                    proximaAtualizacao = setTimeout(() => atualizarGraficoTempoUso(serialNumber, dados, myChartCpu), 2000);
+                });
+            } else {
+                console.error('Nenhum dado encontrado ou erro na API');
+                // Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
+                proximaAtualizacao = setTimeout(() => atualizarGraficoTempoUso(serialNumber, dados, myChartCpu), 2000);
+            }
+        })
+            .catch(function (error) {
+                console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
+            });
 
-		const config = {
-			type: 'line',
-			data: dados,
-			options: {
-				maintainAspectRatio: false,
-				responsive: true,
-			}
-		};
+    }
 
-		let myChartCpu = new Chart(
-			document.getElementById('myChartCpu'),
-			config
-		);
+    
 
 
-		// setTimeout(() => atualizarGraficoCpu(serialNumber, dados, myChartCpu), 2000);
-	}
 
 
 
