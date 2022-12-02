@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="assets/css/styles.min.css">
 </head>
 
-<body id="page-top" onload="selecionarMaquinas(), listarCaixas(), verificarCargo(), obterDadosTodasMaquinas()">
+<body id="page-top" onload="selecionarMaquinas(), listarCaixas(), validarSessao(), verificarCargo(), obterDadosTodasMaquinas()">
     <span id="mensagem_erro" class="ms"></span>
     <div id="wrapper">
         <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
@@ -373,7 +373,6 @@
                     fill: true,
                     data: [],
                 },
-                
             ],
             options: {
                 maintainAspectRatio: false,
@@ -425,43 +424,7 @@
 
 
                     // Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
-                    proximaAtualizacao = setTimeout(() => atualizarGraficoTempoUso(serialNumber, dados, myChartCpu), 2000);
-                });
-            } else {
-                console.error('Nenhum dado encontrado ou erro na API');
-                // Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
-                proximaAtualizacao = setTimeout(() => atualizarGraficoTempoUso(serialNumber, dados, myChartCpu), 2000);
-            }
-        })
-            .catch(function (error) {
-                console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
-            });
-
-    }
-
-    function atualizarGraficoTempoUso(serialNumber, dados, myChartCpu) {
-
-        fetch(`/medidas/tempo-realUso/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
-            if (response.ok) {
-                response.json().then(function (novoRegistro) {
-
-                    span_tempoUso.innerHTML = novoRegistro[0].usoUsuario + "Horas";
-                    span_tempoOcioso.innerHTML = novoRegistro[0].usoOcioso + "Horas";
-
-                    // CpuCor(novoRegistro[0].usoUsuario);
-
-                    // tirando e colocando valores no gráfico
-                    dados.labels.shift(); // apagar o primeiro
-                    dados.labels.push(novoRegistro[0].datahora); // incluir um novo momento
-
-                    dados.datasets[0].data.shift();
-                    dados.datasets[0].data.push((novoRegistro[0].usoUsuario));
-
-                    myChartCpu.update();
-
-
-                    // Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
-                    proximaAtualizacao = setTimeout(() => atualizarGraficoTempoUso(serialNumber, dados, myChartCpu), 2000);
+                    proximaAtualizacao = setTimeout(() => atualizarGraficoTempoUso(serialNumber, dados, myChartCpu), 30000);
                 });
             } else {
                 console.error('Nenhum dado encontrado ou erro na API');

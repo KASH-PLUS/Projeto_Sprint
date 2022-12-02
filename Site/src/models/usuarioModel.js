@@ -49,7 +49,7 @@ function obterDadosTodasMaquinas(cnpj) {
 
     if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
         var instrucao = `
-        select * from (select serialNumber, nome, usoUsuario, usoOcioso from tbMaquina join tbOciosidade on fkMaquina = serialNumber and fkEmpresa = '${cnpj}' group by serialNumber) as maquina order by usoUsuario desc;
+        select serialNumber, nome, max(usoOcioso) as usoOcioso, usoUsuario from tbMaquina join tbOciosidade on fkEmpresa = '${cnpj}' and fkMaquina = serialNumber group by nome;
         `;
     }
     else if (process.env.AMBIENTE_PROCESSO == "producao") {
