@@ -35,4 +35,18 @@ router.get("/ultimasProcCpu/:serialNumber", function (req, res) {
     medidaController.buscarUltimasMedidasProcCpu(req, res);
 });
 
+router.get("/tempo-realProcCpu/:serialNumber", function (req, res) {
+    medidaController.buscarMedidasEmTempoRealProcCpu(req, res);
+});
+
+router.get("/ultimasProcRam/:serialNumber", function (req, res) {
+    medidaController.buscarUltimasMedidasProcRam(req, res);
+});
+
+router.get("/tempo-realProcRam/:serialNumber", function (req, res) {
+    medidaController.buscarMedidasEmTempoRealProcRam(req, res);
+});
+
+
+
 module.exports = router;

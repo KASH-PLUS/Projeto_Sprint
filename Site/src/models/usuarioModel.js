@@ -158,6 +158,15 @@ function listarSelect(cnpj) {
     return database.executar(instrucao)
 }
 
+
+function topProcessos(serialNumber, frequencia) {
+    console.log("ACESSEI O USUARIO MODEL \n \n\t\t >> Se aqui der erro de 'Error: connect ECONNREFUSED',\n \t\t >> verifique suas credenciais de acesso ao banco\n \t\t >> e se o servidor de seu BD está rodando corretamente. \n\n function listar()", serialNumber, frequencia)
+    var instrucao = `SELECT usoCpu, usoRam, processo FROM tbProcesso WHERE fkMaquina = '${serialNumber}' ORDER BY idProcesso DESC LIMIT 
+                     ${frequencia}`;
+    console.log("Executando a instrução SQL: \n" + instrucao);
+    return database.executar(instrucao)
+}
+
 module.exports = {
     entrar,
     cadastrarBanco,
@@ -170,5 +179,6 @@ module.exports = {
     listarMaquinasRegiao,
     listarComponentes,
     criarMapaCaixas,
-    listarSelect
+    listarSelect,
+    topProcessos
 };

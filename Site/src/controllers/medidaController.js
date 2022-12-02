@@ -160,6 +160,65 @@ function buscarUltimasMedidasProcCpu(req, res) {
     });
 }
 
+function buscarMedidasEmTempoRealProcCpu(req, res) {
+
+    var serialNumber = req.params.serialNumber;
+
+    console.log(`Recuperando medidas em tempo real`);
+
+    medidaModel.buscarMedidasEmTempoRealProcCpu(serialNumber).then(function (resultado) {
+        if (resultado.length > 0) {
+            res.status(200).json(resultado);
+        } else {
+            res.status(204).send("Nenhum resultado encontrado!")
+        }
+    }).catch(function (erro) {
+        console.log(erro);
+        console.log("Houve um erro ao buscar as ultimas medidas.", erro.sqlMessage);
+        res.status(500).json(erro.sqlMessage);
+    });
+}
+
+function buscarUltimasMedidasProcRam(req, res) {
+
+    const limite_linhas = 8;
+
+    var serialNumber = req.params.serialNumber;
+
+    console.log(`Recuperando as ultimas ${limite_linhas} medidas`);
+
+    medidaModel.buscarUltimasMedidasProcRam(serialNumber, limite_linhas).then(function (resultado) {
+        if (resultado.length > 0) {
+            res.status(200).json(resultado);
+        } else {
+            res.status(204).send("Nenhum resultado encontrado!")
+        }
+    }).catch(function (erro) {
+        console.log(erro);
+        console.log("Houve um erro ao buscar as ultimas medidas.", erro.sqlMessage);
+        res.status(500).json(erro.sqlMessage);
+    });
+}
+
+function buscarMedidasEmTempoRealProcRam(req, res) {
+
+    var serialNumber = req.params.serialNumber;
+
+    console.log(`Recuperando medidas em tempo real`);
+
+    medidaModel.buscarMedidasEmTempoRealProcRam(serialNumber).then(function (resultado) {
+        if (resultado.length > 0) {
+            res.status(200).json(resultado);
+        } else {
+            res.status(204).send("Nenhum resultado encontrado!")
+        }
+    }).catch(function (erro) {
+        console.log(erro);
+        console.log("Houve um erro ao buscar as ultimas medidas.", erro.sqlMessage);
+        res.status(500).json(erro.sqlMessage);
+    });
+}
+
 module.exports = {
     buscarUltimasMedidasCpu,
     buscarUltimasMedidasRam,
@@ -168,5 +227,8 @@ module.exports = {
     buscarUltimasMedidasDisco,
     buscarMaxDisco,
     buscarMaxRam,
-    buscarUltimasMedidasProcCpu
+    buscarUltimasMedidasProcCpu,
+    buscarMedidasEmTempoRealProcCpu,
+    buscarUltimasMedidasProcRam,
+    buscarMedidasEmTempoRealProcRam
 }

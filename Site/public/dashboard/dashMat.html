@@ -94,7 +94,7 @@
                                                     <div>
                                                         <label class="form-label"><strong id="strong_titulo">Escolha uma máquina</strong><br /></label>
                                                         <select class="form-select" id="slct_caixas">
-															<option value="0">--Escolha uma máquina--</option>
+															<option value="maquina">--Escolha uma máquina--</option>
                                                         </select>
                                                     </div>
                                                     <div class="text-center mb-3"><button class="btn btn-primary btn-sm"
@@ -110,19 +110,72 @@
                         </div>
                     </div>
                 </div>
-				<div id="graficos" style="display: none;">
-					<div class="d-sm-flex justify-content-between align-items-center mb-4">
-						<div class="chart-container" id="grafico_cpu" style="position: relative; width: 45vw;">
-							<canvas id="myChartCpu">
-							</canvas>
+				<div class="container-fluid">
+					<div id="graficos" style="display: none;">
+						<div class="row">
+							<div class="col-8">
+								<div class="card shadow mb-4">
+									<div class="card-header d-flex justify-content-between align-items-center">
+										<h6 class="text-primary fw-bold m-0">Uso da CPU - Processo (%)</h6>
+									</div>
+									<div class="card-body">
+										<div class="chart-container" id="grafico_cpu" style="position: relative; width: 50vw;">
+											<canvas id="myChartCpu">
+											</canvas>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-4">
+								<div class="card shadow mb-4">
+									<div class="card-header d-flex justify-content-between align-items-center">
+										<h6 class="text-primary fw-bold m-0">Processos com mais uso cpu e ram</h6>
+									</div>
+									<div class="col">
+										<label class="form-label"><strong id="strong_titulo">Escolha uma frequência</strong><br /></label>
+										<select class="form-select" id="slct_freq" onchange="topProcessos()">
+											<option value="0">--Escolha uma frequência--</option>
+											<option value="1">Minuto</option>
+											<option value="2">Hora</option>
+											<option value="3">Dia</option>
+										</select>
+									</div>
+									<div class="table-responsive table mt-2" id="dataTable" role="grid"
+									aria-describedby="dataTable_info">
+										<table class="table my-0" id="dataTable">
+											<thead>
+												<tr>
+													<th>Processo</th>
+													<th>Uso da CPU</th>
+													<th>Uso da RAM</th>
+												</tr>
+											</thead>
+											<tbody id="table_body">
+											</tbody>
+											<tfoot>
+												<tr></tr>
+											</tfoot>
+										</table>
+									</div>
+								</div>
+							</div>
 						</div>
-					</div>	
-					<div class="d-sm-flex justify-content-between align-items-center mb-4">
-						<div class="chart-container" id="grafico_ram" style="position: relative; width: 45vw;">
-							<canvas id="myChartRam">
-							</canvas>
+						<div class="row">
+							<div class="col-8">
+								<div class="card shadow mb-4">
+									<div class="card-header d-flex justify-content-between align-items-center">
+										<h6 class="text-primary fw-bold m-0">Uso da RAM - Processo (%)</h6>
+									</div>
+									<div class="card-body">
+										<div class="chart-container" id="grafico_ram" style="position: relative; width: 50vw;">
+											<canvas id="myChartRam">
+											</canvas>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
-					</div>	
+					</div>
 				</div>	
 				<footer class="bg-white sticky-footer">
 					<div class="container my-auto">
@@ -190,39 +243,52 @@
 
 	function obterDadosGraficoCpu() {
 
-		serialNumber = slct_caixas.value;
-		graficos.style.display = 'block';
+		var serialNumber = slct_caixas.value;
 
-		document.getElementById("myChartCpu").remove();
+		if (serialNumber != "maquina") {
+			
+			graficos.style.display = 'block';
 
-		var divGrafico = document.getElementById("grafico_cpu");
-		var canvas = document.createElement("canvas");
-		canvas.id = "myChartCpu";
+			document.getElementById("myChartCpu").remove();
 
-		divGrafico.appendChild(canvas);
+			var divGrafico = document.getElementById("grafico_cpu");
+			var canvas = document.createElement("canvas");
+			canvas.id = "myChartCpu";
 
-		if (proximaAtualizacao != undefined) {
-			clearTimeout(proximaAtualizacao);
+			divGrafico.appendChild(canvas);
+
+			if (proximaAtualizacao != undefined) {
+				clearTimeout(proximaAtualizacao);
+			}
+
+			fetch(`/medidas/ultimasProcCpu/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
+				if (response.ok) {
+					response.json().then(function (resposta) {
+
+				
+						resposta.reverse();
+
+						var jsonVar = resposta
+
+						plotarGraficoCpu(jsonVar, serialNumber);
+					});
+				} else {
+					console.error('Nenhum dado encontrado ou erro na API');
+				}
+			})
+				.catch(function (error) {
+					console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
+				});
+
+		} else {
+			Swal.fire({
+                title: 'Escolha uma máquina',
+                icon: 'error',     
+                confirmButtonText: 'OK'
+            })
+			graficos.style.display = 'none';
 		}
 
-		fetch(`/medidas/ultimasProcCpu/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
-			if (response.ok) {
-				response.json().then(function (resposta) {
-
-			
-					resposta.reverse();
-
-					var jsonVar = resposta
-
-					plotarGraficoCpu(jsonVar, serialNumber);
-				});
-			} else {
-				console.error('Nenhum dado encontrado ou erro na API');
-			}
-		})
-			.catch(function (error) {
-				console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
-			});
 	}
 
 	function plotarGraficoCpu(jsonVar, serialNumber) {
@@ -248,7 +314,6 @@
 					pointHoverBorderColor: "rgba(78, 115, 223, 1)",
 					pointHitRadius: 10,
 					pointBorderWidth: 2,
-					fill: true,
 					data: [],
 				},
 				{
@@ -273,9 +338,9 @@
 
 		for (let i = 0; i < jsonVar.length; i++) {
 			var registro = jsonVar[i];
-			labels.push(registro.processo + "\n" + registro.dataHora);
+			labels.push(registro.processo + "-" + registro.dataHora);
 			dados.datasets[0].data.push(registro.registro); 
-			dados.datasets[1].data.push(((registro.usoCpu * registro.registro) / 100)); 
+			dados.datasets[1].data.push(registro.usoCpu); 
 		}
 
 		const config = {
@@ -298,22 +363,20 @@
 
 	function atualizarGraficoCpu(serialNumber, dados, myChartCpu) {
 
-		fetch(`/medidas/tempo-realCpu/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
+		fetch(`/medidas/tempo-realProcCpu/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
 			if (response.ok) {
 				response.json().then(function (novoRegistro) {
-
-					console.log(`Dados recebidos: ${JSON.stringify(novoRegistro)}`);
-					console.log(`Dados atuais do gráfico: ${dados}`);
-
+					
 					// tirando e colocando valores no gráfico
 					dados.labels.shift(); // apagar o primeiro
-					dados.labels.push(novoRegistro[0].momento_grafico); // incluir um novo momento
+					dados.labels.push(novoRegistro[0].processo + "-" + novoRegistro[0].dataHora); // incluir um novo momento
 
 					dados.datasets[0].data.shift();
-					dados.datasets[0].data.push((novoRegistro[0].Registro));
+					dados.datasets[0].data.push(novoRegistro[0].registro);
+					dados.datasets[1].data.shift();
+					dados.datasets[1].data.push(novoRegistro[0].usoCpu);
 
 					myChartCpu.update();
-
 
 					// Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
 					proximaAtualizacao = setTimeout(() => atualizarGraficoCpu(serialNumber, dados, myChartCpu), 10000);
@@ -332,39 +395,53 @@
 
 	function obterDadosGraficoRam() {
 
-		serialNumber = slct_caixas.value;
-		graficos.style.display = 'block';
-		
-		document.getElementById("myChartRam").remove();
+		var serialNumber = slct_caixas.value;
 
-		var divGrafico = document.getElementById("grafico_ram");
-		var canvas = document.createElement("canvas");
-		canvas.id = "myChartRam";
+		if (serialNumber != "maquina") {
 
-		divGrafico.appendChild(canvas);
+			graficos.style.display = 'block';
 
-		if (proximaAtualizacao != undefined) {
-			clearTimeout(proximaAtualizacao);
+			document.getElementById("myChartRam").remove();
+
+			var divGrafico = document.getElementById("grafico_ram");
+			var canvas = document.createElement("canvas");
+			canvas.id = "myChartRam";
+
+			divGrafico.appendChild(canvas);
+
+			if (proximaAtualizacao != undefined) {
+				clearTimeout(proximaAtualizacao);
+			}
+
+			fetch(`/medidas/ultimasProcRam/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
+				if (response.ok) {
+					response.json().then(function (resposta) {
+						
+						resposta.reverse();
+
+						var jsonVar = resposta;
+
+						plotarGraficoRam(jsonVar, serialNumber);
+					});
+				} else {
+					console.error('Nenhum dado encontrado ou erro na API');
+				}
+			})
+				.catch(function (error) {
+					console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
+				});
+		} else {
+			Swal.fire({
+                title: 'Escolha uma máquina',
+                icon: 'error',     
+                confirmButtonText: 'OK'
+            })
+			graficos.style.display = 'none';
 		}
 
-		fetch(`/medidas/ultimasRam/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
-			if (response.ok) {
-				response.json().then(function (resposta) {
-			
-					resposta.reverse();
-
-					plotarGraficoRam(resposta, serialNumber);
-				});
-			} else {
-				console.error('Nenhum dado encontrado ou erro na API');
-			}
-		})
-			.catch(function (error) {
-				console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
-			});
 	}
 
-	function plotarGraficoRam(resposta, serialNumber) {
+	function plotarGraficoRam(jsonVar, serialNumber) {
 		console.log('iniciando plotagem do gráfico...');
 		console.log(serialNumber);
 
@@ -373,21 +450,36 @@
 		var dados = {
 			labels: labels,
 			datasets: [
-				{
+			{
 					yAxisID: 'y-usoRam',
 					label: 'Uso da ram',
 					lineTension: 0.3,
-					backgroundColor: "rgba(124, 252, 0, 0.5)",
-					borderColor: "rgba(124, 252, 0, 1)",
+					backgroundColor: "rgba(78, 115, 223, 0.5)",
+					borderColor: "rgba(78, 115, 223, 1)",
 					pointRadius: 3,
-					pointBackgroundColor: "rgba(124, 252, 0, 1)",
-					pointBorderColor: "rgba(124, 252, 0, 1)",
+					pointBackgroundColor: "rgba(78, 115, 223, 1)",
+					pointBorderColor: "rgba(78, 115, 223, 1)",
 					pointHoverRadius: 3,
-					pointHoverBackgroundColor: "rgba(124, 252, 0, 1)",
-					pointHoverBorderColor: "rgba(124, 252, 0, 1)",
+					pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+					pointHoverBorderColor: "rgba(78, 115, 223, 1)",
 					pointHitRadius: 10,
 					pointBorderWidth: 2,
-					data: [0, 50, 20, 45, 10, 30, 22, 55, 35, 10, 95, 50],
+					data: [],
+				},
+				{
+					yAxisID: 'y-usoRam',
+					label: 'Uso da ram pelo processo',
+					lineTension: 0.3,
+					backgroundColor: "rgba(255,0, 0, 0.5)",
+					borderColor: "rgba(255,0, 0, 1)",
+					pointRadius: 3,
+					pointBackgroundColor: "rgba(255,0, 0, 1)",
+					pointBorderColor: "rgba(255,0, 0, 1)",
+					pointHoverRadius: 3,
+					pointHoverBackgroundColor: "rgba(255,0, 0, 1)",
+					pointHoverBorderColor: "rgba(255,0, 0, 1)",
+					pointHitRadius: 10,
+					pointBorderWidth: 2,
 					fill: true,
 					data: [],
 				},
@@ -398,13 +490,12 @@
 			}
 		};
 
-		for (i = 0; i < resposta.length; i++) {
-			var registro = resposta[i];
-			labels.push(registro.momento_grafico);
-			dados.datasets[0].data.push(registro.Registro);
+		for (i = 0; i < jsonVar.length; i++) {
+			var registro = jsonVar[i];
+			labels.push(registro.processo + "-" + registro.dataHora);
+			dados.datasets[0].data.push(((registro.registro / registro.metricaMaxima) * 100).toFixed(1));
+			dados.datasets[1].data.push(registro.usoRam);
 		}
-
-		console.log(JSON.stringify(dados));
 
 		const configRam = {
 			type: 'line',
@@ -427,22 +518,17 @@
 
 	function atualizarGraficoRam(serialNumber, dados, myChartRam) {
 
-		fetch(`/medidas/tempo-realRam/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
+		fetch(`/medidas/tempo-realProcRam/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
 			if (response.ok) {
 				response.json().then(function (novoRegistro) {
 
-					console.log(`Dados recebidos: ${JSON.stringify(novoRegistro)}`);
-					console.log(`Dados atuais do gráfico: ${dados}`);
-
-					// tirando e colocando valores no gráfico
 					dados.labels.shift(); // apagar o primeiro
-					dados.labels.push(novoRegistro[0].momento_grafico); // incluir um novo momento
+					dados.labels.push(novoRegistro[0].processo + "-" + novoRegistro[0].dataHora); // incluir um novo momento
 
-					dados.datasets[0].data.shift();  // apagar o primeiro de umidade
-					dados.datasets[0].data.push((novoRegistro[0].Registro)); // incluir uma nova medida de umidade
-
-					// dados.datasets[1].data.shift();  // apagar o primeiro de temperatura
-					// dados.datasets[1].data.push(novoRegistro[0].temperatura); // incluir uma nova medida de temperatura
+					dados.datasets[0].data.shift();
+					dados.datasets[0].data.push(((novoRegistro[0].registro / novoRegistro[0].metricaMaxima) * 100).toFixed(1));
+					dados.datasets[1].data.shift();
+					dados.datasets[1].data.push(novoRegistro[0].usoRam);
 
 					myChartRam.update();
 
@@ -460,5 +546,79 @@
 			});
 
 	}
+
+	function topProcessos() {
+		serialNumber = slct_caixas.value;
+		
+		if (slct_freq.value == 0) {
+			table_body.innerHTML = "";
+			var frequencia = 0;
+		}
+		
+		if (slct_freq.value == 1) {
+			table_body.innerHTML = "";
+			var frequencia = 6;
+		}
+		
+		if (slct_freq.value == 2) {
+			table_body.innerHTML = "";
+			var frequencia = 360;
+		}
+		
+		if (slct_freq.value == 3) {
+			table_body.innerHTML = "";
+			var frequencia = 8640;
+		}
+
+		if (frequencia > 0) {
+			fetch("/usuarios/topProcessos", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({
+					serialNumberServer: serialNumber,
+					frequenciaServer: frequencia
+				})
+			}).then(function (resposta) {
+
+				if (resposta.ok) {
+
+					resposta.json().then(json => {
+						
+						var tabela = document.getElementById("table_body");
+						for (var i = 0; i < json.length; i++) {
+							var linha = document.createElement('tr');
+							tabela.appendChild(linha);
+
+							var colunaProcesso = document.createElement('td');
+							linha.appendChild(colunaProcesso);
+							colunaProcesso.innerHTML += json[i].processo;
+							
+							var colunaUsoCpu = document.createElement('td');
+							linha.appendChild(colunaUsoCpu);
+							colunaUsoCpu.innerHTML += json[i].usoCpu;
+							
+							var colunaUsoRam = document.createElement('td');
+							linha.appendChild(colunaUsoRam);
+							colunaUsoRam.innerHTML += json[i].usoRam;
+							
+						}
+
+                	});
+
+				} else {
+					console.log("Houve um erro ao tentar selecionar os processos!");
+				}
+
+			}).catch(function (erro) {
+				console.log(erro);
+			})
+		} else {
+			alert("OPD	")
+		}
+
+        return false;
+    }
 
 </script>
