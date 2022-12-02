@@ -42,6 +42,26 @@ function selecionarMaquinas(cnpj) {
     return database.executar(instrucao)
 }
 
+function obterDadosTodasMaquinas(cnpj) {
+    console.log("ACESSEI O USUARIO MODEL \n \n\t\t >> Se aqui der erro de 'Error: connect ECONNREFUSED',\n \t\t >> verifique suas credenciais de acesso ao banco\n \t\t >> e se o servidor de seu BD está rodando corretamente. \n\n function listar()");
+
+    var instrucao = '';
+
+    if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
+        var instrucao = `
+        select * from (select serialNumber, nome, usoUsuario, usoOcioso from tbMaquina join tbOciosidade on fkMaquina = serialNumber and fkEmpresa = '${cnpj}' group by serialNumber) as maquina order by usoUsuario desc;
+        `;
+    }
+    else if (process.env.AMBIENTE_PROCESSO == "producao") {
+        var instrucao = `
+        select * from (select serialNumber, nome, usoUsuario, usoOcioso from tbMaquina join tbOciosidade on fkMaquina = serialNumber and fkEmpresa = '${cnpj}' group by serialNumber) as maquina order by usoUsuario desc;
+        `;
+    }
+
+    console.log("Executando a instrução SQL: \n" + instrucao);
+    return database.executar(instrucao)
+}
+
 function selectCargo(query) {
     console.log("ACESSEI O USUARIO MODEL \n \n\t\t >> Se aqui der erro de 'Error: connect ECONNREFUSED',\n \t\t >> verifique suas credenciais de acesso ao banco\n \t\t >> e se o servidor de seu BD está rodando corretamente. \n\n function listar()");
     var instrucao = `
@@ -200,5 +220,6 @@ module.exports = {
     deletarRegistros,
     deletarComponentes,
     deletarCaixa,
-    selecionarMaquinas
+    selecionarMaquinas,
+    obterDadosTodasMaquinas
 };
