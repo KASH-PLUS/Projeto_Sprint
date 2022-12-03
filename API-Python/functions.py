@@ -193,8 +193,10 @@ def insertPeriodico(idCpu, idDisco, idRam, serialNumber, nome):
         usoAtualMemoria = conversao_bytes(virtual_memory().used, 3)
         usoCpuPorc = cpu_percent()
         usoAtualMemoriaPorc = virtual_memory().percent
-        usoOciosidade = f'{cpu_times(percpu=False).idle / 3600: .2f}'
-        usoUsuario = f'{cpu_times(percpu=False).user / 3600: .2f}'
+        # usoOciosidade = f'{cpu_times(percpu=False).idle / 3600: .2f}'
+        # usoUsuario = f'{cpu_times(percpu=False).user / 3600: .2f}'
+        usoOciosidade = cpu_times(percpu=False).idle
+        usoUsuario = cpu_times(percpu=False).user
 
         particoes = []
         if sistema == "Windows":

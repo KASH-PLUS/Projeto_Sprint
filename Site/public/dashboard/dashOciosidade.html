@@ -200,8 +200,8 @@
                                         <tr>
                                             <th>Nome</th>
                                             <th>Número Serial</th>
-                                            <th>Tempo Ocioso(%)</th>
-                                            <th>Inicio do Monitoramento</th>
+                                            <th>Média de uso diário</th>
+                                            <th>CEP</th>
                                         </tr>
                                     </thead>
                                     <tbody id="table_body">
@@ -408,7 +408,13 @@
             if (response.ok) {
                 response.json().then(function (novoRegistro) {
 
-                    span_tempoUso.innerHTML = novoRegistro[0].usoUsuario + "Horas";
+                    usoUsuario = new Date(novoRegistro[0].usoUsuario * 1000);
+                    hours = usoUsuario.getUTCHours();
+                    console.log(hours);
+                    minutes = usoUsuario.getUTCMinutes();
+                    seconds = usoUsuario.getSeconds();
+
+                    span_tempoUso.innerHTML = hours + " Horas " + minutes + " Minutos " + seconds + " Segundos ";
                     span_tempoOcioso.innerHTML = novoRegistro[0].usoOcioso + "Horas";
 
                     // CpuCor(novoRegistro[0].usoUsuario);
@@ -465,6 +471,8 @@
                         serialNumber = json[i].serialNumber;
                         usoUsuario = json[i].usoUsuario;
                         usoOcioso = json[i].usoOcioso;
+
+                        
 
                         var linha = document.createElement('tr');
                         tabela.appendChild(linha);
