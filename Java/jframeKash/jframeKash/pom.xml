@@ -80,6 +80,19 @@
             <artifactId>okhttp</artifactId>
             <version>5.0.0-alpha.10</version>
         </dependency>
+        
+        <!-- https://mvnrepository.com/artifact/com.github.oshi/oshi-core  
+        <dependency>
+            <groupId>com.github.oshi</groupId>
+            <artifactId>oshi-core</artifactId>
+            <version>5.3.6</version>
+        </dependency>-->
+        <!-- https://mvnrepository.com/artifact/com.github.oshi/oshi-core -->
+        <dependency>
+            <groupId>com.github.oshi</groupId>
+            <artifactId>oshi-core</artifactId>
+            <version>6.1.5</version>
+        </dependency>
 
     </dependencies>
     
