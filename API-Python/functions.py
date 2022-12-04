@@ -56,7 +56,6 @@ def divisaoComponentes(serialNumber):
             idRam.append(i[0])
     return idCpu, idDisco, idRam
         
-
 def metricasMaximas(idCpu, idDisco, idRam):
     if sistema == "Windows":
         disco = "C:\\"
@@ -77,8 +76,6 @@ def metricasMaximas(idCpu, idDisco, idRam):
         queryRam = f"UPDATE tbComponente SET metricaMaxima = {conversao_bytes(virtual_memory().total, 3)} WHERE idComponente = {i};"
         time.sleep(1)
         insert(queryRam)
-
-
 
 def monitorar():
     while (True):
@@ -148,7 +145,6 @@ def monitorar():
         except KeyboardInterrupt:
             return "0"
 
-
 def info():
     os.system(codeCleaner)
     
@@ -187,8 +183,7 @@ def info():
     input("\n\n\033[1mPressione Enter para prosseguir...\033[0m")
     return 0 
 
-
-def insertPeriodico(idCpu, idDisco, idRam, serialNumber, nome):
+def insertPeriodico(idCpu, idDisco, idRam, serialNumber, nome, urlOpen):
     time.sleep(5)
     while True:
         usoAtualMemoria = conversao_bytes(virtual_memory().used, 3)
@@ -246,7 +241,7 @@ def insertPeriodico(idCpu, idDisco, idRam, serialNumber, nome):
         response = requests.request("POST", url, json=data, headers=headers)
 
         if os.name == "nt":
-            capturaTemp(serialNumber)
+            capturaTemp(serialNumber, urlOpen)
         else:
             import psutil
             # Temperatura - Linux
@@ -263,12 +258,12 @@ def insertPeriodico(idCpu, idDisco, idRam, serialNumber, nome):
 
         print(response.text, "oi")
         
-        time.sleep(30)
+        time.sleep(3)
 
 
-def capturaTemp(serialNumber):
+def capturaTemp(serialNumber, urlOpen):
     try:
-        url = "http://10.18.32.98:9000/data.json"
+        url = urlOpen + "data.json" 
         req = requests.get(url)
         jsonText= req.text.encode("utf8")
         data = json.loads(jsonText)

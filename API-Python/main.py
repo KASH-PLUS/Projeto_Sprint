@@ -10,8 +10,8 @@ from gerarGraficos import gerarGraficoCpu, gerarGraficoDisco, gerarGraficoMemori
 #from wordCloud import cloud
 
 
-def menu(serialNumber, nome, idCpu, idDisco, idRam):
-    threading.Thread(target=insertPeriodico, kwargs={'idCpu':idCpu, 'idDisco':idDisco, 'idRam':idRam, 'serialNumber':serialNumber, 'nome':nome, } ).start()
+def menu(serialNumber, nome, idCpu, idDisco, idRam, urlOpen):
+    threading.Thread(target=insertPeriodico, kwargs={'idCpu':idCpu, 'idDisco':idDisco, 'idRam':idRam, 'serialNumber':serialNumber, 'nome':nome, 'urlOpen':urlOpen,} ).start()
 
     os.system(codeCleaner)
 
@@ -98,8 +98,12 @@ def main():
         idCpu = componentes[0]
         idDisco = componentes[1]
         idRam = componentes[2]
+        if os.name == "nt":
+            print("Verificamos que sua máquina é Windows")
+            url = input("Por favor, insira a url do open hardware monitor\n")
         metricasMaximas(idCpu, idDisco, idRam)
-        menu(serialNumber, nome, idCpu, idDisco, idRam)
+        menu(serialNumber, nome, idCpu, idDisco, idRam, url)
+
     elif opcao1tela == "2":
         print("Obrigado por utilizar nossos serviços")
         time.sleep(1)
