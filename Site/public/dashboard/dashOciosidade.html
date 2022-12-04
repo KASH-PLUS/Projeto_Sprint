@@ -409,13 +409,18 @@
                 response.json().then(function (novoRegistro) {
 
                     usoUsuario = new Date(novoRegistro[0].usoUsuario * 1000);
-                    hours = usoUsuario.getUTCHours();
-                    console.log(hours);
-                    minutes = usoUsuario.getUTCMinutes();
-                    seconds = usoUsuario.getSeconds();
+                    hoursUsuario = usoUsuario.getUTCHours();
+                    minutesUsuario = usoUsuario.getUTCMinutes();
+                    secondsUsuario = usoUsuario.getSeconds();
 
-                    span_tempoUso.innerHTML = hours + " Horas " + minutes + " Minutos " + seconds + " Segundos ";
-                    span_tempoOcioso.innerHTML = novoRegistro[0].usoOcioso + "Horas";
+                    usoOcioso = new Date(novoRegistro[0].usoOcioso * 1000);
+                    daysOcioso = usoOcioso.getUTCDate() - 1;
+                    hoursOcioso = usoOcioso.getUTCHours();
+                    minutesOcioso = usoOcioso.getUTCMinutes();
+                    secondsOcioso = usoOcioso.getSeconds();
+
+                    span_tempoUso.innerHTML = hoursUsuario + " Horas " + minutesUsuario + " Minutos ";
+                    span_tempoOcioso.innerHTML = daysOcioso + " Dias " + hoursOcioso + " Horas " + minutesOcioso + " Minutos ";
 
                     // CpuCor(novoRegistro[0].usoUsuario);
 
