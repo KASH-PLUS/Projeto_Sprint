@@ -14,10 +14,12 @@ import javax.swing.ImageIcon;
  * @author User
  */
 public class TelaCPU extends javax.swing.JFrame {
+
     Looca looca = new Looca();
     Processador processador = looca.getProcessador();
     ImageIcon img = new ImageIcon("src/main/resources/logoWhite.png");
     TbUsuario usuario = new TbUsuario();
+
     /**
      * Creates new form TelaCPU
      */
@@ -33,7 +35,7 @@ public class TelaCPU extends javax.swing.JFrame {
         lblNumCPUsFisicas.setText(lblNumCPUsFisicas.getText() + processador.getNumeroCpusFisicas().toString());
         lblNumCPUsLogicas.setText(lblNumCPUsLogicas.getText() + processador.getNumeroCpusLogicas().toString());
         lblUso.setText(lblUso.getText() + processador.getUso().toString());
-        
+
         img.setImage(img.getImage().getScaledInstance(lblLogo.getWidth(), lblLogo.getHeight(), 1));
         lblLogo.setIcon(img);
     }
@@ -64,6 +66,7 @@ public class TelaCPU extends javax.swing.JFrame {
         lblUso = new javax.swing.JLabel();
         btnProcessos = new javax.swing.JButton();
         btnTemp = new javax.swing.JButton();
+        btnRede = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -151,6 +154,15 @@ public class TelaCPU extends javax.swing.JFrame {
             }
         });
 
+        btnRede.setFont(new java.awt.Font("Consolas", 0, 16)); // NOI18N
+        btnRede.setText("Rede");
+        btnRede.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        btnRede.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRedeActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -167,7 +179,8 @@ public class TelaCPU extends javax.swing.JFrame {
                             .addComponent(btnDisco)
                             .addComponent(btnMemo)
                             .addComponent(btnProcessos)
-                            .addComponent(btnTemp))))
+                            .addComponent(btnTemp)
+                            .addComponent(btnRede))))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(140, 140, 140)
@@ -250,7 +263,9 @@ public class TelaCPU extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(btnProcessos)
                         .addGap(18, 18, 18)
-                        .addComponent(btnTemp)))
+                        .addComponent(btnTemp)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnRede)))
                 .addContainerGap(40, Short.MAX_VALUE))
         );
 
@@ -297,6 +312,14 @@ public class TelaCPU extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_btnTempActionPerformed
 
+    private void btnRedeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRedeActionPerformed
+        TelaRede in = new TelaRede();
+        in.setLocationRelativeTo(null);
+        in.setVisible(true);
+        in.setResizable(false);
+        this.dispose();
+    }//GEN-LAST:event_btnRedeActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -336,6 +359,7 @@ public class TelaCPU extends javax.swing.JFrame {
     private javax.swing.JButton btnDisco;
     private javax.swing.JButton btnMemo;
     private javax.swing.JButton btnProcessos;
+    private javax.swing.JButton btnRede;
     private javax.swing.JButton btnSO;
     private javax.swing.JButton btnTemp;
     private javax.swing.JLabel lblFabricante;

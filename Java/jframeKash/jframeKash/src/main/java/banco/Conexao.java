@@ -12,23 +12,31 @@ import org.springframework.jdbc.core.JdbcTemplate;
  * @author User
  */
 public class Conexao {
+
     private JdbcTemplate connection;
-    
-    public Conexao() {
-        BasicDataSource dataSource = new BasicDataSource();
-        
-        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        
-        dataSource.setUrl("jdbc:mysql://localhost:3306/dbkashplus");
-        
-        dataSource.setUsername("kashUser");
-        
-        dataSource.setPassword("kash");
-        
-        connection = new JdbcTemplate(dataSource);
+
+    public JdbcTemplate getConnection() {
+        return connection;
     }
-    
-    public  JdbcTemplate getConexao() {
+
+    public void setConnection(JdbcTemplate connection) {
+        this.connection = connection;
+    }
+
+
+    public Conexao() {
+
+        BasicDataSource dataSource = new BasicDataSource();
+        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        dataSource.setUrl("jdbc:mysql://localhost:3306/dbkashplus");
+        dataSource.setUsername("kashUser");
+        dataSource.setPassword("kash");
+
+        this.connection = new JdbcTemplate(dataSource);
+
+    }
+
+    public JdbcTemplate getConexao() {
         return connection;
     }
 }

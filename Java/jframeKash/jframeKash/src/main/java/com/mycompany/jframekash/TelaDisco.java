@@ -126,6 +126,7 @@ public class TelaDisco extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         txtParticoes = new javax.swing.JTextPane();
         btnTemp = new javax.swing.JButton();
+        btnRede = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -250,6 +251,15 @@ public class TelaDisco extends javax.swing.JFrame {
             }
         });
 
+        btnRede.setFont(new java.awt.Font("Consolas", 0, 16)); // NOI18N
+        btnRede.setText("Rede");
+        btnRede.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        btnRede.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRedeActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -267,7 +277,8 @@ public class TelaDisco extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnProcessos)
                             .addComponent(btnMemo)
-                            .addComponent(btnTemp))))
+                            .addComponent(btnTemp)
+                            .addComponent(btnRede))))
                 .addGap(119, 119, 119)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblQntVolume, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -319,7 +330,9 @@ public class TelaDisco extends javax.swing.JFrame {
                                         .addGap(69, 69, 69)
                                         .addComponent(lblQntVolume)))
                                 .addGap(40, 40, 40)
-                                .addComponent(lblTamanhoDiscos))))
+                                .addComponent(lblTamanhoDiscos)))
+                        .addGap(29, 29, 29)
+                        .addComponent(btnRede))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(17, 17, 17)
                         .addComponent(pnlDisco, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -371,6 +384,14 @@ public class TelaDisco extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_btnTempActionPerformed
 
+    private void btnRedeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRedeActionPerformed
+        TelaRede in = new TelaRede();
+        in.setLocationRelativeTo(null);
+        in.setVisible(true);
+        in.setResizable(false);
+        this.dispose();
+    }//GEN-LAST:event_btnRedeActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -410,6 +431,7 @@ public class TelaDisco extends javax.swing.JFrame {
     private javax.swing.JButton btnCPU;
     private javax.swing.JButton btnMemo;
     private javax.swing.JButton btnProcessos;
+    private javax.swing.JButton btnRede;
     private javax.swing.JButton btnSO;
     private javax.swing.JButton btnTemp;
     private javax.swing.JScrollPane jScrollPane1;

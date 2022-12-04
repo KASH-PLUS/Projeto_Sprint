@@ -64,6 +64,7 @@ public class TelaTemperatura extends javax.swing.JFrame {
         prgTemperatura = new javax.swing.JProgressBar();
         lblAviso = new javax.swing.JLabel();
         btnDisco = new javax.swing.JButton();
+        btnRede = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(950, 510));
@@ -130,6 +131,15 @@ public class TelaTemperatura extends javax.swing.JFrame {
             }
         });
 
+        btnRede.setFont(new java.awt.Font("Consolas", 0, 16)); // NOI18N
+        btnRede.setText("Rede");
+        btnRede.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        btnRede.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRedeActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -143,23 +153,28 @@ public class TelaTemperatura extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(89, 89, 89)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnProcessos)
-                    .addComponent(btnMemo)
-                    .addComponent(btnCPU)
-                    .addComponent(btnDisco)
-                    .addComponent(btnSO))
-                .addGap(246, 246, 246)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblAviso, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(101, 101, 101))
+                        .addComponent(btnRede)
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(lblTemperatura)
-                                .addGap(139, 139, 139))
-                            .addComponent(prgTemperatura, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(139, 139, 139))))
+                            .addComponent(btnProcessos)
+                            .addComponent(btnMemo)
+                            .addComponent(btnCPU)
+                            .addComponent(btnDisco)
+                            .addComponent(btnSO))
+                        .addGap(246, 246, 246)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lblAviso, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(101, 101, 101))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                        .addComponent(lblTemperatura)
+                                        .addGap(139, 139, 139))
+                                    .addComponent(prgTemperatura, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(139, 139, 139))))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -191,6 +206,8 @@ public class TelaTemperatura extends javax.swing.JFrame {
                         .addComponent(btnMemo)
                         .addGap(18, 18, 18)
                         .addComponent(btnProcessos)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnRede)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
@@ -237,6 +254,14 @@ public class TelaTemperatura extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_btnDiscoActionPerformed
 
+    private void btnRedeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRedeActionPerformed
+        TelaRede in = new TelaRede();
+        in.setLocationRelativeTo(null);
+        in.setVisible(true);
+        in.setResizable(false);
+        this.dispose();
+    }//GEN-LAST:event_btnRedeActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -277,6 +302,7 @@ public class TelaTemperatura extends javax.swing.JFrame {
     private javax.swing.JButton btnDisco;
     private javax.swing.JButton btnMemo;
     private javax.swing.JButton btnProcessos;
+    private javax.swing.JButton btnRede;
     private javax.swing.JButton btnSO;
     private javax.swing.JLabel lblAviso;
     private javax.swing.JLabel lblLogo;

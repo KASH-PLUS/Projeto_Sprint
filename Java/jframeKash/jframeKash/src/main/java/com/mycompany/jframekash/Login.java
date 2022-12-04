@@ -4,17 +4,23 @@
  */
 package com.mycompany.jframekash;
 
+import banco.CadastroRede;
+import banco.ConexaoAzure;
 import banco.TbMaquinaCrud;
 import banco.TbMaquina;
+import banco.TbRede;
+import banco.TbRedeCrud;
 import javax.swing.ImageIcon;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
  *
  * @author User
  */
 public class Login extends javax.swing.JFrame {
+
     ImageIcon img = new ImageIcon("src/main/resources/logoWhite.png");
-    
+
     public Login() {
         initComponents();
         ImageIcon img = new ImageIcon("src/main/resources/logoWhite.png");
@@ -22,6 +28,7 @@ public class Login extends javax.swing.JFrame {
         lblLogo.setIcon(img);
     }
     TelaConfirmacaoCaptura in = new TelaConfirmacaoCaptura();
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -132,6 +139,7 @@ public class Login extends javax.swing.JFrame {
         TbMaquinaCrud maquinaCrud = new TbMaquinaCrud();
         TbMaquina validacao = new TbMaquina();
         String serialNumber = txtSerial.getText();
+        CadastroRede cadastroRede = new CadastroRede();
 
         validacao = maquinaCrud.selecionar(serialNumber);
 
@@ -142,18 +150,21 @@ public class Login extends javax.swing.JFrame {
                 in.setVisible(true);
                 in.setResizable(false);
                 in.setSerialNumber(serialNumber);
+                cadastroRede.setSerialNumber(serialNumber);
+                cadastroRede.cadastroRede();
+                in.setMacAddress(cadastroRede.getMac());
                 this.dispose();
-            }else {
+            } else {
                 lblErro.setText("Desculpe, mas não encontramos seu cadastro");
             }
-        }
-        else {
+        } else {
             lblErro.setText("ERRO - Login/Senha inválidos");
             System.out.println("Erro no select");
         }
 
     }//GEN-LAST:event_btnEntrarActionPerformed
 
+    
     /**
      * @param args the command line arguments
      */

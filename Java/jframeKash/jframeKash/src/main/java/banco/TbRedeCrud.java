@@ -12,16 +12,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
  *
  * @author vinicius
  */
-public class VwMaquinaCrud {
-    public VwMaquina selecionar(String numeroSerial) {
+public class TbRedeCrud {
+     public TbRede selecionar(String serial) {
 
-        Conexao con = new Conexao();
+        ConexaoAzure con = new ConexaoAzure();
         JdbcTemplate cursor = con.getConexao();
 
-        List<VwMaquina> validacao = cursor.query(String.format("SELECT * FROM vwMaquina where numeroSerial = %s", numeroSerial), new BeanPropertyRowMapper(VwMaquina.class));
-        for (VwMaquina maquina : validacao) {
-            System.out.println(maquina);
-            return maquina;
+        List<TbRede> validacao = cursor.query(String.format("SELECT * FROM tbRede WHERE fkMaquina = '%s'", serial), new BeanPropertyRowMapper(TbRede.class));
+        for (TbRede rede: validacao) {
+            return rede;
         }
         return null;
     }

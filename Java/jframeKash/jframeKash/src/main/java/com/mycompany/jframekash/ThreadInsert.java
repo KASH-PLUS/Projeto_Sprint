@@ -4,6 +4,7 @@
  */
 package com.mycompany.jframekash;
 
+import banco.CadastroRede;
 import banco.Conexao;
 import banco.ConexaoAzure;
 import banco.Pipefy;
@@ -18,11 +19,16 @@ import com.github.britooo.looca.api.group.memoria.Memoria;
 import com.github.britooo.looca.api.group.processador.Processador;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import oshi.SystemInfo;
+import oshi.hardware.HardwareAbstractionLayer;
+import oshi.hardware.NetworkIF;
 
 /**
  *
@@ -31,6 +37,15 @@ import java.util.logging.Logger;
 public class ThreadInsert extends Thread {
 
     private String serialNumber;
+    private String macAddress;
+
+    public String getMacAddress() {
+        return macAddress;
+    }
+
+    public void setMacAddress(String macAddress) {
+        this.macAddress = macAddress;
+    }
 
     TbComponenteCrud componeteCrud = new TbComponenteCrud();
     ConexaoAzure con = new ConexaoAzure();
@@ -49,8 +64,9 @@ public class ThreadInsert extends Thread {
             } catch (IOException ex) {
                 Logger.getLogger(ThreadInsert.class.getName()).log(Level.SEVERE, null, ex);
             }
+
             try {
-                Thread.sleep(30000); // tempo de cada insert
+                Thread.sleep(2000); // tempo de cada insert em milissegundos
             } catch (InterruptedException ex) {
                 Logger.getLogger(ThreadInsert.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -63,6 +79,34 @@ public class ThreadInsert extends Thread {
         for (TbComponente componente : componentes) {
             insertRegistro(componente.getIdComponente(), componente.getTipo());
         }
+    }
+
+    private List<Long> obterPacotes() {
+        SystemInfo si = new SystemInfo();
+        HardwareAbstractionLayer hal = si.getHardware();
+        List<NetworkIF> redes = hal.getNetworkIFs();
+        NetworkIF rede = redes.get(redes.size() - 1);
+
+        Long pacotesRecebidos = rede.getPacketsRecv();
+        Long pacotesEnviados = rede.getPacketsSent();
+
+        List<Long> pacotes = List.of(pacotesEnviados, pacotesRecebidos);
+
+        return pacotes;
+    }
+
+    private List<Long> obterBytes() {
+        SystemInfo si = new SystemInfo();
+        HardwareAbstractionLayer hal = si.getHardware();
+        List<NetworkIF> redes = hal.getNetworkIFs();
+        NetworkIF rede = redes.get(redes.size() - 1);
+
+        Long bytesEnviados = rede.getBytesSent();
+        Long bytesRecebidos = rede.getBytesRecv();
+
+        List<Long> bytes = List.of(bytesEnviados, bytesRecebidos);
+
+        return bytes;
     }
 
     private void insertRegistro(Integer fkComponente, String tipo) throws IOException {
@@ -83,15 +127,15 @@ public class ThreadInsert extends Thread {
 
         Long usoDisco = (totalDisco - discoDisponivel) / 1024 / 1024 / 1024;
         double usoMemoria = (double) longUsoMemoria;
-        
+
         Long longMemoriaTotal = memoria.getTotal();
         double usoMemoriaTotal = (double) longMemoriaTotal;
 
         usoMemoria = usoMemoria / 1024 / 1024 / 1024;
-        usoMemoriaTotal = usoMemoriaTotal  / 1024 / 1024 / 1024;
-        
+        usoMemoriaTotal = usoMemoriaTotal / 1024 / 1024 / 1024;
+
         Double usoMemoriaPercent = usoMemoria / usoMemoriaTotal * 100;
-        
+
         if (tipo.equals("disco")) {
             cursor.update(String.format("INSERT INTO tbRegistro(fkComponente, registro, dataHora) VALUES ( '%s', '%d', '%s' )", fkComponente, usoDisco, dataHora));
             System.out.println("Insert realizado");
@@ -101,17 +145,46 @@ public class ThreadInsert extends Thread {
         } else if (tipo.equals("ram")) {
             cursor.update(String.format("INSERT INTO tbRegistro(fkComponente, registro, dataHora) VALUES ( '%s', '%.2f', '%s' )", fkComponente, usoMemoria, dataHora));
             System.out.println("Insert realizado");
-            if (usoMemoriaPercent > 10) {
+            if (usoMemoriaPercent > 70) {
                 Pipefy.criarCardRam(usoMemoriaPercent, this.serialNumber, date);
             }
 
         } else if (tipo.equals("cpu")) {
             cursor.update(String.format("INSERT INTO tbRegistro(fkComponente, registro, dataHora) VALUES ( '%s', '%.2f', '%s' )", fkComponente, usoCpu, dataHora));
             System.out.println("Insert realizado");
-            if (usoCpu > 1) {
+            if (usoCpu > 70) {
                 Pipefy.criarCardCpu(usoCpu, this.serialNumber, date);
             }
+
+            insertRede(obterPacotes(), obterBytes());
         }
+    }
+
+    private void insertRede(List<Long> pacotes, List<Long> bytes) {
+        SystemInfo si = new SystemInfo();
+        HardwareAbstractionLayer hal = si.getHardware();
+        List<NetworkIF> redes = hal.getNetworkIFs();
+        NetworkIF rede = redes.get(redes.size() - 1);
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Date date = new Date();
+        String dataHora = dateFormat.format(date);
+
+        Long pacotesAtuaisEnviados = rede.getPacketsSent() - pacotes.get(0); // enviados
+        Long pacotesAtuaisRecebidos = rede.getPacketsRecv() - pacotes.get(1); // recebidos
+
+        Double mbAtuaisEnviados = (double) rede.getBytesSent() - bytes.get(0);
+        Double mbAtuaisRecebidos = (double) rede.getBytesRecv() - bytes.get(1);
+
+        mbAtuaisEnviados = mbAtuaisEnviados / 1024 / 1024;
+        mbAtuaisRecebidos = mbAtuaisRecebidos / 1024 / 1024;
+
+        Double totalEnviado = (double) rede.getBytesSent() / 1024 / 1024;
+        Double totalRecebidos = (double) rede.getBytesRecv() / 1024 / 1024;
+
+        cursor.update(String.format(Locale.US, "INSERT INTO tbRegistroRede(fkPlaca, mbEnviados, mbRecebidos, totalEnviado, totalRecebido, pacotesEnviados, pacotesRecebidos, dataHora) VALUES ('%s', %.2f, %.2f, %.2f, %.2f, %d, %d, '%s');", this.macAddress, mbAtuaisEnviados, mbAtuaisRecebidos, totalEnviado, totalRecebidos, pacotesAtuaisEnviados, pacotesAtuaisRecebidos, dataHora));
+
+        System.out.println("Insert de rede realizado");
     }
 
     public String getSerialNumber() {

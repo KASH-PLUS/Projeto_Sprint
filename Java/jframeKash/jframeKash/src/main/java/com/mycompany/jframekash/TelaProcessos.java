@@ -72,6 +72,7 @@ public class TelaProcessos extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         txtProcessos = new javax.swing.JTextPane();
         btnTemp = new javax.swing.JButton();
+        btnRede = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -163,6 +164,15 @@ public class TelaProcessos extends javax.swing.JFrame {
             }
         });
 
+        btnRede.setFont(new java.awt.Font("Consolas", 0, 16)); // NOI18N
+        btnRede.setText("Rede");
+        btnRede.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        btnRede.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRedeActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -190,7 +200,9 @@ public class TelaProcessos extends javax.swing.JFrame {
                                 .addGap(11, 11, 11)))
                         .addGap(111, 111, 111))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnTemp)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnTemp)
+                            .addComponent(btnRede))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(75, 75, 75))
@@ -205,19 +217,16 @@ public class TelaProcessos extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(36, 36, 36)
                         .addComponent(lblTitulo)))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(21, 21, 21)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                            .addComponent(lblTotalProcessos)
+                            .addGap(40, 40, 40)
+                            .addComponent(lblTotalThreads)
+                            .addGap(89, 89, 89))
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(21, 21, 21)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(lblTotalProcessos)
-                                .addGap(40, 40, 40)
-                                .addComponent(lblTotalThreads)
-                                .addGap(89, 89, 89))
-                            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 79, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(61, 61, 61)
                         .addComponent(btnCPU)
                         .addGap(18, 18, 18)
                         .addComponent(btnDisco)
@@ -227,7 +236,9 @@ public class TelaProcessos extends javax.swing.JFrame {
                         .addComponent(btnSO)
                         .addGap(18, 18, 18)
                         .addComponent(btnTemp)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addGap(23, 23, 23)
+                        .addComponent(btnRede)))
+                .addGap(0, 79, Short.MAX_VALUE))
         );
 
         pack();
@@ -273,6 +284,14 @@ public class TelaProcessos extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_btnTempActionPerformed
 
+    private void btnRedeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRedeActionPerformed
+        TelaRede in = new TelaRede();
+        in.setLocationRelativeTo(null);
+        in.setVisible(true);
+        in.setResizable(false);
+        this.dispose();
+    }//GEN-LAST:event_btnRedeActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -312,6 +331,7 @@ public class TelaProcessos extends javax.swing.JFrame {
     private javax.swing.JButton btnCPU;
     private javax.swing.JButton btnDisco;
     private javax.swing.JButton btnMemo;
+    private javax.swing.JButton btnRede;
     private javax.swing.JButton btnSO;
     private javax.swing.JButton btnTemp;
     private javax.swing.JPanel jPanel1;
