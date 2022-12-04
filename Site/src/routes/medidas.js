@@ -39,4 +39,8 @@ router.get("/tempo-realTemp/:serialNumber", function (req, res) {
     medidaController.buscarMedidasEmTempoRealTemp(req, res);
 });
 
+router.get("/tempo-realClock/:serialNumber", function (req, res) {
+    medidaController.buscarClockEmTempoReal(req, res);
+});
+
 module.exports = router;

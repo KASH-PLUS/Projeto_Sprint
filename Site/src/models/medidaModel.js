@@ -170,7 +170,7 @@ function buscarUltimasMedidasTemp(serialNumber, limite_linhas) {
                             CONVERT(varchar, Horario, 108) as momento_grafico
                             from vwTemp
                             WHERE NumeroSerial = '${serialNumber}'
-                            ORDER BY momento_grafico DESC;
+                            ORDER BY Horario DESC;
                         `;
     } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
         instrucaoSql = `SELECT 
@@ -178,7 +178,7 @@ function buscarUltimasMedidasTemp(serialNumber, limite_linhas) {
                             DATE_FORMAT(Horario,'%H:%i:%s') as momento_grafico
                             FROM vwTemp 
                             WHERE NumeroSerial = '${NumeroSerial}'
-                            ORDER BY momento_grafico DESC
+                            ORDER BY Horario DESC
                             LIMIT ${limite_linhas};
                         `;
     } else {
@@ -200,7 +200,7 @@ function buscarMedidasEmTempoRealTemp(serialNumber) {
                             CONVERT(varchar, Horario, 108) as momento_grafico
                             from vwTemp
                             WHERE NumeroSerial = '${serialNumber}'
-                            ORDER BY momento_grafico DESC;`
+                            ORDER BY Horario DESC;`
         
     } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
         instrucaoSql = `SELECT 
@@ -208,7 +208,35 @@ function buscarMedidasEmTempoRealTemp(serialNumber) {
                             DATE_FORMAT(Horario,'%H:%i:%s') as momento_grafico
                             FROM vwTemp 
                             WHERE NumeroSerial = '${serialNumber}'
-                            ORDER BY momento_grafico DESC
+                            ORDER BY Horario DESC
+                            LIMIT 1;
+                        `;
+    } else {
+        console.log("\nO AMBIENTE (produção OU desenvolvimento) NÃO FOI DEFINIDO EM app.js\n");
+        return
+    }
+
+    console.log("Executando a instrução SQL: \n" + instrucaoSql);
+    return database.executar(instrucaoSql);
+}
+
+function buscarClockEmTempoReal(serialNumber) {
+    
+    instrucaoSql = ''
+    
+    if (process.env.AMBIENTE_PROCESSO == "producao") {       
+        instrucaoSql = `SELECT TOP 1 
+                            Clock 
+                            FROM vwTemp 
+                            WHERE NumeroSerial = '${serialNumber}'
+                            ORDER BY Horario DESC;`
+        
+    } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
+        instrucaoSql = `SELECT 
+                            Clock 
+                            FROM vwTemp 
+                            WHERE NumeroSerial = '${serialNumber}'
+                            ORDER BY Horario DESC 
                             LIMIT 1;
                         `;
     } else {
@@ -229,5 +257,6 @@ module.exports = {
     buscarMaxDisco,
     buscarMaxRam,
     buscarUltimasMedidasTemp,
-    buscarMedidasEmTempoRealTemp
+    buscarMedidasEmTempoRealTemp,
+    buscarClockEmTempoReal
 }

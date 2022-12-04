@@ -119,10 +119,8 @@ function listarCaixas() {
 
                     sessionStorage.INFO_CAIXA = JSON.stringify(caixas);
                     verificarComponentes(caixas.serialNumber[0]);
-                    verificarTemperatura(caixas.serialNumber[0]);
                     obterDadosGraficoRam(caixas.serialNumber[0]);
                     obterDadosGraficoCpu(caixas.serialNumber[0]);
-                    obterDadosGraficoTemp(caixas.serialNumber[0]);
                     obterDadosGraficoDisco(caixas.serialNumber[0]);
                     setRamMax(caixas.serialNumber[0]);
                     recuperarDados(caixas.cep[0]);
@@ -130,8 +128,6 @@ function listarCaixas() {
                 }
 
             });
-
-
 
         } else {
             console.log("Houve um erro ao tentar listar os caixas!");
@@ -235,11 +231,9 @@ function addListeners() {
             key = this.id;
 
             verificarComponentes(key);
-            verificarTemperatura(key);
             obterDadosGraficoDisco(key);
             obterDadosGraficoRam(key);
             obterDadosGraficoCpu(key);
-            obterDadosGraficoTemp(key);
             setRamMax(key);
 
             document.getElementById("span_serialNumber").innerHTML = key

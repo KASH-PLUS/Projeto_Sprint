@@ -258,7 +258,7 @@ def insertPeriodico(idCpu, idDisco, idRam, serialNumber, nome, urlOpen):
 
         print(response.text, "oi")
         
-        time.sleep(3)
+        time.sleep(30)
 
 
 def capturaTemp(serialNumber, urlOpen):

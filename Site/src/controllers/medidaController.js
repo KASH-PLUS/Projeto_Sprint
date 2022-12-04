@@ -177,6 +177,25 @@ function buscarMedidasEmTempoRealTemp(req, res) {
         console.log("Houve um erro ao buscar as medidas em tempo real.", erro.sqlMessage);
         res.status(500).json(erro.sqlMessage);
     });
+} 
+
+function buscarClockEmTempoReal(req, res) {
+    
+    var serialNumberVar = req.params.serialNumber;
+
+    console.log(`Recuperando clock em tempo real`);
+
+    medidaModel.buscarClockEmTempoReal(serialNumberVar).then(function (resultado) {
+        if (resultado.length > 0) {
+            res.status(200).json(resultado);
+        } else {
+            res.status(204).send("Nenhum resultado encontrado!")
+        }
+    }).catch(function (erro) {
+        console.log(erro);
+        console.log("Houve um erro ao buscar o valor do clock em tempo real.", erro.sqlMessage);
+        res.status(500).json(erro.sqlMessage);
+    });
 }
 
 module.exports = {
@@ -188,5 +207,6 @@ module.exports = {
     buscarMaxDisco,
     buscarMaxRam,
     buscarUltimasMedidasTemp,
-    buscarMedidasEmTempoRealTemp
+    buscarMedidasEmTempoRealTemp,
+    buscarClockEmTempoReal
 }

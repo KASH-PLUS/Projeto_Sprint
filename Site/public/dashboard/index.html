@@ -14,7 +14,7 @@
 		integrity="sha256-sA+zWATbFveLLNqWO2gtiw3HL/lh1giY/Inf1BJ0z14=" crossorigin="" />
 </head>
 
-<body id="page-top" onload="validarSessao(), listarCaixas(), verificarCargo()">
+<body id="page-top" onload="validarSessao(), listarCaixas(), verificarCargo()"> 
 	<div id="wrapper">
 		<nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
 			style="background: rgb(0, 132, 156);">
@@ -172,8 +172,8 @@
 													style="color: green;">Bom</span></div>
 										</div>
 										<div class="col-auto">
-											<svg id="svg_status" class="fa-2x" xmlns="http://www.w3.org/2000/svg" width="1.5em"
-												height="1.5em" viewBox="0 0 24 24" fill="none"
+											<svg id="svg_status" class="fa-2x" xmlns="http://www.w3.org/2000/svg"
+												width="1.5em" height="1.5em" viewBox="0 0 24 24" fill="none"
 												style="color: var(--bs-green)">
 												<path
 													d="M5.63604 18.3639C2.12132 14.8492 2.12132 9.15071 5.63604 5.63599M18.364 5.63599C21.8787 9.15071 21.8787 14.8492 18.364 18.3639M8.46447 15.5355C6.51184 13.5829 6.51184 10.417 8.46447 8.46441M15.5355 8.46441C17.4882 10.417 17.4882 13.5829 15.5355 15.5355M13 11.9999C13 12.5522 12.5523 12.9999 12 12.9999C11.4477 12.9999 11 12.5522 11 11.9999C11 11.4477 11.4477 10.9999 12 10.9999C12.5523 10.9999 13 11.4477 13 11.9999Z"
@@ -193,7 +193,7 @@
 							<div class="card shadow mb-4" id="card_cpu" style="display: none;">
 								<div class="card-header d-flex justify-content-between align-items-center">
 									<h6 class="text-primary fw-bold m-0">Uso da CPU(%)</h6>
-								</div> 
+								</div>
 								<div class="card-body">
 									<div class="chart-area"
 										style="display: flex; align-items: center; justify-content: center;">
@@ -219,19 +219,68 @@
 								</div>
 							</div>
 						</div>
-						<div class="row">
-							<div class="col-lg-12 col-xl-11">
-								<div class="card shadow mb-4" id="card_temp" style="display: none;">
-									<div class="card-header d-flex justify-content-between align-items-center">
-										<h6 class="text-primary fw-bold m-0">Temperatura (°C)</h6>
-									</div> 
-									<div class="card-body">
-										<div class="chart-area"
-											style="display: flex; align-items: center; justify-content: center;">
-											<div class="chart-container" id="grafico_temp"
-												style="position: relative; width: 100vw; height: 20vw;">
-												<canvas id="myChartTemp">
-												</canvas>
+						<div class="row" style="flex-wrap: nowrap;">
+							<div class="row col-lg-12 col-xl-9">
+								<div>
+									<div class="card shadow mb-4" id="card_temp" style="display: none;">
+										<div class="card-header d-flex justify-content-between align-items-center">
+											<h6 class="fw-bold m-0" style="color: rgb(167, 57, 60);">Temperatura do
+												processador (°C)</h6>
+										</div>
+										<div class="card-body">
+											<div class="chart-area"
+												style="display: flex; align-items: center; justify-content: center;">
+												<div class="chart-container" id="grafico_temp"
+													style="position: relative; width: 100vw; height: 20vw;">
+													<canvas id="myChartTemp">
+													</canvas>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="row col-lg-7 col-xl-5 align-content-around" id="kpis_temp" style="display: none;">
+								<div class="col-md-6 col-xl-8 mb-4">
+									<div id="clock_cor" class="card shadow border-start-success py-2">
+										<div class="card-body">
+											<div class="row align-items-center no-gutters">
+												<div class="col me-2">
+													<div class="text-uppercase fw-bold text-l mb-1"
+														style="color: rgb(167, 57, 60);">
+														<span>Clock</span>
+													</div>
+													<div class="text-dark fw-bold h5 mb-0"><span
+															id="span_clockAtual">0000</span>
+													</div>
+												</div>
+												<div class="col-auto"><i class="fas fa-clock fa-2x text-black-300" style="color: rgb(167, 57, 60)"></i>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-6 col-xl-8 mb-4">
+									<div class="card shadow border-start-success py-2">
+										<div class="card-body">
+											<div class="row align-items-center no-gutters">
+												<div class="col me-2">
+													<div class="text-uppercase text-warning fw-bold text-l mb-1">
+														<span>Status</span>
+													</div>
+													<div class="text-dark fw-bold h5 mb-0"><span id="span_statusTemp"
+															style="color: green;">Buscando ...</span></div>
+												</div>
+												<div class="col-auto">
+													<svg id="svg_statusTemp" class="fa-2x"
+														xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em"
+														viewBox="0 0 24 24" fill="none" style="color: var(--bs-green)">
+														<path
+															d="M5.63604 18.3639C2.12132 14.8492 2.12132 9.15071 5.63604 5.63599M18.364 5.63599C21.8787 9.15071 21.8787 14.8492 18.364 18.3639M8.46447 15.5355C6.51184 13.5829 6.51184 10.417 8.46447 8.46441M15.5355 8.46441C17.4882 10.417 17.4882 13.5829 15.5355 15.5355M13 11.9999C13 12.5522 12.5523 12.9999 12 12.9999C11.4477 12.9999 11 12.5522 11 11.9999C11 11.4477 11.4477 10.9999 12 10.9999C12.5523 10.9999 13 11.4477 13 11.9999Z"
+															stroke="currentColor" stroke-width="2"
+															stroke-linecap="round" stroke-linejoin="round"></path>
+													</svg>
+												</div>
 											</div>
 										</div>
 									</div>
@@ -265,30 +314,31 @@
 							</div>
 						</div>
 					</div>
-				</div>
-				<footer class="bg-white sticky-footer">
-					<div class="container my-auto">
-						<div class="text-center my-auto copyright"><span>Copyright © KASH+&nbsp;2022</span></div>
-					</div>
-				</footer>
-			</div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
-		</div>
-		<script src="assets/bootstrap/js/bootstrap.min.js"></script>
-		<script src="assets/js/script.min.js"></script>
-		<script src="../js/funcoes.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-		<script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js"
-			integrity="sha256-o9N1jGDZrf5tS+Ft4gbIK7mYMipq9lqpVJ91xHSyKhg=" crossorigin=""></script>
-		<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+					<footer class="bg-white sticky-footer">
+						<div class="container my-auto">
+							<div class="text-center my-auto copyright"><span>Copyright © KASH+&nbsp;2022</span></div>
+						</div>
+					</footer>
+				</div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i
+						class="fas fa-angle-up"></i></a>
+			</div>
+			<script src="assets/bootstrap/js/bootstrap.min.js"></script>
+			<script src="assets/js/script.min.js"></script>
+			<script src="../js/funcoes.js"></script>
+			<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+			<script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js"
+				integrity="sha256-o9N1jGDZrf5tS+Ft4gbIK7mYMipq9lqpVJ91xHSyKhg=" crossorigin=""></script>
+			<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </body>
 
 </html>
 <script>
 	pesoCpu = 0;
+	var pesoClock = 0;
+	var pesoTemp = 0;
 
 	setTimeout(addListeners, 500);
-	// setTimeout(addListeners2, 500);
 
 	let proximaAtualizacao;
 
@@ -309,7 +359,7 @@
 		fetch(`/medidas/ultimasTemp/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
 			if (response.ok) {
 				response.json().then(function (resposta) {
-					console.log(`Dados recebidos: ${JSON.stringify(resposta)}`);
+					console.log(`Dados recebidos de temperatura: ${JSON.stringify(resposta)}`);
 					resposta.reverse();
 
 					plotarGraficoTemp(resposta, serialNumber);
@@ -324,8 +374,7 @@
 	}
 
 	function plotarGraficoTemp(resposta, serialNumber) {
-		console.log('iniciando plotagem do gráfico...');
-        console.log(serialNumber)
+		console.log('iniciando plotagem do gráfico de temperatura...');
 
 		let labels = [];
 
@@ -349,7 +398,7 @@
 					data: [0, 50, 20, 45, 10, 30, 22, 55, 35, 10, 95, 50],
 					fill: true,
 					data: [],
-				},  
+				},
 			],
 			options: {
 				maintainAspectRatio: false,
@@ -383,23 +432,34 @@
 		setTimeout(() => atualizarGraficoTemp(serialNumber, dados, myChartTemp), 2000);
 	}
 
-	function atualizarGraficoTemp(serialNumber, dados, myChartTemp) { 
+	function atualizarGraficoTemp(serialNumber, dados, myChartTemp) {
 		fetch(`/medidas/tempo-realTemp/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
 			if (response.ok) {
 				response.json().then(function (novoRegistro) {
 
-					console.log(`Dados recebidos: ${JSON.stringify(novoRegistro)}`);
-					console.log(`Dados atuais do gráfico: ${dados}`);
+					console.log(`Dados de temperatura recebidos: ${JSON.stringify(novoRegistro)}`);
 
-					// span_clock.innerHTML = novoRegistro[0].Registro;
-					// TempCor(novoRegistro[0].Registro);
-
-					// tirando e colocando valores no gráfico
-					dados.labels.shift(); // apagar o primeiro
-					dados.labels.push(novoRegistro[0].momento_grafico); // incluir um novo momento
+					dados.labels.shift();
+					dados.labels.push(novoRegistro[0].momento_grafico); 
 
 					dados.datasets[0].data.shift();
 					dados.datasets[0].data.push((novoRegistro[0].Temperatura));
+
+					registro = novoRegistro[0].Temperatura
+
+					if (registro <= 20) {  // 40 - 65 // 70-85
+						cor = "red";
+						pesoTemp = 8;
+					} else if (registro >= 65) {
+						cor = "yellow";
+						pesoTemp = 4;
+					} else if (registro >= 85) {
+						cor = "red";
+						pesoTemp = 8;
+					} else {
+						cor = "green";
+						pesoTemp = 0;
+					}
 
 					myChartTemp.update();
 
@@ -418,65 +478,88 @@
 
 	function verificarTemperatura(serialNumber) {
 
-	document.getElementById("card_temp").style.display = "none";
+		document.getElementById("card_temp").style.display = "none";
+		document.getElementById("kpis_temp").style.display = "none";
 
-	fetch("/usuarios/verificarTemperatura", {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json"
-		},
-		body: JSON.stringify({
-			serialNumberServer: serialNumber
+		fetch("/usuarios/verificarTemperatura", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify({
+				serialNumberServer: serialNumber
+			})
+		}).then(function (resposta) {
+			console.log("ESTOU NO THEN DO listar()_T!");
+
+			if (resposta.ok) {
+				console.log('resposta: ' + resposta);
+
+				resposta.json().then(json => {
+					console.log('json: ' +  json);
+					console.log('jsonS: ' + JSON.stringify(json));
+
+					 if (json[0].Contagem != null && json[0].Contagem > 0) {
+						 document.getElementById("card_temp").style.display = "block";
+						 kpis_temp.style.display = "flex";
+						 obterDadosGraficoTemp(serialNumber);
+						 atualizarKpiClock(serialNumber);
+					 } else {
+						 // alert('Esta maquina não tem temperatura cadastrada');
+						 Swal.fire({
+							 title: 'Temperatura não encontrada',
+							 text: "Não encontramos nenhum dado de temperatura para essa máquina no nosso banco de dados",
+							 icon: 'warning'
+						 })
+					 }
+
+				});
+
+			} else {
+
+				console.log("Houve um erro ao tentar verificar a temperatura");
+
+				resposta.text().then(texto => {
+					mensagem_erro.classList.add("erro")
+					mensagem_erro.style.display = "flex";
+					mensagem_erro.innerHTML = texto;
+					setTimeout(() => {
+						mensagem_erro.style.display = "none";
+						mensagem_erro.classList.remove("alerta");
+						mensagem_erro.innerHTML = "";
+					}, "5000")
+				});
+			}
+
+		}).catch(function (erro) {
+			console.log(erro);
 		})
-	}).then(function (resposta) {
-		console.log("ESTOU NO THEN DO listar()_T!")
 
-		if (resposta.ok) {
-			console.log(resposta);
+	}
+	
+	function atualizarKpiClock(serialNumber) {
+		fetch(`/medidas/tempo-realClock/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
+			if (response.ok) {
+				response.json().then(function (novoRegistro) {
 
-			resposta.json().then(json => {
-				console.log(json);
-				console.log(JSON.stringify(json));
+					console.log(`Dados atuais da Kpi ${JSON.stringify(novoRegistro)}`);
 
-				for (let i = 0; i < json.length; i++) {
-					var count = json[i].Contagem;
+					span_clockAtual.innerHTML = novoRegistro[0].Clock;
 
-					if (count != null && count > 0) {
-						document.getElementById("card_temp").style.display = "block";
-						// document.getElementById("aviso_componente").style.display = "none";
-					} else {
-						// alert('Esta maquina não tem temperatura cadastrada');
-						Swal.fire({
-							title: 'Temperatura não encontrada',
-							text: "Não encontramos nenhum dado de temperatura no nosso banco de dados",
-							icon: 'warning'
-						})
-					}
-				}
+					console.log('serial: ' + serialNumber)
+					ClockCor(novoRegistro[0].Clock);
 
+					proximaAtualizacao = setTimeout(() => atualizarKpiClock(serialNumber), 2000);
+				});
+			} else {
+				console.error('Nenhum dado encontrado ou erro na API');
+				proximaAtualizacao = setTimeout(() => atualizarKpiClock(serialNumber), 2000);
+			}
+		})
+			.catch(function (error) {
+				console.error(`Erro na obtenção dos dados p/ kpi: ${error.message}`);
 			});
-
-		} else {
-
-			console.log("Houve um erro ao tentar realizar o login!");
-
-			resposta.text().then(texto => {
-				mensagem_erro.classList.add("erro")
-				mensagem_erro.style.display = "flex";
-				mensagem_erro.innerHTML = texto;
-				setTimeout(() => {
-					mensagem_erro.style.display = "none";
-					mensagem_erro.classList.remove("alerta");
-					mensagem_erro.innerHTML = "";
-				}, "5000")
-			});
-		}
-
-	}).catch(function (erro) {
-		console.log(erro);
-	})
-
-}
+	}
 
 	function obterDadosGraficoCpu(serialNumber) {
 		document.getElementById("myChartCpu").remove();
@@ -852,9 +935,8 @@
 	function verificarComponentes(serialNumber) {
 
 		document.getElementById("card_cpu").style.display = "none";
-		// document.getElementById("card_ram").style.display = "none";
+		document.getElementById("card_ram").style.display = "none";
 		document.getElementById("card_disco").style.display = "none";
-		document.getElementById("card_temp").style.display = "none";
 
 		fetch("/usuarios/verificarComponentes", {
 			method: "POST",
@@ -880,6 +962,7 @@
 						if (componente == "cpu") {
 							document.getElementById("card_cpu").style.display = "block";
 							document.getElementById("aviso_componente").style.display = "none";
+							verificarTemperatura(serialNumber);
 						}
 
 						if (componente == "ram") {
@@ -915,7 +998,6 @@
 			console.log(erro);
 		})
 
-		// verificarTemperatura(serialNumber);
 	}
 
 	function setRamMax(serialNumber) {
@@ -1000,6 +1082,25 @@
 		disco_cor.style = "border-bottom: 3px solid " + cor;
 	}
 
+	function ClockCor(registroClock) {
+		if (registroClock <= 900) {  // 1000 - 3600
+			cor = "red";
+			pesoClock = 14;
+		} else if (registroClock <= 1999) {
+			cor = "yellow";
+			pesoClock = 4;
+		} else if (registroClock >= 4000) {
+			cor = "red";
+			pesoClock = 8;
+		} else {
+			cor = "green";
+			pesoClock = 0;
+		}
+		clock_cor.style = "border-bottom: 3px solid " + cor;
+		
+		StatusCorTemp();
+	}
+
 	function StatusCor() {
 
 		peso = pesoCpu + pesoDisco + pesoRam;
@@ -1019,6 +1120,25 @@
 		span_status.style = "color: " + status_cor;
 		svg_status.style = "color: var(--bs-" + status_cor + ")";
 
+	}
+
+	function StatusCorTemp() {
+		peso = pesoClock + pesoTemp;
+
+		if (peso >= 14) {
+			texto = "Crítico";
+			cor = "red"
+		} else if (peso >= 6) {
+			texto = "Alerta";
+			cor = "yellow"
+		} else {
+			texto = "Bom";
+			cor = "green"
+		}
+
+		span_statusTemp.innerHTML = texto;
+		span_statusTemp.style = "color: " + cor;
+		svg_statusTemp.style = "color: var(--bs-" + cor + ")";
 	}
 
 	function deletarCaixa() {
