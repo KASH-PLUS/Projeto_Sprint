@@ -100,6 +100,37 @@ function buscarUltimasMedidasRede(seralNumber, limite_linhas) {
     return database.executar(instrucaoSql);
 }
 
+function buscarUltimasMedidasPacotes(seralNumber, limite_linhas) {
+
+    var instrucaoSql = ''
+
+    if (process.env.AMBIENTE_PROCESSO == "producao") {
+        instrucaoSql = `SELECT top ${limite_linhas}
+                        pacotesEnviados, 
+                        pacotesRecebidos,
+                        CONVERT(varchar, dataHora, 108) as momento_grafico
+                    FROM vwRede
+                    WHERE fkMaquina = '${seralNumber}'
+                    ORDER BY ID DESC`;
+    } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
+        instrucaoSql = `SELECT 
+                        pacotesEnviados, 
+                        pacotesRecebidos, 
+                        DATE_FORMAT(dataHora,'%H:%i:%s') as momento_grafico
+                    FROM vwRede
+                    WHERE fkMaquina = '${seralNumber}'
+                    ORDER BY ID DESC LIMIT ${limite_linhas}`;
+    } else {
+        console.log("\nO AMBIENTE (produção OU desenvolvimento) NÃO FOI DEFINIDO EM app.js\n");
+        return
+    }
+
+    console.log("Executando a instrução SQL: \n" + instrucaoSql);
+    return database.executar(instrucaoSql);
+}
+
+
+
 function buscarMaxDisco(serialNumber) {
 
     var instrucaoSql = ''
@@ -210,7 +241,35 @@ function buscarMedidasEmTempoRealRede(serialNumber) {
                     ORDER BY ID DESC LIMIT 1`;
     } else {
         console.log("\nO AMBIENTE (produção OU desenvolvimento) NÃO FOI DEFINIDO EM app.js\n");
-        return  
+        return
+    }
+
+    console.log("Executando a instrução SQL: \n" + instrucaoSql);
+    return database.executar(instrucaoSql);
+}
+
+function buscarMedidasEmTempoRealPacotes (serialNumber) {
+
+    instrucaoSql = ''
+
+    if (process.env.AMBIENTE_PROCESSO == "producao") {
+        instrucaoSql = `SELECT top 1
+                        pacotesEnviados,
+                        pacotesRecebidos, 
+                        CONVERT(varchar, dataHora, 108) as momento_grafico
+                        FROM vwRede where fkMaquina = '${serialNumber}'
+                    order by ID desc`;
+
+    } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
+        instrucaoSql = `SELECT 
+                        pacotesEnviados,
+                        pacotesRecebidos,
+                        DATE_FORMAT(dataHora,'%H:%i:%s') as momento_grafico 
+                        FROM vwRede where fkMaquina = '${serialNumber}'
+                    ORDER BY ID DESC LIMIT 1`;
+    } else {
+        console.log("\nO AMBIENTE (produção OU desenvolvimento) NÃO FOI DEFINIDO EM app.js\n");
+        return
     }
 
     console.log("Executando a instrução SQL: \n" + instrucaoSql);
@@ -236,7 +295,7 @@ function obterDadosPlacaRede(serialNumber) {
                         FROM tbRede where fkMaquina = '${serialNumber}'`;
     } else {
         console.log("\nO AMBIENTE (produção OU desenvolvimento) NÃO FOI DEFINIDO EM app.js\n");
-        return  
+        return
     }
 
     console.log("Executando a instrução SQL: \n" + instrucaoSql);
@@ -250,9 +309,11 @@ module.exports = {
     buscarUltimasMedidasRam,
     buscarMedidasEmTempoRealCpu,
     buscarUltimasMedidasRede,
+    buscarUltimasMedidasPacotes,
     buscarMedidasEmTempoRealRam,
     buscarUltimasMedidasDisco,
     buscarMedidasEmTempoRealRede,
+    buscarMedidasEmTempoRealPacotes,
     obterDadosPlacaRede,
     buscarMaxDisco,
     buscarMaxRam,

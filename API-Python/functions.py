@@ -103,9 +103,9 @@ def cadastroRede(serialNumber):
     netmask6 = placa[1].netmask
 
     if type(dados) == type(None):
-        query = f"INSERT INTO tbRede(macAddress, ipv4, ipv6, netmask4, netmask6, fkMaquina) VALUES ('{macAddress}', '{ipv4}', '{ipv6}', '{netmask4}', '{netmask6}', '{serialNumber}');"
+        query = f"INSERT INTO tbRede(macAddress, ipv4, netmask4, netmask6, fkMaquina) VALUES ('{macAddress}', '{ipv4}', '{netmask4}', '{netmask6}', '{serialNumber}');"
     else:
-        query = f"UPDATE tbRede SET macAddress = '{macAddress}', ipv4 = '{ipv4}', ipv6 = '{ipv6}', netmask4 = '{netmask4}', netmask6 = '{netmask6}' WHERE fkMaquina = '{serialNumber}';"
+        query = f"UPDATE tbRede SET macAddress = '{macAddress}', ipv4 = '{ipv4}', netmask4 = '{netmask4}', netmask6 = '{netmask6}' WHERE fkMaquina = '{serialNumber}';"
 
     insert(query)
 
@@ -226,9 +226,10 @@ def info():
 def insertPeriodico(idCpu, idDisco, idRam, macAddress):
     intervaloInsert = 2 # em segundos
 
-    ultimosRecebidos = net_io_counters().bytes_recv
-    ultimosEnviados = net_io_counters().bytes_sent
-    total = ultimosRecebidos + ultimosEnviados
+    ultimosRecebidos = net_io_counters().packets_recv
+    ultimosEnviados = net_io_counters().packets_sent
+    ultimosPacotesRecebidos = net_io_counters().bytes_recv
+    ultimosPacotesEnviados = net_io_counters().bytes_sent
 
     while True:
         usoAtualMemoria = conversao_bytes(virtual_memory().used, 3)
@@ -285,12 +286,25 @@ def insertPeriodico(idCpu, idDisco, idRam, macAddress):
         mbRecebidosTotal = bytesRecebidos / 1024 / 1024
 
 
-        queryRede = f"INSERT INTO tbRegistroRede(fkPlaca, mbEnviados, mbRecebidos, totalEnviado, totalRecebido, dataHora) VALUES ('{macAddress}', {mbEnviados:.2f}, {mbRecebidos:.2f}, {mbEnviadosTotal:.2f}, {mbRecebidosTotal:.2f},'{dataHora}');"
+
+        # Pacotes
+
+        pacotesRecebidos = net_io_counters().packets_recv
+        pacotesEnviados = net_io_counters().packets_sent
+
+        novosPacotesRecebidos = pacotesRecebidos - ultimosPacotesRecebidos
+        novosPacotesEnviados = pacotesEnviados - ultimosPacotesEnviados
+    
+
+        queryRede = f"INSERT INTO tbRegistroRede(fkPlaca, mbEnviados, mbRecebidos, totalEnviado, totalRecebido, pacotesEnviados, pacotesRecebidos, dataHora) VALUES ('{macAddress}', {mbEnviados:.2f}, {mbRecebidos:.2f}, {mbEnviadosTotal:.2f}, {mbRecebidosTotal:.2f}, {novosPacotesEnviados}, {novosPacotesRecebidos},'{dataHora}');"
 
         insert(queryRede)       
 
         ultimosRecebidos = bytesRecebidos
         ultimosEnviados = bytesEnviados
+        
+        ultimosPacotesRecebidos = pacotesRecebidos
+        ultimosPacotesEnviados = pacotesEnviados
 
         time.sleep(intervaloInsert)
 

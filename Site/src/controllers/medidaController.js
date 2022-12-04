@@ -85,6 +85,27 @@ function buscarUltimasMedidasRede(req, res) {
     });
 }
 
+
+function buscarUltimasMedidasPacotes(req, res) {
+
+    const limite_linhas = 8;
+
+    var serialNumber = req.params.serialNumber;
+
+    medidaModel.buscarUltimasMedidasPacotes(serialNumber, limite_linhas).then(function (resultado) {
+        if (resultado.length > 0) {
+            res.status(200).json(resultado);
+        } else {
+            res.status(204).send("Nenhum resultado encontrado!")
+        }
+    }).catch(function (erro) {
+        console.log(erro);
+        console.log("Houve um erro ao buscar as ultimas medidas.", erro.sqlMessage);
+        res.status(500).json(erro.sqlMessage);
+    });
+}
+
+
 function buscarMedidasEmTempoRealRede(req, res) {
 
     var serialNumber = req.params.serialNumber;
@@ -178,6 +199,26 @@ function buscarMedidasEmTempoRealRam(req, res) {
     });
 }
 
+function buscarMedidasEmTempoRealPacotes(req, res) {
+
+    var serialNumber = req.params.serialNumber;
+
+    console.log(`Recuperando medidas em tempo real`);
+
+    medidaModel.buscarMedidasEmTempoRealPacotes(serialNumber).then(function (resultado) {
+        if (resultado.length > 0) {
+            res.status(200).json(resultado);
+        } else {
+            res.status(204).send("Nenhum resultado encontrado!")
+        }
+    }).catch(function (erro) {
+        console.log(erro);
+        console.log("Houve um erro ao buscar as ultimas medidas.", erro.sqlMessage);
+        res.status(500).json(erro.sqlMessage);
+    });
+}
+
+
 function obterDadosPlacaRede(req, res) {
 
     var serialNumber = req.params.serialNumber;
@@ -200,10 +241,12 @@ function obterDadosPlacaRede(req, res) {
 module.exports = {
     buscarUltimasMedidasCpu,
     buscarUltimasMedidasRam,
+    buscarUltimasMedidasPacotes,
     buscarUltimasMedidasRede,
     buscarMedidasEmTempoRealCpu,
     buscarMedidasEmTempoRealRam,
     buscarMedidasEmTempoRealRede,
+    buscarMedidasEmTempoRealPacotes,
     buscarUltimasMedidasDisco,
     obterDadosPlacaRede,
     buscarMaxDisco,

@@ -59,10 +59,9 @@ idRegistro INT PRIMARY KEY AUTO_INCREMENT
 
 CREATE TABLE tbRede(
   macAddress CHAR(17) PRIMARY KEY
-  ,ipv4 CHAR(13)
-  ,ipv6 CHAR(25)
+  ,ipv4 CHAR(15)
+  ,ipv6 CHAR(30)
   ,netmask4 CHAR(15)
-  ,netmask6 CHAR(21)
   ,fkMaquina VARCHAR(30)
   , FOREIGN KEY(fkMaquina) REFERENCES tbMaquina(serialNumber)
   );

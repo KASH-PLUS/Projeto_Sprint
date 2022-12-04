@@ -23,7 +23,8 @@ for i in enumerate(placa):
 
 placa = net_if_addrs()[minha_placa]
 
-print(placa)
+print(net_if_addrs())
+
 print("-"*50)
 
 print("Ipv4 Local: " + placa[0].address)

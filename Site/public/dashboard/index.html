@@ -262,7 +262,7 @@
 
 		<!-- modal para gráfico de rede -->
 		<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-			<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-dialog modal-dialog-centered modal-dialog modal-dialog-scrollable">
 				<div class="modal-content">
 					<div class="modal-header">
 						<h5 class="modal-title" id="exampleModalLabel">Monitoramento de banda de rede</h5>
@@ -281,8 +281,9 @@
 							</div>
 						</div>
 					</div>
-					<div id="grafico_rede" class="modal-body">
+					<div class="modal-body">
 						<div id="myChartRede"></div>
+						<div id="myChartPacotes"></div>
 					</div>
 
 				</div>
@@ -309,6 +310,167 @@
 	let proximaAtualizacao;
 
 	verifyNav()
+
+
+	function obterDadosPacotes(serialNumber) {
+
+		fetch(`/medidas/ultimosPacotes/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
+			if (response.ok) {
+				response.json().then(function (resposta) {
+					console.log(`Dados recebidos: ${JSON.stringify(resposta)}`);
+					resposta.reverse();
+
+					plotarGraficoPacotes(resposta, serialNumber);
+				});
+			} else {
+				console.error('Nenhum dado encontrado ou erro na API');
+			}
+		}).catch(function (error) {
+			console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
+		});
+
+	}
+
+	function plotarGraficoPacotes(resposta, serialNumber) {
+		var dadosEnviados = []
+		var dadosRecebidos = []
+		var labels = []
+
+		var options = {
+			chart: {
+				type: 'line',
+				animations: {
+					enabled: true,
+					easing: 'linear',
+					dynamicAnimation: {
+						speed: 1000
+					}
+				},
+				toolbar: {
+					show: false
+				},
+			},
+			title: {
+				text: 'Quantidade de pacotes enviados e recebidos',
+				align: 'left'
+			},
+			stroke: {
+				curve: 'smooth',
+			},
+			series: [
+				{
+					name: 'Pacotes Enviados',
+					data: dadosEnviados
+				},
+				{
+					name: 'Pacotes Recebidos',
+					data: dadosRecebidos
+				}
+			],
+			colors: ["#FF1654", "#247BA0"],
+			xaxis: {
+				categories: labels,
+				range: 7
+			},
+			yaxis: [
+				{
+					axisTicks: {
+						show: true
+					},
+					axisBorder: {
+						show: true,
+						color: "#FF1654"
+					},
+					labels: {
+						style: {
+							colors: "#FF1654"
+						}
+					},
+					title: {
+						text: "Pacotes Enviados",
+						style: {
+							color: "#FF1654"
+						}
+					}
+				},
+				{
+					opposite: true,
+					axisTicks: {
+						show: true
+					},
+					axisBorder: {
+						show: true,
+						color: "#247BA0"
+					},
+					labels: {
+						style: {
+							colors: "#247BA0"
+						}
+					},
+					title: {
+						text: "Pacotes Recebidos",
+						style: {
+							color: "#247BA0"
+						}
+					}
+				}
+			],
+		}
+
+		for (i = 0; i < resposta.length; i++) {
+			var registro = resposta[i];
+			labels.push(registro.momento_grafico);
+			dadosEnviados.push(registro.pacotesEnviados);
+			dadosRecebidos.push(registro.pacotesRecebidos);
+		}
+
+		var chartPacotes = new ApexCharts(document.querySelector("#myChartPacotes"), options);
+
+		chartPacotes.render();
+
+		atualizarGraficoPacotes(chartPacotes, dadosEnviados, dadosRecebidos, labels, serialNumber)
+	}
+
+	function atualizarGraficoPacotes(chart, dadosEnviados, dadosRecebidos, labels, serialNumber) {
+
+		fetch(`/medidas/tempo-realPacotes/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
+			if (response.ok) {
+				response.json().then(function (novoRegistro) {
+
+					console.log(`Dados recebidos: ${JSON.stringify(novoRegistro)}`);
+
+
+					dadosEnviados.push(novoRegistro[0].pacotesEnviados)
+					dadosRecebidos.push(novoRegistro[0].pacotesRecebidos)
+
+					labels.push(novoRegistro[0].momento_grafico)
+
+
+					chart.updateSeries(
+						[
+							{
+								data: dadosEnviados
+							},
+							{
+								data: dadosRecebidos
+							}
+						],
+
+					)
+
+					proximaAtualizacao = setTimeout(() => atualizarGraficoPacotes(chart, dadosEnviados, dadosRecebidos, labels, serialNumber), 1000);
+				});
+			} else {
+				console.error('Nenhum dado encontrado ou erro na API');
+				// Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
+				proximaAtualizacao = setTimeout(() => atualizarGraficoPacotes(chart, dadosEnviados, dadosRecebidos, labels, serialNumber), 1000);
+			}
+		}).catch(function (error) {
+			console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
+		});
+
+	}
+
 
 	function obterDadosPlacaDeRede(serialNumber) {
 		fetch(`/medidas/obterDadosPlacaRede/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
