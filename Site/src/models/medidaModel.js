@@ -161,11 +161,9 @@ function buscarMedidasEmTempoRealTempoUso(serialNumber) {
     instrucaoSql = ''
     
     if (process.env.AMBIENTE_PROCESSO == "producao") {       
-        instrucaoSql = `SELECT top 1
-                        Registro, 
-                        CONVERT(varchar, Horario, 108) as momento_grafico
-                        FROM vwConsumo where NumeroSerial = '${serialNumber}' and Componente = 'cpu'
-                    order by ID desc`;
+        instrucaoSql = `select top 1 usoUsuario, usoOcioso,
+        FORMAT(datahora,'%H:%i:%s') as datahora from tbOciosidade where fkMaquina = '${serialNumber}' 
+         order by idRegistro desc;`;
         
     } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
         instrucaoSql = `select usoUsuario, usoOcioso,
@@ -185,11 +183,8 @@ function obterInicioMonitoramento(serialNumber) {
     instrucaoSql = ''
     
     if (process.env.AMBIENTE_PROCESSO == "producao") {       
-        instrucaoSql = `SELECT top 1
-                        Registro, 
-                        CONVERT(varchar, Horario, 108) as momento_grafico
-                        FROM vwConsumo where NumeroSerial = '${serialNumber}' and Componente = 'cpu'
-                    order by ID desc`;
+        instrucaoSql = `select top 1 datahora
+        from tbOciosidade where fkMaquina = '${serialNumber}' order by idRegistro;`;
         
     } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
         instrucaoSql = `select datahora
