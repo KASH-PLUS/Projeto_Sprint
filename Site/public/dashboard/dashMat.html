@@ -115,27 +115,31 @@
 						<div class="row">
 							<div class="col">
 								<div class="row">
-									<div class="card shadow mb-4">
-										<div class="card-header d-flex justify-content-between align-items-center">
-											<h6 class="text-primary fw-bold m-0">Uso da CPU - Processo (%)</h6>
-										</div>
-										<div class="card-body">
-											<div class="chart-container" id="grafico_cpu" style="position: relative; width: 85vw;">
-												<canvas id="myChartCpu">
-												</canvas>
+									<div class="col">
+										<div class="card shadow mb-4">
+											<div class="card-header d-flex justify-content-between align-items-center">
+												<h6 class="text-primary fw-bold m-0">Uso da CPU - Processo (%)</h6>
+											</div>
+											<div class="card-body">
+												<div class="chart-container" id="grafico_cpu" style="position: relative; width: 75vw;">
+													<canvas id="myChartCpu">
+													</canvas>
+												</div>
 											</div>
 										</div>
 									</div>
 								</div>
 								<div class="row">
-									<div class="card shadow mb-4">
-										<div class="card-header d-flex justify-content-between align-items-center">
-											<h6 class="text-primary fw-bold m-0">Uso da RAM - Processo (%)</h6>
-										</div>
-										<div class="card-body">
-											<div class="chart-container" id="grafico_ram" style="position: relative; width: 85vw;">
-												<canvas id="myChartRam">
-												</canvas>
+									<div class="col">
+										<div class="card shadow mb-4">
+											<div class="card-header d-flex justify-content-between align-items-center">
+												<h6 class="text-primary fw-bold m-0">Uso da RAM - Processo (%)</h6>
+											</div>
+											<div class="card-body">
+												<div class="chart-container" id="grafico_ram" style="position: relative; width: 75vw;">
+													<canvas id="myChartRam">
+													</canvas>
+												</div>
 											</div>
 										</div>
 									</div>
@@ -307,7 +311,7 @@
 			var registro = jsonVar[i];
 			labels.push(registro.processo + "-" + registro.dataHora);
 			dados.datasets[0].data.push(registro.registro); 
-			dados.datasets[1].data.push(registro.usoCpu); 
+			dados.datasets[1].data.push(((registro.registro * registro.usoCpu) / 100).toFixed(2)); 
 		}
 
 		const config = {
@@ -341,7 +345,7 @@
 					dados.datasets[0].data.shift();
 					dados.datasets[0].data.push(novoRegistro[0].registro);
 					dados.datasets[1].data.shift();
-					dados.datasets[1].data.push(novoRegistro[0].usoCpu);
+					dados.datasets[1].data.push(((novoRegistro[0].registro * novoRegistro[0].usoCpu) / 100).toFixed(2));
 
 					myChartCpu.update();
 
@@ -460,7 +464,7 @@
 		for (i = 0; i < jsonVar.length; i++) {
 			var registro = jsonVar[i];
 			labels.push(registro.processo + "-" + registro.dataHora);
-			dados.datasets[0].data.push(((registro.registro / registro.metricaMaxima) * 100).toFixed(1));
+			dados.datasets[0].data.push(((registro.registro / registro.metricaMaxima) * 100).toFixed(2));
 			dados.datasets[1].data.push(registro.usoRam);
 		}
 
@@ -493,7 +497,7 @@
 					dados.labels.push(novoRegistro[0].processo + "-" + novoRegistro[0].dataHora); // incluir um novo momento
 
 					dados.datasets[0].data.shift();
-					dados.datasets[0].data.push(((novoRegistro[0].registro / novoRegistro[0].metricaMaxima) * 100).toFixed(1));
+					dados.datasets[0].data.push(((novoRegistro[0].registro / novoRegistro[0].metricaMaxima) * 100).toFixed(2));
 					dados.datasets[1].data.shift();
 					dados.datasets[1].data.push(novoRegistro[0].usoRam);
 
