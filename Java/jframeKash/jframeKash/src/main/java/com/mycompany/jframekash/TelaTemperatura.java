@@ -11,6 +11,9 @@ import com.github.britooo.looca.api.group.temperatura.Temperatura;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.ImageIcon;
+import oshi.SystemInfo;
+import oshi.hardware.CentralProcessor;
+import oshi.hardware.HardwareAbstractionLayer;
 
 /**
  *
@@ -23,6 +26,10 @@ public class TelaTemperatura extends javax.swing.JFrame {
     ImageIcon img = new ImageIcon("src/main/resources/logoWhite.png");
     TbUsuario usuario = new TbUsuario();
     
+    SystemInfo si = new SystemInfo();
+    HardwareAbstractionLayer hal = si.getHardware();
+    CentralProcessor cpu = hal.getProcessor(); 
+    
     public TelaTemperatura() {
         initComponents();
         
@@ -34,9 +41,17 @@ public class TelaTemperatura extends javax.swing.JFrame {
             timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
-                    lblTemperatura.setText("Temperatura Atual: ");
-                    lblTemperatura.setText(lblTemperatura.getText() + temperatura.getTemperatura());
+                    lblClock.setText("Temperatura Atual: ");
+                    lblClock.setText(lblClock.getText() + temperatura.getTemperatura());
                     prgTemperatura.setValue((temperatura.getTemperatura()).intValue());
+                    
+                    Long clockLong = cpu.getCurrentFreq()[1];
+                    Double clockDouble = clockLong.doubleValue();
+                    clockDouble = clockDouble / Math.pow(10, 6);
+                    Integer clock = clockDouble.intValue();
+                    
+                    lblClock.setText("Clock: ");
+                    lblClock.setText(lblClock.getText() + clock);
                 }
             }, 00, 5000);
         }
@@ -60,11 +75,12 @@ public class TelaTemperatura extends javax.swing.JFrame {
         btnSO = new javax.swing.JButton();
         btnMemo = new javax.swing.JButton();
         btnProcessos = new javax.swing.JButton();
-        lblTemperatura = new javax.swing.JLabel();
+        lblClock = new javax.swing.JLabel();
         prgTemperatura = new javax.swing.JProgressBar();
         lblAviso = new javax.swing.JLabel();
         btnDisco = new javax.swing.JButton();
         btnRede = new javax.swing.JButton();
+        lblTemperatura = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(950, 510));
@@ -114,8 +130,8 @@ public class TelaTemperatura extends javax.swing.JFrame {
             }
         });
 
-        lblTemperatura.setFont(new java.awt.Font("Comic Sans MS", 0, 18)); // NOI18N
-        lblTemperatura.setText("Temperatura Atual: ");
+        lblClock.setFont(new java.awt.Font("Comic Sans MS", 0, 18)); // NOI18N
+        lblClock.setText("Clock: ");
 
         prgTemperatura.setFont(new java.awt.Font("Comic Sans MS", 0, 10)); // NOI18N
         prgTemperatura.setForeground(new java.awt.Color(204, 0, 204));
@@ -139,6 +155,8 @@ public class TelaTemperatura extends javax.swing.JFrame {
                 btnRedeActionPerformed(evt);
             }
         });
+        lblTemperatura.setFont(new java.awt.Font("Comic Sans MS", 0, 18)); // NOI18N
+        lblTemperatura.setText("Temperatura Atual: ");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -164,15 +182,21 @@ public class TelaTemperatura extends javax.swing.JFrame {
                 .addGap(283, 283, 283)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblAviso, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(101, 101, 101))
-                    .addGroup(layout.createSequentialGroup()
+                        .addGap(246, 246, 246)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(lblTemperatura)
-                                .addGap(139, 139, 139))
-                            .addComponent(prgTemperatura, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(139, 139, 139))))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lblAviso, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(101, 101, 101))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(161, 161, 161)
+                                .addComponent(prgTemperatura, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblClock)
+                            .addComponent(lblTemperatura))
+                        .addGap(270, 270, 270))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -187,12 +211,21 @@ public class TelaTemperatura extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(lblTemperatura)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(prgTemperatura, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(91, 91, 91)
                         .addComponent(lblAviso))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(14, 14, 14)
+                        .addComponent(lblClock)
+                        .addGap(51, 51, 51)
+                        .addComponent(lblAviso)
+                        .addGap(107, 107, 107))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(62, 62, 62)
                         .addComponent(btnCPU)
                         .addGap(18, 18, 18)
                         .addComponent(btnDisco)
@@ -205,6 +238,7 @@ public class TelaTemperatura extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(btnRede)))
                 .addGap(107, 107, 107))
+                        .addContainerGap(118, Short.MAX_VALUE))))
         );
 
         pack();
@@ -301,6 +335,7 @@ public class TelaTemperatura extends javax.swing.JFrame {
     private javax.swing.JButton btnRede;
     private javax.swing.JButton btnSO;
     private javax.swing.JLabel lblAviso;
+    private javax.swing.JLabel lblClock;
     private javax.swing.JLabel lblLogo;
     private javax.swing.JLabel lblTemperatura;
     private javax.swing.JLabel lblTitulo;

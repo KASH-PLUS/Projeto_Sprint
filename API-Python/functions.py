@@ -1,7 +1,7 @@
 import datetime
 from dis import disco
 from pickletools import read_int4
-import time
+import time, json
 from psutil import *
 import os
 import platform
@@ -185,7 +185,6 @@ def monitorar():
         except KeyboardInterrupt:
             return "0"
 
-
 def info():
     os.system(codeCleaner)
 
@@ -272,7 +271,6 @@ def insertPeriodico(idCpu, idDisco, idRam, macAddress):
             queryRam = f"INSERT INTO tbRegistro(fkComponente, registro, dataHora) VALUES ('{i}', '{usoAtualMemoria}', '{dataHora}');"
             insert(queryRam)
 
-<<<<<<< HEAD
         url = "https://api.pipefy.com/graphql"
 
         usoCpuPorc = str(usoCpuPorc)
@@ -307,7 +305,6 @@ def insertPeriodico(idCpu, idDisco, idRam, macAddress):
             }
             # Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c2VyIjp7ImlkIjozMDIxNzYyNTMsImVtYWlsIjoiMjIyLTFjY28tZ3J1cG8xMEBiYW5kdGVjLmNvbS5iciIsImFwcGxpY2F0aW9uIjozMDAyMTQyNTF9fQ.BDmwgdA6MjMvUaD3x6l34bBKpv9-8epdwzgHOwIOV_zljVHNf1lefNgHg0--ZA_vLjSVT2cFwpwOmiIcPwqfQw
             response = requests.post(url, json=payload, headers=headers)
-=======
         # SITE PARA PEGAR ID DE CADA FIELD DO CARD PIPEFY
         # https://app.pipefy.com/graphiql
         url = "https://api.pipefy.com/graphql"
@@ -321,10 +318,24 @@ def insertPeriodico(idCpu, idDisco, idRam, macAddress):
 
         response = requests.request("POST", url, json=data, headers=headers)
 
+        if os.name == "nt":
+            capturaTemp(serialNumber, urlOpen)
+        else:
+            import psutil
+            # Temperatura - Linux
+            tempInfo = psutil.sensors_temperatures()
+            tempAtual = int(tempInfo['coretemp'][0][1])
+
+            #Clock - Linux
+            clock = int(psutil.cpu_freq().current)
+
+            query = f"INSERT INTO tbTemperatura(fkMaquina, tempAtual, clock, dataHora) VALUES ('{serialNumber}', '{tempAtual}', '{clock}', '{dataHora}');"
+            insert(query)
+
         print(response)
 
         print(response.text, "oi")
->>>>>>> 45600070992520c90f9950105ffef196026e1a6e
+
         
         # Pegando dados de rede
 
@@ -363,7 +374,25 @@ def insertPeriodico(idCpu, idDisco, idRam, macAddress):
 
         time.sleep(intervaloInsert)
 
+def capturaTemp(serialNumber, urlOpen):
+    try:
+        url = urlOpen + "data.json" 
+        req = requests.get(url)
+        jsonText= req.text.encode("utf8")
+        data = json.loads(jsonText)
 
+        tempDados = int(data["Children"][0]["Children"][0]["Children"][1]["Children"][0]["Value"][:2])
+        clockDado = int(data["Children"][0]["Children"][0]["Children"][0]["Children"][1]["Value"][:4])
+        
+        dataHora = datetime.datetime.now()
+        dataHora = datetime.datetime.strftime(dataHora, "%Y-%m-%d %H:%M:%S")
+        query = f"INSERT INTO tbTemperatura(fkMaquina, tempAtual, clock, dataHora) VALUES ('{serialNumber}', '{tempDados}', '{clockDado}', '{dataHora}');"
+        insert(query)
+    except:
+        print('Erro ao capturar a temperatura')
+        print('Por favor ligue o open hardware monitor na url:')
+        print(url + '\n\n')
+        
 def relatorio():
     os.system(codeCleaner)
 

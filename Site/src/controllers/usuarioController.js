@@ -229,7 +229,6 @@ function cadastrarComponente(req, res) {
 
 }
 
-
 function enviarEmailCadastro(email, senha, emailBanco) {
     var transporter = nodemailer.createTransport({
         service: 'outlook',
@@ -257,7 +256,6 @@ function enviarEmailCadastro(email, senha, emailBanco) {
         }
     })
 }
-
 
 function enviarEmailContato(req, res) {
     const emailRecebedor = "pipe302766815@mail.pipefy.com"
@@ -362,6 +360,26 @@ function verificarComponentes(req, res) {
 
 }
 
+function verificarTemperatura(req, res) {
+    var serialNumber = req.body.serialNumberServer;
+
+    usuarioModel.listarTemperatura(serialNumber)
+        .then(
+            function (resultado) {
+                res.json(resultado);
+            }
+        ).catch(
+            function (erro) {
+                console.log(erro);
+                console.log(
+                    erro.sqlMessage
+                );
+                res.status(500).json(erro.sqlMessage);
+            }
+        );
+
+}
+
 function criarMapaCaixas(req, res) {
 
     var cnpj = req.body.cnpjServer;
@@ -434,5 +452,6 @@ module.exports = {
     verificarComponentes,
     enviarEmailContato,
     criarMapaCaixas,
-    deletarCaixa
+    deletarCaixa,
+    verificarTemperatura
 }

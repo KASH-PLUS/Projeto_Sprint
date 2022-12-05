@@ -248,7 +248,36 @@ function buscarMedidasEmTempoRealRede(serialNumber) {
     return database.executar(instrucaoSql);
 }
 
-function buscarMedidasEmTempoRealPacotes (serialNumber) {
+function buscarUltimasMedidasTemp(serialNumber, limite_linhas) {
+
+    var instrucaoSql = ''
+
+    if (process.env.AMBIENTE_PROCESSO == "producao") {
+        instrucaoSql = `SELECT top ${limite_linhas}
+                            Temperatura, 
+                            CONVERT(varchar, Horario, 108) as momento_grafico
+                            from vwTemp
+                            WHERE NumeroSerial = '${serialNumber}'
+                            ORDER BY Horario DESC;
+                        `;
+    } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
+        instrucaoSql = `SELECT 
+                            Temperatura, 
+                            DATE_FORMAT(Horario,'%H:%i:%s') as momento_grafico
+                            FROM vwTemp 
+                            WHERE NumeroSerial = '${NumeroSerial}'
+                            ORDER BY Horario DESC
+                            LIMIT ${limite_linhas};
+                        `;
+    } else {
+        console.log("\nO AMBIENTE (produção OU desenvolvimento) NÃO FOI DEFINIDO EM app.js\n");
+        return
+    }
+    console.log("Executando a instrução SQL: \n" + instrucaoSql);
+    return database.executar(instrucaoSql);
+}
+
+function buscarMedidasEmTempoRealPacotes(serialNumber) {
 
     instrucaoSql = ''
 
@@ -267,6 +296,37 @@ function buscarMedidasEmTempoRealPacotes (serialNumber) {
                         DATE_FORMAT(dataHora,'%H:%i:%s') as momento_grafico 
                         FROM vwRede where fkMaquina = '${serialNumber}'
                     ORDER BY ID DESC LIMIT 1`;
+
+    } else {
+        console.log("\nO AMBIENTE (produção OU desenvolvimento) NÃO FOI DEFINIDO EM app.js\n");
+        return
+    }
+
+    console.log("Executando a instrução SQL: \n" + instrucaoSql);
+    return database.executar(instrucaoSql);
+}
+
+function buscarMedidasEmTempoRealTemp(serialNumber) {
+
+    instrucaoSql = ''
+
+    if (process.env.AMBIENTE_PROCESSO == "producao") {
+        instrucaoSql = `SELECT TOP 1
+                            Temperatura,
+                            CONVERT(varchar, Horario, 108) as momento_grafico
+                            from vwTemp
+                            WHERE NumeroSerial = '${serialNumber}'
+                            ORDER BY Horario DESC;`
+
+    } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
+        instrucaoSql = `SELECT
+                            Temperatura,
+                            DATE_FORMAT(Horario,'%H:%i:%s') as momento_grafico
+                            FROM vwTemp
+                            WHERE NumeroSerial = '${serialNumber}'
+                            ORDER BY Horario DESC
+                            LIMIT 1;
+                        `;
     } else {
         console.log("\nO AMBIENTE (produção OU desenvolvimento) NÃO FOI DEFINIDO EM app.js\n");
         return
@@ -293,6 +353,35 @@ function obterDadosPlacaRede(serialNumber) {
                         ipv4,
                         netmask4 
                         FROM tbRede where fkMaquina = '${serialNumber}'`;
+
+    } else {
+        console.log("\nO AMBIENTE (produção OU desenvolvimento) NÃO FOI DEFINIDO EM app.js\n");
+        return
+    }
+
+    console.log("Executando a instrução SQL: \n" + instrucaoSql);
+    return database.executar(instrucaoSql);
+}
+
+function buscarClockEmTempoReal(serialNumber) {
+
+    instrucaoSql = ''
+
+    if (process.env.AMBIENTE_PROCESSO == "producao") {
+        instrucaoSql = `SELECT TOP 1
+                            Clock
+                            FROM vwTemp
+                            WHERE NumeroSerial = '${serialNumber}'
+                            ORDER BY Horario DESC;`
+
+    } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
+        instrucaoSql = `SELECT
+                            Clock
+                            FROM vwTemp
+                            WHERE NumeroSerial = '${serialNumber}'
+                            ORDER BY Horario DESC
+                            LIMIT 1;
+                        `;
     } else {
         console.log("\nO AMBIENTE (produção OU desenvolvimento) NÃO FOI DEFINIDO EM app.js\n");
         return
@@ -317,4 +406,7 @@ module.exports = {
     obterDadosPlacaRede,
     buscarMaxDisco,
     buscarMaxRam,
+    buscarUltimasMedidasTemp,
+    buscarMedidasEmTempoRealTemp,
+    buscarClockEmTempoReal
 }

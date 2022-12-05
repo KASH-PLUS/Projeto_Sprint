@@ -78,6 +78,13 @@ CREATE TABLE tbRegistroRede(
  ,dataHora DATETIME
  , FOREIGN KEY(fkPlaca) REFERENCES tbRede(macAddress)
 )
+CREATE TABLE tbTemperatura (
+id INT PRIMARY KEY AUTO_INCREMENT,
+fkMaquina VARCHAR(30), FOREIGN KEY(fkMaquina) REFERENCES tbMaquina(serialNumber),
+tempAtual INT,
+clock INT,
+dataHora DATETIME
+);
 
 -- Criando Views --
 
@@ -144,3 +151,16 @@ CREATE VIEW vwRede AS
 ;
 
 
+        tbUsuario ON cnpj = fkEmpresa
+;
+
+CREATE VIEW vwTemp AS 
+	SELECT
+		serialNumber AS 'NumeroSerial',
+		tempAtual AS 'Temperatura',
+        clock,
+        dataHora AS 'Horario'
+	FROM 
+		tbTemperatura JOIN tbMaquina 
+        ON fkMaquina = serialNumber
+;

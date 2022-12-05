@@ -44,6 +44,10 @@ router.post("/verificarComponentes", function (req, res) {
     usuarioController.verificarComponentes(req, res);
 })
 
+router.post("/verificarTemperatura", function (req, res) {
+    usuarioController.verificarTemperatura(req, res);
+})
+
 router.post("/enviarEmailContato", function (req, res) {
     usuarioController.enviarEmailContato(req, res);
 })

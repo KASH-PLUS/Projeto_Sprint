@@ -51,5 +51,16 @@ router.get("/ultimosPacotes/:serialNumber", function (req, res) {
     medidaController.buscarUltimasMedidasPacotes(req, res);
 });
 
+router.get("/ultimasTemp/:serialNumber", function (req, res) { 
+    medidaController.buscarUltimasMedidasTemp(req, res);
+});
+
+router.get("/tempo-realTemp/:serialNumber", function (req, res) {
+    medidaController.buscarMedidasEmTempoRealTemp(req, res);
+});
+
+router.get("/tempo-realClock/:serialNumber", function (req, res) {
+    medidaController.buscarClockEmTempoReal(req, res);
+});
 
 module.exports = router;

@@ -17,6 +17,8 @@ import com.github.britooo.looca.api.group.discos.DiscoGrupo;
 import com.github.britooo.looca.api.group.discos.Volume;
 import com.github.britooo.looca.api.group.memoria.Memoria;
 import com.github.britooo.looca.api.group.processador.Processador;
+import com.github.britooo.looca.api.group.sistema.Sistema;
+import com.github.britooo.looca.api.group.temperatura.Temperatura;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -29,6 +31,7 @@ import java.util.logging.Logger;
 import oshi.SystemInfo;
 import oshi.hardware.HardwareAbstractionLayer;
 import oshi.hardware.NetworkIF;
+import oshi.hardware.CentralProcessor;
 
 /**
  *
@@ -111,7 +114,7 @@ public class ThreadInsert extends Thread {
 
     private void insertRegistro(Integer fkComponente, String tipo) throws IOException {
 
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        DateFormat dateFormat = new SimpleDateFormat("yyy/MM/dd HH:mm:ss");
         Date date = new Date();
         String dataHora = dateFormat.format(date);
 
@@ -136,12 +139,15 @@ public class ThreadInsert extends Thread {
 
         Double usoMemoriaPercent = usoMemoria / usoMemoriaTotal * 100;
 
+        usoMemoria = usoMemoria / 1024 / 1024 / 1024;
+        
+        if (usoCpu > 1) {
+            Pipefy.criarCard();
+        }
+
         if (tipo.equals("disco")) {
             cursor.update(String.format("INSERT INTO tbRegistro(fkComponente, registro, dataHora) VALUES ( '%s', '%d', '%s' )", fkComponente, usoDisco, dataHora));
             System.out.println("Insert realizado");
-            if (usoDisco > 70) {
-                Pipefy.criarCardDisco(usoDisco, this.serialNumber, date);
-            }
         } else if (tipo.equals("ram")) {
             cursor.update(String.format("INSERT INTO tbRegistro(fkComponente, registro, dataHora) VALUES ( '%s', '%.2f', '%s' )", fkComponente, usoMemoria, dataHora));
             System.out.println("Insert realizado");
@@ -154,6 +160,11 @@ public class ThreadInsert extends Thread {
             System.out.println("Insert realizado");
             if (usoCpu > 70) {
                 Pipefy.criarCardCpu(usoCpu, this.serialNumber, date);
+            
+            Sistema sistema = looca.getSistema();
+            
+            if (!(sistema.getSistemaOperacional().equalsIgnoreCase("Windows"))) {
+                insertTemp();
             }
 
             insertRede(obterPacotes(), obterBytes());
@@ -187,6 +198,28 @@ public class ThreadInsert extends Thread {
         System.out.println("Insert de rede realizado");
     }
 
+    public void insertTemp() {
+        DateFormat dateFormat = new SimpleDateFormat("yyy/MM/dd HH:mm:ss");
+        Date date = new Date();
+        String dataHora = dateFormat.format(date);
+        
+        Temperatura temperatura = looca.getTemperatura();
+        Double tempDouble = temperatura.getTemperatura();
+        Integer temp = tempDouble.intValue();
+        
+        SystemInfo si = new SystemInfo();
+        HardwareAbstractionLayer hal = si.getHardware();
+        CentralProcessor cpu = hal.getProcessor(); 
+        
+        Long clockLong = cpu.getCurrentFreq()[1];
+        Double clockDouble = clockLong.doubleValue();
+        clockDouble = clockDouble / Math.pow(10, 6);
+        Integer clock = clockDouble.intValue();
+        
+        cursor.update(String.format("INSERT INTO tbTemperatura(fkMaquina, tempAtual, clock, dataHora) VALUES('%s', '%d', '%d', '%s');", serialNumber, temp, clock, dataHora));
+        System.out.println("Insert da temperatura realizado");
+    }
+    
     public String getSerialNumber() {
         return serialNumber;
     }
