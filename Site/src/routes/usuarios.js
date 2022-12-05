@@ -56,8 +56,4 @@ router.post("/gerarSelect", function (req, res) {
     usuarioController.gerarSelect(req, res);
 })
 
-router.post("/topProcessos", function (req, res) {
-    usuarioController.topProcessos(req, res);
-});
-
 module.exports = router;

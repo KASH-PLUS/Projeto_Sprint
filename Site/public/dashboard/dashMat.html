@@ -113,63 +113,30 @@
 				<div class="container-fluid">
 					<div id="graficos" style="display: none;">
 						<div class="row">
-							<div class="col-8">
-								<div class="card shadow mb-4">
-									<div class="card-header d-flex justify-content-between align-items-center">
-										<h6 class="text-primary fw-bold m-0">Uso da CPU - Processo (%)</h6>
-									</div>
-									<div class="card-body">
-										<div class="chart-container" id="grafico_cpu" style="position: relative; width: 50vw;">
-											<canvas id="myChartCpu">
-											</canvas>
+							<div class="col">
+								<div class="row">
+									<div class="card shadow mb-4">
+										<div class="card-header d-flex justify-content-between align-items-center">
+											<h6 class="text-primary fw-bold m-0">Uso da CPU - Processo (%)</h6>
+										</div>
+										<div class="card-body">
+											<div class="chart-container" id="grafico_cpu" style="position: relative; width: 85vw;">
+												<canvas id="myChartCpu">
+												</canvas>
+											</div>
 										</div>
 									</div>
 								</div>
-							</div>
-							<div class="col-4">
-								<div class="card shadow mb-4">
-									<div class="card-header d-flex justify-content-between align-items-center">
-										<h6 class="text-primary fw-bold m-0">Processos com mais uso cpu e ram</h6>
-									</div>
-									<div class="col">
-										<label class="form-label"><strong id="strong_titulo">Escolha uma frequência</strong><br /></label>
-										<select class="form-select" id="slct_freq" onchange="topProcessos()">
-											<option value="0">--Escolha uma frequência--</option>
-											<option value="1">Minuto</option>
-											<option value="2">Hora</option>
-											<option value="3">Dia</option>
-										</select>
-									</div>
-									<div class="table-responsive table mt-2" id="dataTable" role="grid"
-									aria-describedby="dataTable_info">
-										<table class="table my-0" id="dataTable">
-											<thead>
-												<tr>
-													<th>Processo</th>
-													<th>Uso da CPU</th>
-													<th>Uso da RAM</th>
-												</tr>
-											</thead>
-											<tbody id="table_body">
-											</tbody>
-											<tfoot>
-												<tr></tr>
-											</tfoot>
-										</table>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-8">
-								<div class="card shadow mb-4">
-									<div class="card-header d-flex justify-content-between align-items-center">
-										<h6 class="text-primary fw-bold m-0">Uso da RAM - Processo (%)</h6>
-									</div>
-									<div class="card-body">
-										<div class="chart-container" id="grafico_ram" style="position: relative; width: 50vw;">
-											<canvas id="myChartRam">
-											</canvas>
+								<div class="row">
+									<div class="card shadow mb-4">
+										<div class="card-header d-flex justify-content-between align-items-center">
+											<h6 class="text-primary fw-bold m-0">Uso da RAM - Processo (%)</h6>
+										</div>
+										<div class="card-body">
+											<div class="chart-container" id="grafico_ram" style="position: relative; width: 85vw;">
+												<canvas id="myChartRam">
+												</canvas>
+											</div>
 										</div>
 									</div>
 								</div>
@@ -546,79 +513,5 @@
 			});
 
 	}
-
-	function topProcessos() {
-		serialNumber = slct_caixas.value;
-		
-		if (slct_freq.value == 0) {
-			table_body.innerHTML = "";
-			var frequencia = 0;
-		}
-		
-		if (slct_freq.value == 1) {
-			table_body.innerHTML = "";
-			var frequencia = 6;
-		}
-		
-		if (slct_freq.value == 2) {
-			table_body.innerHTML = "";
-			var frequencia = 360;
-		}
-		
-		if (slct_freq.value == 3) {
-			table_body.innerHTML = "";
-			var frequencia = 8640;
-		}
-
-		if (frequencia > 0) {
-			fetch("/usuarios/topProcessos", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json"
-				},
-				body: JSON.stringify({
-					serialNumberServer: serialNumber,
-					frequenciaServer: frequencia
-				})
-			}).then(function (resposta) {
-
-				if (resposta.ok) {
-
-					resposta.json().then(json => {
-						
-						var tabela = document.getElementById("table_body");
-						for (var i = 0; i < json.length; i++) {
-							var linha = document.createElement('tr');
-							tabela.appendChild(linha);
-
-							var colunaProcesso = document.createElement('td');
-							linha.appendChild(colunaProcesso);
-							colunaProcesso.innerHTML += json[i].processo;
-							
-							var colunaUsoCpu = document.createElement('td');
-							linha.appendChild(colunaUsoCpu);
-							colunaUsoCpu.innerHTML += json[i].usoCpu;
-							
-							var colunaUsoRam = document.createElement('td');
-							linha.appendChild(colunaUsoRam);
-							colunaUsoRam.innerHTML += json[i].usoRam;
-							
-						}
-
-                	});
-
-				} else {
-					console.log("Houve um erro ao tentar selecionar os processos!");
-				}
-
-			}).catch(function (erro) {
-				console.log(erro);
-			})
-		} else {
-			alert("OPD	")
-		}
-
-        return false;
-    }
 
 </script>

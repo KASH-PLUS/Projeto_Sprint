@@ -140,29 +140,8 @@ function criarMapaCaixas(cnpj) {
 function listarSelect(cnpj) {
     console.log("ACESSEI O USUARIO MODEL \n \n\t\t >> Se aqui der erro de 'Error: connect ECONNREFUSED',\n \t\t >> verifique suas credenciais de acesso ao banco\n \t\t >> e se o servidor de seu BD está rodando corretamente. \n\n function listar()");
 
-    var instrucao = '';
+    var instrucao = `SELECT serialNumber, nome FROM tbMaquina where fkEmpresa = '${cnpj}';`;
 
-    if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
-        var instrucao = `
-        SELECT serialNumber, nome FROM tbMaquina where fkEmpresa = '${cnpj}'
-        `;
-    }
-    else if (process.env.AMBIENTE_PROCESSO == "producao") {
-        var instrucao = `
-        SELECT Maquina, NumeroSerial, Cep FROM vwMaquina where Cnpj = '${cnpj}' 
-        GROUP BY NumeroSerial, Maquina, Cep;
-        `;
-    }
-
-    console.log("Executando a instrução SQL: \n" + instrucao);
-    return database.executar(instrucao)
-}
-
-
-function topProcessos(serialNumber, frequencia) {
-    console.log("ACESSEI O USUARIO MODEL \n \n\t\t >> Se aqui der erro de 'Error: connect ECONNREFUSED',\n \t\t >> verifique suas credenciais de acesso ao banco\n \t\t >> e se o servidor de seu BD está rodando corretamente. \n\n function listar()", serialNumber, frequencia)
-    var instrucao = `SELECT usoCpu, usoRam, processo FROM tbProcesso WHERE fkMaquina = '${serialNumber}' ORDER BY idProcesso DESC LIMIT 
-                     ${frequencia}`;
     console.log("Executando a instrução SQL: \n" + instrucao);
     return database.executar(instrucao)
 }
@@ -179,6 +158,5 @@ module.exports = {
     listarMaquinasRegiao,
     listarComponentes,
     criarMapaCaixas,
-    listarSelect,
-    topProcessos
+    listarSelect
 };

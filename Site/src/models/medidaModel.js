@@ -107,7 +107,6 @@ function buscarMaxRam(serialNumber) {
 }
 
 
-
 function buscarMedidasEmTempoRealCpu(serialNumber) {
     
     instrucaoSql = ''
@@ -165,12 +164,10 @@ function buscarUltimasMedidasProcCpu(serialNumber, limite_linhas) {
     var instrucaoSql = ''
     
     if (process.env.AMBIENTE_PROCESSO == "producao") {
-        instrucaoSql = `SELECT top ${limite_linhas}
-                        Registro, 
-                        CONVERT(varchar, Horario, 108) as momento_grafico
-                    FROM vwConsumo
-                    WHERE NumeroSerial = '${serialNumber}' AND Componente = 'cpu'
-                    ORDER BY ID DESC`;
+        instrucaoSql = `SELECT TOP ${limite_linhas} CONVERT(varchar, [dbo].[tbRegistro].dataHora, 108) AS dataHora, registro, processo, usoCpu 
+                        FROM [dbo].[tbRegistro], [dbo].[tbComponente], [dbo].[tbProcesso] WHERE fkComponente = idComponente 
+                        AND tipo = 'cpu' AND [dbo].[tbComponente].fkMaquina = '${serialNumber}' AND [dbo].[tbRegistro].dataHora = 
+                        [dbo].[tbProcesso].dataHora ORDER BY idRegistro DESC;`;
     } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
         instrucaoSql = `SELECT DATE_FORMAT(tbRegistro.dataHora,'%H:%i:%s') AS dataHora, registro, processo, usoCpu 
                         FROM tbRegistro, tbComponente, tbProcesso 
@@ -190,11 +187,10 @@ function buscarMedidasEmTempoRealProcCpu(serialNumber) {
     instrucaoSql = ''
     
     if (process.env.AMBIENTE_PROCESSO == "producao") {       
-        instrucaoSql = `SELECT top 1
-                        Registro, 
-                        CONVERT(varchar, Horario, 108) as momento_grafico
-                        FROM vwConsumo where NumeroSerial = '${serialNumber}' and Componente = 'cpu'
-                    order by ID desc`;
+        instrucaoSql = `SELECT TOP 1 CONVERT(varchar, [dbo].[tbRegistro].dataHora, 108) AS dataHora, metricaMaxima, registro, processo, usoCpu 
+                        FROM [dbo].[tbRegistro], [dbo].[tbComponente], [dbo].[tbProcesso] WHERE fkComponente = idComponente 
+                        AND tipo = 'cpu' AND [dbo].[tbComponente].fkMaquina = '${serialNumber}' AND [dbo].[tbRegistro].dataHora = 
+                        [dbo].[tbProcesso].dataHora ORDER BY idRegistro DESC`;
         
     } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
         instrucaoSql = `SELECT DATE_FORMAT(tbRegistro.dataHora,'%H:%i:%s') AS dataHora, registro, processo, usoCpu 
@@ -215,12 +211,10 @@ function buscarUltimasMedidasProcRam(serialNumber, limite_linhas) {
     var instrucaoSql = ''
     
     if (process.env.AMBIENTE_PROCESSO == "producao") {
-        instrucaoSql = `SELECT top ${limite_linhas}
-                        Registro, 
-                        CONVERT(varchar, Horario, 108) as momento_grafico
-                    FROM vwConsumo
-                    WHERE NumeroSerial = '${serialNumber}' AND Componente = 'cpu'
-                    ORDER BY ID DESC`;
+        instrucaoSql = `SELECT TOP ${limite_linhas} CONVERT(varchar, [dbo].[tbRegistro].dataHora, 108) AS dataHora, metricaMaxima, registro,  
+                        processo, usoRam FROM [dbo].[tbRegistro], [dbo].[tbComponente], [dbo].[tbProcesso] WHERE fkComponente = idComponente AND 
+                        tipo = 'ram' AND [dbo].[tbComponente].fkMaquina = '${serialNumber}' AND [dbo].[tbRegistro].dataHora = 
+                        [dbo].[tbProcesso].dataHora ORDER BY idRegistro DESC`;
     } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
         instrucaoSql = `SELECT DATE_FORMAT(tbRegistro.dataHora,'%H:%i:%s') AS dataHora, metricaMaxima, registro, processo, usoRam 
                         FROM tbRegistro, tbComponente, tbProcesso WHERE fkComponente = idComponente AND tipo = 'ram' 
@@ -239,12 +233,11 @@ function buscarMedidasEmTempoRealProcRam(serialNumber) {
     
     instrucaoSql = ''
     
-    if (process.env.AMBIENTE_PROCESSO == "producao") {       
-        instrucaoSql = `SELECT top 1
-                        Registro, 
-                        CONVERT(varchar, Horario, 108) as momento_grafico
-                        FROM vwConsumo where NumeroSerial = '${serialNumber}' and Componente = 'cpu'
-                    order by ID desc`;
+    if (process.env.AMBIENTE_PROCESSO == "producao") {   
+        instrucaoSql = `SELECT TOP 1 CONVERT(varchar, [dbo].[tbRegistro].dataHora, 108) AS dataHora, metricaMaxima, registro, processo, usoRam 
+                        FROM [dbo].[tbRegistro], [dbo].[tbComponente], [dbo].[tbProcesso] WHERE fkComponente = idComponente 
+                        AND tipo = 'ram' AND [dbo].[tbComponente].fkMaquina = '${serialNumber}' AND [dbo].[tbRegistro].dataHora = 
+                        [dbo].[tbProcesso].dataHora ORDER BY idRegistro DESC`;
         
     } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
         instrucaoSql = `SELECT DATE_FORMAT(tbRegistro.dataHora,'%H:%i:%s') AS dataHora, metricaMaxima, registro, processo, usoRam 
