@@ -101,12 +101,12 @@ def cadastroRede(serialNumber):
     ipv4 = placa[0].address;
     netmask4 = placa[0].netmask;
     ipv6 = placa[1].address[:25]
-    netmask6 = placa[1].netmask
 
     if type(dados) == type(None):
-        query = f"INSERT INTO tbRede(macAddress, ipv4, netmask4, netmask6, fkMaquina) VALUES ('{macAddress}', '{ipv4}', '{netmask4}', '{netmask6}', '{serialNumber}');"
+        query = f"INSERT INTO tbRede(macAddress, ipv4, netmask4, fkMaquina) VALUES ('{macAddress}', '{ipv4}', '{netmask4}', '{serialNumber}');"
     else:
-        query = f"UPDATE tbRede SET macAddress = '{macAddress}', ipv4 = '{ipv4}', netmask4 = '{netmask4}', netmask6 = '{netmask6}' WHERE fkMaquina = '{serialNumber}';"
+        query = f"INSERT INTO tbRede(macAddress, ipv4, netmask4, fkMaquina) VALUES ('{macAddress}', '{ipv4}', '{netmask4}', '{serialNumber}');"
+        
 
     insert(query)
 
@@ -116,7 +116,7 @@ def cadastroRede(serialNumber):
 def getMac(serialNumber):
     query = f"SELECT macAddress FROM tbRede WHERE fkMaquina = '{serialNumber}'"
 
-    dados = select(query);
+    dados = select(query)
     
     return dados
 
@@ -223,7 +223,7 @@ def info():
     return 0
 
 
-def insertPeriodico(idCpu, idDisco, idRam, macAddress):
+def insertPeriodico(idCpu, idDisco, idRam, macAddress, serialNumber, urlOpen):
     intervaloInsert = 2 # em segundos
 
     ultimosRecebidos = net_io_counters().packets_recv
@@ -271,52 +271,52 @@ def insertPeriodico(idCpu, idDisco, idRam, macAddress):
             queryRam = f"INSERT INTO tbRegistro(fkComponente, registro, dataHora) VALUES ('{i}', '{usoAtualMemoria}', '{dataHora}');"
             insert(queryRam)
 
-        url = "https://api.pipefy.com/graphql"
+        # url = "https://api.pipefy.com/graphql"
 
-        usoCpuPorc = str(usoCpuPorc)
-        usoDisco = str(usoDisco)
-        usoAtualMemoria = str(usoAtualMemoria)
-        dataHora = str(dataHora)
+        # usoCpuPorc = str(usoCpuPorc)
+        # usoDisco = str(usoDisco)
+        # usoAtualMemoria = str(usoAtualMemoria)
+        # dataHora = str(dataHora)
 
-        if usoCpuPorc > 0:
-            payload = {("{\"query\": \"mutation{ createCard( input: { pipe_id: \\\"302821637\\\", phase_id: \\\"317555598\\\" title:\\\"Alerta de uso de Disco - Máquina "+ serialNumber +" \\\" fields_attributes: [ {field_id: \\\"aviso\\\", field_value: \\\"O uso de seu disco está fora do ideal\\\"} {field_id: \\\"serial_number\\\", field_value: \\\" "+ serialNumber +" \\\"} {field_id: \\\"uso\\\", field_value: \\\" "+ usoCpuPorc +" \\\"} {field_id: \\\"data_hora\\\", field_value: \\\" "+ dataHora +" \\\"} ] } ) {clientMutationId card {id title }}}\"}")}
-            headers = {
-                "accept": "application/json",
-                "Authorization": "sha512-lLFRPmsF5Wq2e3Y++70j7xewpYmBAvJBP2hm6Wcf7hqv6tl5T2CS8XNJ+vm/ZV0oeVjJ+SgshtS+6CQtRpXRBA==?Ufww",
-                "content-type": "application/json"
-            }
-            response = requests.post(url, json=payload, headers=headers)
+        # if usoCpuPorc > 0:
+        #     payload = {("{\"query\": \"mutation{ createCard( input: { pipe_id: \\\"302821637\\\", phase_id: \\\"317555598\\\" title:\\\"Alerta de uso de Disco - Máquina "+ serialNumber +" \\\" fields_attributes: [ {field_id: \\\"aviso\\\", field_value: \\\"O uso de seu disco está fora do ideal\\\"} {field_id: \\\"serial_number\\\", field_value: \\\" "+ serialNumber +" \\\"} {field_id: \\\"uso\\\", field_value: \\\" "+ usoCpuPorc +" \\\"} {field_id: \\\"data_hora\\\", field_value: \\\" "+ dataHora +" \\\"} ] } ) {clientMutationId card {id title }}}\"}")}
+        #     headers = {
+        #         "accept": "application/json",
+        #         "Authorization": "sha512-lLFRPmsF5Wq2e3Y++70j7xewpYmBAvJBP2hm6Wcf7hqv6tl5T2CS8XNJ+vm/ZV0oeVjJ+SgshtS+6CQtRpXRBA==?Ufww",
+        #         "content-type": "application/json"
+        #     }
+        #     response = requests.post(url, json=payload, headers=headers)
         
-        if usoDisco > 0:
-            payload = {("{\"query\": \"mutation{ createCard( input: { pipe_id: \\\"302821637\\\", phase_id: \\\"317566487\\\" title:\\\"Alerta de uso de Disco - Máquina "+ serialNumber +" \\\" fields_attributes: [ {field_id: \\\"aviso\\\", field_value: \\\"O uso de seu disco está fora do ideal\\\"} {field_id: \\\"serial_number\\\", field_value: \\\" "+ serialNumber +" \\\"} {field_id: \\\"uso\\\", field_value: \\\" "+  usoDisco +" GB\\\"} {field_id: \\\"data_hora\\\", field_value: \\\" "+  dataHora +"\\\"} ] } ) {clientMutationId card {id title }}}\"}")}
-            headers = {
-                "accept": "application/json",
-                "Authorization": "sha512-lLFRPmsF5Wq2e3Y++70j7xewpYmBAvJBP2hm6Wcf7hqv6tl5T2CS8XNJ+vm/ZV0oeVjJ+SgshtS+6CQtRpXRBA==?Ufww",
-                "content-type": "application/json"
-            }
-            response = requests.post(url, json=payload, headers=headers)
+        # if usoDisco > 0:
+        #     payload = {("{\"query\": \"mutation{ createCard( input: { pipe_id: \\\"302821637\\\", phase_id: \\\"317566487\\\" title:\\\"Alerta de uso de Disco - Máquina "+ serialNumber +" \\\" fields_attributes: [ {field_id: \\\"aviso\\\", field_value: \\\"O uso de seu disco está fora do ideal\\\"} {field_id: \\\"serial_number\\\", field_value: \\\" "+ serialNumber +" \\\"} {field_id: \\\"uso\\\", field_value: \\\" "+  usoDisco +" GB\\\"} {field_id: \\\"data_hora\\\", field_value: \\\" "+  dataHora +"\\\"} ] } ) {clientMutationId card {id title }}}\"}")}
+        #     headers = {
+        #         "accept": "application/json",
+        #         "Authorization": "sha512-lLFRPmsF5Wq2e3Y++70j7xewpYmBAvJBP2hm6Wcf7hqv6tl5T2CS8XNJ+vm/ZV0oeVjJ+SgshtS+6CQtRpXRBA==?Ufww",
+        #         "content-type": "application/json"
+        #     }
+        #     response = requests.post(url, json=payload, headers=headers)
         
-        if usoAtualMemoria > 0:
-            payload = {("{\"query\": \"mutation{ createCard( input: { pipe_id: \\\"302821637\\\", phase_id: \\\"317574217\\\" title:\\\"Alerta de uso de Ram - Máquina "+ serialNumber +" \\\" fields_attributes: [ {field_id: \\\"aviso\\\", field_value: \\\"O uso de seu disco está fora do ideal\\\"} {field_id: \\\"serial_number\\\", field_value: \\\" "+ serialNumber +" \\\"} {field_id: \\\"uso\\\", field_value: \\\" "+  usoAtualMemoria +" GB\\\"} {field_id: \\\"data_hora\\\", field_value: \\\" "+  dataHora +" \\\"} ] } ) {clientMutationId card {id title }}}\"}")}
-            headers = {
-                "accept": "application/json",
-                "Authorization": "sha512-lLFRPmsF5Wq2e3Y++70j7xewpYmBAvJBP2hm6Wcf7hqv6tl5T2CS8XNJ+vm/ZV0oeVjJ+SgshtS+6CQtRpXRBA==?Ufww",
-                "content-type": "application/json"
-            }
-            # Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c2VyIjp7ImlkIjozMDIxNzYyNTMsImVtYWlsIjoiMjIyLTFjY28tZ3J1cG8xMEBiYW5kdGVjLmNvbS5iciIsImFwcGxpY2F0aW9uIjozMDAyMTQyNTF9fQ.BDmwgdA6MjMvUaD3x6l34bBKpv9-8epdwzgHOwIOV_zljVHNf1lefNgHg0--ZA_vLjSVT2cFwpwOmiIcPwqfQw
-            response = requests.post(url, json=payload, headers=headers)
-        # SITE PARA PEGAR ID DE CADA FIELD DO CARD PIPEFY
-        # https://app.pipefy.com/graphiql
-        url = "https://api.pipefy.com/graphql"
+        # if usoAtualMemoria > 0:
+        #     payload = {("{\"query\": \"mutation{ createCard( input: { pipe_id: \\\"302821637\\\", phase_id: \\\"317574217\\\" title:\\\"Alerta de uso de Ram - Máquina "+ serialNumber +" \\\" fields_attributes: [ {field_id: \\\"aviso\\\", field_value: \\\"O uso de seu disco está fora do ideal\\\"} {field_id: \\\"serial_number\\\", field_value: \\\" "+ serialNumber +" \\\"} {field_id: \\\"uso\\\", field_value: \\\" "+  usoAtualMemoria +" GB\\\"} {field_id: \\\"data_hora\\\", field_value: \\\" "+  dataHora +" \\\"} ] } ) {clientMutationId card {id title }}}\"}")}
+        #     headers = {
+        #         "accept": "application/json",
+        #         "Authorization": "sha512-lLFRPmsF5Wq2e3Y++70j7xewpYmBAvJBP2hm6Wcf7hqv6tl5T2CS8XNJ+vm/ZV0oeVjJ+SgshtS+6CQtRpXRBA==?Ufww",
+        #         "content-type": "application/json"
+        #     }
+        #     # Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c2VyIjp7ImlkIjozMDIxNzYyNTMsImVtYWlsIjoiMjIyLTFjY28tZ3J1cG8xMEBiYW5kdGVjLmNvbS5iciIsImFwcGxpY2F0aW9uIjozMDAyMTQyNTF9fQ.BDmwgdA6MjMvUaD3x6l34bBKpv9-8epdwzgHOwIOV_zljVHNf1lefNgHg0--ZA_vLjSVT2cFwpwOmiIcPwqfQw
+        #     response = requests.post(url, json=payload, headers=headers)
+        # # SITE PARA PEGAR ID DE CADA FIELD DO CARD PIPEFY
+        # # https://app.pipefy.com/graphiql
+        # url = "https://api.pipefy.com/graphql"
 
-        data = {"query": "mutation{ createCard( input: { pipe_id: \"302821637\" fields_attributes: [ {field_id: \"aviso\", field_value: \"Sua CPU está fora do ideal\"} {field_id: \"serial_number\", field_value: \"AQUI VIRÁ O SERIAL NUMBER\"} {field_id: \"uso\", field_value: \"AQUI VIRÁ O USO DA CPU\"} {field_id: \"data_hora\", field_value: \"08/11/2022 00:00\"} ] } ) {clientMutationId card {id title }}}"}
+        # data = {"query": "mutation{ createCard( input: { pipe_id: \"302821637\" fields_attributes: [ {field_id: \"aviso\", field_value: \"Sua CPU está fora do ideal\"} {field_id: \"serial_number\", field_value: \"AQUI VIRÁ O SERIAL NUMBER\"} {field_id: \"uso\", field_value: \"AQUI VIRÁ O USO DA CPU\"} {field_id: \"data_hora\", field_value: \"08/11/2022 00:00\"} ] } ) {clientMutationId card {id title }}}"}
 
 
-        headers = {
-            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c2VyIjp7ImlkIjozMDIxNzYyNTMsImVtYWlsIjoiMjIyLTFjY28tZ3J1cG8xMEBiYW5kdGVjLmNvbS5iciIsImFwcGxpY2F0aW9uIjozMDAyMTQwMDV9fQ.zV0vqSFmSDOMiHXQ2QsOhfjt_khTh5EJ_0myF0dbD8dzebwTL-nJ2wo7HR-sIrG6mkR0RdZV7uEIdY-c4aUfww",
-            "Content-Type": "application/json"}
+        # headers = {
+        #     "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c2VyIjp7ImlkIjozMDIxNzYyNTMsImVtYWlsIjoiMjIyLTFjY28tZ3J1cG8xMEBiYW5kdGVjLmNvbS5iciIsImFwcGxpY2F0aW9uIjozMDAyMTQwMDV9fQ.zV0vqSFmSDOMiHXQ2QsOhfjt_khTh5EJ_0myF0dbD8dzebwTL-nJ2wo7HR-sIrG6mkR0RdZV7uEIdY-c4aUfww",
+        #     "Content-Type": "application/json"}
 
-        response = requests.request("POST", url, json=data, headers=headers)
+        # response = requests.request("POST", url, json=data, headers=headers)
 
         if os.name == "nt":
             capturaTemp(serialNumber, urlOpen)
@@ -332,9 +332,9 @@ def insertPeriodico(idCpu, idDisco, idRam, macAddress):
             query = f"INSERT INTO tbTemperatura(fkMaquina, tempAtual, clock, dataHora) VALUES ('{serialNumber}', '{tempAtual}', '{clock}', '{dataHora}');"
             insert(query)
 
-        print(response)
+        # print(response)
 
-        print(response.text, "oi")
+        # print(response.text, "oi")
 
         
         # Pegando dados de rede
@@ -350,8 +350,6 @@ def insertPeriodico(idCpu, idDisco, idRam, macAddress):
 
         mbEnviadosTotal = bytesEnviados / 1024 / 1024
         mbRecebidosTotal = bytesRecebidos / 1024 / 1024
-
-
 
         # Pacotes
 

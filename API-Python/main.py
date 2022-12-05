@@ -11,8 +11,9 @@ from gerarGraficos import gerarGraficoCpu, gerarGraficoDisco, gerarGraficoMemori
 
 
 def menu(serialNumber, nome, idCpu, idDisco, idRam, urlOpen, macAddress):
-    threading.Thread(target=insertPeriodico, kwargs={'idCpu':idCpu, 'idDisco':idDisco, 'idRam':idRam, 'serialNumber':serialNumber, 'nome':nome, 'urlOpen':urlOpen, 'macAddress':macAddress, } ).start()
+    threading.Thread(target=insertPeriodico, kwargs={'idCpu':idCpu, 'idDisco':idDisco, 'idRam':idRam, 'serialNumber':serialNumber, 'urlOpen':urlOpen, 'macAddress':macAddress, } ).start()
 
+    time.sleep(5)
     os.system(codeCleaner)
 
     opcaoUser = input(f"\033[1mHardware Monitor\033[0m\n\n Bem vindo(a) {nome}!!\n\n[1] - Monitorar processos atuais da máquina \n[2] - Verificar Informações sobre o dispositivo\n[3] - Análise de dados\n[4] - Documentar meus dados\n[5] - Criar simulação de máquinas\n[6] - Criar arquivo para word cloud\n[7] - Sair\n\n\033[1mUsuário:\033[0m ")
