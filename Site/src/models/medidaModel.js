@@ -33,12 +33,9 @@ function buscarUltimasMedidasOciosidade(serialNumber, limite_linhas) {
     var instrucaoSql = ''
     
     if (process.env.AMBIENTE_PROCESSO == "producao") {
-        instrucaoSql = `SELECT top ${limite_linhas}
-                        Registro, 
-                        CONVERT(varchar, Horario, 108) as momento_grafico
-                    FROM vwConsumo
-                    WHERE NumeroSerial = '${serialNumber}' AND Componente = 'cpu'
-                    ORDER BY ID DESC`;
+        instrucaoSql = `select top ${limite_linhas} usoUsuario, usoOcioso,
+        FORMAT(datahora,'%H:%m:%s') as datahora from tbOciosidade where fkMaquina = '${serialNumber}' 
+         order by idRegistro desc;`;
     } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
         instrucaoSql = `select usoUsuario, usoOcioso,
         DATE_FORMAT(datahora,'%H:%i:%s') as datahora from tbOciosidade where fkMaquina = '${serialNumber}' 

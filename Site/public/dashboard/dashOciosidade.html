@@ -198,9 +198,9 @@
                                 <table class="table my-0" id="dataTable">
                                     <thead>
                                         <tr>
-                                            <th>Nome</th>
                                             <th>Número Serial</th>
-                                            <th>Média de uso diário</th>
+                                            <th>Nome</th>
+                                            <th>Média uso diario</th>
                                             <th>CEP</th>
                                         </tr>
                                     </thead>
@@ -252,9 +252,6 @@
             if (resposta.ok) {
 
                 resposta.json().then(json => {
-
-                    serialNumber = json[0].serialNumber;
-                    nome = json[0].nome; verificarCargo;
 
                     const select = document.querySelector('#slct_maquinas');
 
@@ -472,31 +469,29 @@
 
                     for(i = 0; i < json.length; i++){
 
+                        serialNumber = json[i].fkMaquina;
                         nome = json[i].nome;
-                        serialNumber = json[i].serialNumber;
-                        usoUsuario = json[i].usoUsuario;
-                        usoOcioso = json[i].usoOcioso;
-
-                        
+                        mediaUsoDiario = json[i].usoOcioso;
+                        cep = json[i].cep;
 
                         var linha = document.createElement('tr');
                         tabela.appendChild(linha);
-
-                        var colunaNome = document.createElement('td');
-                        linha.appendChild(colunaNome);
-                        colunaNome.innerHTML = nome;
 
                         var colunaSerialNumber = document.createElement('td');
                         linha.appendChild(colunaSerialNumber);
                         colunaSerialNumber.innerHTML = serialNumber;
 
+                        var colunaNome = document.createElement('td');
+                        linha.appendChild(colunaNome);
+                        colunaNome.innerHTML = nome;
+
                         var colunaUsoUsuario = document.createElement('td');
                         linha.appendChild(colunaUsoUsuario);
-                        colunaUsoUsuario.innerHTML = usoUsuario;
+                        colunaUsoUsuario.innerHTML = mediaUsoDiario;
 
-                        var colunaUsoOcioso = document.createElement('td');
-                        linha.appendChild(colunaUsoOcioso);
-                        colunaUsoOcioso.innerHTML = usoOcioso;
+                        var colunaCep = document.createElement('td');
+                        linha.appendChild(colunaCep);
+                        colunaCep.innerHTML = cep;
                     }
                 });
 

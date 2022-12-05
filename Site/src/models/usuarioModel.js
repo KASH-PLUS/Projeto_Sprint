@@ -33,8 +33,7 @@ function selecionarMaquinas(cnpj) {
     }
     else if (process.env.AMBIENTE_PROCESSO == "producao") {
         var instrucao = `
-        SELECT Maquina, NumeroSerial, Cep FROM vwMaquina where Cnpj = '${cnpj}' 
-        GROUP BY NumeroSerial, Maquina, Cep;
+        SELECT serialNumber, nome FROM tbMaquina where fkEmpresa = '${cnpj}';
         `;
     }
 
@@ -49,12 +48,14 @@ function obterDadosTodasMaquinas(cnpj) {
 
     if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
         var instrucao = `
-        select serialNumber, nome, max(usoOcioso) as usoOcioso, usoUsuario from tbMaquina join tbOciosidade on fkEmpresa = '${cnpj}' and fkMaquina = serialNumber group by nome;
+        select serialNumber, nome, max(usoOcioso) as usoOcioso, 
+        usoUsuario from tbMaquina join tbOciosidade on fkEmpresa = '${cnpj}' and fkMaquina = serialNumber group by nome;
         `;
     }
     else if (process.env.AMBIENTE_PROCESSO == "producao") {
         var instrucao = `
-        select * from (select serialNumber, nome, usoUsuario, usoOcioso from tbMaquina join tbOciosidade on fkMaquina = serialNumber and fkEmpresa = '${cnpj}' group by serialNumber) as maquina order by usoUsuario desc;
+        select fkMaquina, nome, max(usoOcioso) as usoOcioso, max(usoUsuario) as usoUsuario, cep from [dbo].[tbOciosidade], [dbo].[tbMaquina] 
+where fkEmpresa = '${cnpj}' and fkMaquina = serialNumber group by fkMaquina, cep, nome;
         `;
     }
 
