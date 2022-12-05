@@ -83,12 +83,12 @@
                             <div class="row">
                                 <select class="form-select" id="select_list_regiao" onchange="selectRegiao()">
                                     <option value="0">Todas</option>
-                                    <option value="1">São Paulo</option>
-                                    <option value="2">Região Norte</option>
-                                    <option value="3">Região Oeste</option>
-                                    <option value="4">Região Sudoeste</option>
-                                    <option value="5">Região Sudeste</option>
-                                    <option value="6">Região Leste</option>
+                                    <option value="São Paulo">São Paulo</option>
+                                    <option value="Norte">Região Norte</option>
+                                    <option value="Oeste">Região Oeste</option>
+                                    <option value="Sudoeste">Região Sudoeste</option>
+                                    <option value="Sudeste">Região Sudeste</option>
+                                    <option value="Leste">Região Leste</option>
                                 </select>
                                 <div class="col">
                                     <div class="card-body">
@@ -240,32 +240,11 @@
 
         table_body.innerHTML = "";
 
-        if (select_list_regiao.value == "0") {
-            var queryVar = `'São Paulo' OR 'Norte' OR 'Oeste' OR 'Sudoeste' OR 'Sudeste' OR 'Leste'`
-        }
-
-        if (select_list_regiao.value == "1") {
-            var queryVar = `'São Paulo'`
-        }
-
-        if (select_list_regiao.value == "2") {
-            var queryVar = `'Norte'`
-        }
-
-        if (select_list_regiao.value == "3") {
-            var queryVar = `'Oeste'`
-        }
-
-        if (select_list_regiao.value == "4") {
-            var queryVar = `'Sudoeste'`
-        }
-
-        if (select_list_regiao.value == "5") {
-            var queryVar = `'Sudeste'`
-        }
-
-        if (select_list_regiao.value == "6") {
-            var queryVar = `'Leste'`
+        if (select_list_regiao.value == 0) {
+            var selectVar = 1;
+        } else {
+            var selectVar = 2;
+            queryVar = select_list_regiao.value;
         }
 
         fetch("/usuarios/listarMaquinasRegiao", {
@@ -275,7 +254,8 @@
             },
             body: JSON.stringify({
                 cnpjServer: cnpjVar,
-                queryServer: queryVar
+                queryServer: queryVar,
+                selectServer: selectVar
             })
         }).then(function (resposta) {
             console.log("ESTOU NO THEN DO listar()!")
@@ -443,6 +423,6 @@
 
     }
 
-    setTimeout(gerarMapa, 1000)
+    setTimeout(gerarMapa, 5000)
 
 </script>

@@ -11,5 +11,7 @@ python -m pip install dashing
 python -m pip install openpyxl
 python -m pip install pyodbc
 # python -m pip install wordcloud
+python -m pip install requests
+
 
 

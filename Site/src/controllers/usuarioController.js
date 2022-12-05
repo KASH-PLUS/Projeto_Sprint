@@ -324,8 +324,9 @@ function listarMaquinasRegiao(req, res) {
 
     var query = req.body.queryServer;
     var cnpj = req.body.cnpjServer;
+    var select = req.body.selectServer
 
-    usuarioModel.listarMaquinasRegiao(query, cnpj)
+    usuarioModel.listarMaquinasRegiao(query, cnpj, select)
         .then(function (resultado) {
             if (resultado.length > 0) {
                 res.status(200).json(resultado);

@@ -109,11 +109,19 @@ function listarQuantidade(cnpj) {
     return database.executar(instrucao);
 }
 
-function listarMaquinasRegiao(query, cnpj) {
-    console.log("ACESSEI O USUARIO MODEL \n \n\t\t >> Se aqui der erro de 'Error: connect ECONNREFUSED',\n \t\t >> verifique suas credenciais de acesso ao banco\n \t\t >> e se o servidor de seu BD está rodando corretamente. \n\n function listar()", query, cnpj);
-    var instrucao = `
-        SELECT serialNumber, cep, cidade, regiao FROM tbMaquina WHERE regiao = (${query}) AND fkEmpresa = ${cnpj};
-    `;
+function listarMaquinasRegiao(query, cnpj, select) {
+    console.log("ACESSEI O USUARIO MODEL \n \n\t\t >> Se aqui der erro de 'Error: connect ECONNREFUSED',\n \t\t >> verifique suas credenciais de acesso ao banco\n \t\t >> e se o servidor de seu BD está rodando corretamente. \n\n function listar()", query, cnpj, select);
+    if (select == 1) {
+        var instrucao = `
+            SELECT serialNumber, cep, cidade, regiao FROM tbMaquina WHERE fkEmpresa = ${cnpj};
+        `;
+    }
+    if (select == 2) {
+        var instrucao = `
+            SELECT serialNumber, cep, cidade, regiao FROM tbMaquina WHERE fkEmpresa = ${cnpj} AND regiao = '${query}';
+        `;
+    }
+   
     console.log("Executando a instrução SQL: \n" + instrucao);
     return database.executar(instrucao)
 
