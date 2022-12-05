@@ -121,6 +121,28 @@ function buscarUltimasCondicaoDisco(serialNumber) {
     return database.executar(instrucaoSql);
 }
 
+
+function buscarUltimasMedidasOciosidade(serialNumber, limite_linhas) {
+    
+    var instrucaoSql = ''
+    
+    if (process.env.AMBIENTE_PROCESSO == "producao") {
+        instrucaoSql = `select top ${limite_linhas} usoUsuario, usoOcioso,
+        FORMAT(datahora,'%H:%m:%s') as datahora from tbOciosidade where fkMaquina = '${serialNumber}' 
+         order by idRegistro desc;`;
+    } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
+        instrucaoSql = `select usoUsuario, usoOcioso,
+        DATE_FORMAT(datahora,'%H:%i:%s') as datahora from tbOciosidade where fkMaquina = '${serialNumber}' 
+         order by idRegistro desc limit ${limite_linhas};`;
+    } else {
+        console.log("\nO AMBIENTE (produção OU desenvolvimento) NÃO FOI DEFINIDO EM app.js\n");
+        return
+    }
+    
+    console.log("Executando a instrução SQL: \n" + instrucaoSql);
+    return database.executar(instrucaoSql);
+}
+
 function buscarUltimasMedidasRam(serialNumber, limite_linhas) {
 
     var instrucaoSql = ''
@@ -278,6 +300,48 @@ function buscarMedidasEmTempoRealCpu(serialNumber) {
                         DATE_FORMAT(Horario,'%H:%i:%s') as momento_grafico 
                         FROM vwConsumo where NumeroSerial = '${serialNumber}' and Componente = 'cpu'
                     ORDER BY ID DESC LIMIT 1`;
+    } else {
+        console.log("\nO AMBIENTE (produção OU desenvolvimento) NÃO FOI DEFINIDO EM app.js\n");
+        return
+    }
+
+    console.log("Executando a instrução SQL: \n" + instrucaoSql);
+    return database.executar(instrucaoSql);
+}
+
+function buscarMedidasEmTempoRealTempoUso(serialNumber) {
+    
+    instrucaoSql = ''
+    
+    if (process.env.AMBIENTE_PROCESSO == "producao") {       
+        instrucaoSql = `select top 1 usoUsuario, usoOcioso,
+        FORMAT(datahora,'%H:%m:%s') as datahora from tbOciosidade where fkMaquina = '${serialNumber}' 
+         order by idRegistro desc;`;
+        
+    } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
+        instrucaoSql = `select usoUsuario, usoOcioso,
+        DATE_FORMAT(datahora,'%H:%i:%s') as datahora from tbOciosidade where fkMaquina = '${serialNumber}' 
+         order by idRegistro desc limit 1;`;
+    } else {
+        console.log("\nO AMBIENTE (produção OU desenvolvimento) NÃO FOI DEFINIDO EM app.js\n");
+        return
+    }
+
+    console.log("Executando a instrução SQL: \n" + instrucaoSql);
+    return database.executar(instrucaoSql);
+}
+
+function obterInicioMonitoramento(serialNumber) {
+    
+    instrucaoSql = ''
+    
+    if (process.env.AMBIENTE_PROCESSO == "producao") {       
+        instrucaoSql = `select top 1 datahora
+        from tbOciosidade where fkMaquina = '${serialNumber}' order by idRegistro;`;
+        
+    } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
+        instrucaoSql = `select datahora
+         from tbOciosidade where fkMaquina = '${serialNumber}' order by idRegistro limit 1;`;
     } else {
         console.log("\nO AMBIENTE (produção OU desenvolvimento) NÃO FOI DEFINIDO EM app.js\n");
         return
@@ -599,5 +663,8 @@ module.exports = {
     buscarUltimasMedidasProcCpu,
     buscarMedidasEmTempoRealProcCpu,
     buscarUltimasMedidasProcRam,
-    buscarMedidasEmTempoRealProcRam
+    buscarMedidasEmTempoRealProcRam,
+    buscarUltimasMedidasOciosidade,
+    buscarMedidasEmTempoRealTempoUso,
+    obterInicioMonitoramento
 }

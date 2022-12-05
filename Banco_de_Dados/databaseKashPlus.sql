@@ -42,6 +42,14 @@ serialNumber VARCHAR(30) PRIMARY KEY
 ,regiao VARCHAR(15)
 );
 
+CREATE TABLE tbOciosidade(
+idRegistro INT PRIMARY KEY AUTO_INCREMENT
+,fkMaquina VARCHAR(30), FOREIGN KEY(fkMaquina) REFERENCES tbMaquina(serialNumber)
+,usoUsuario VARCHAR(50)
+,usoOcioso VARCHAR(50)
+,datahora DATETIME
+);
+
 CREATE TABLE tbComponente(
 idComponente INT PRIMARY KEY AUTO_INCREMENT
 ,fkMaquina VARCHAR(30), FOREIGN KEY(fkMaquina) REFERENCES tbMaquina(serialNumber)

@@ -13,7 +13,7 @@ from matplotlib.animation import FuncAnimation
 import matplotlib.pyplot as plt  # Definindo um "apelido" para a biblioteca
 import openpyxl
 import requests
-# from slack import chamadoSlack
+from wordCloud import cloud
 
 if os.name == "nt":
     codeCleaner = "cls"
@@ -238,6 +238,10 @@ def insertPeriodico(idCpu, idDisco, idRam, macAddress, serialNumber, urlOpen):
         usoAtualMemoria = conversao_bytes(virtual_memory().used, 3)
         usoCpuPorc = cpu_percent()
         usoAtualMemoriaPorc = virtual_memory().percent
+        # usoOciosidade = f'{cpu_times(percpu=False).idle / 3600: .2f}'
+        # usoUsuario = f'{cpu_times(percpu=False).user / 3600: .2f}'
+        usoOciosidade = cpu_times(percpu=False).idle
+        usoUsuario = cpu_times(percpu=False).user
 
         particoes = []
         if sistema == "Windows":
@@ -261,6 +265,9 @@ def insertPeriodico(idCpu, idDisco, idRam, macAddress, serialNumber, urlOpen):
 
         dataHora = datetime.datetime.now()
         dataHora = datetime.datetime.strftime(dataHora, "%Y-%m-%d %H:%M:%S")
+
+        queryTempoUso = f"INSERT INTO tbOciosidade(fkMaquina, usoUsuario, usoOcioso, datahora) VALUES ('{serialNumber}', '{usoUsuario}', '{usoOciosidade}', '{dataHora}');"
+        insert(queryTempoUso)
 
         for i in idCpu:
             queryCpu = f"INSERT INTO tbRegistro(fkComponente, registro, dataHora) VALUES ('{i}', '{usoCpuPorc}', '{dataHora}');"

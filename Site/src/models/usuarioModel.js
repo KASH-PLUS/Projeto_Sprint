@@ -21,6 +21,48 @@ function listarCaixas(cnpj) {
     return database.executar(instrucao)
 }
 
+function selecionarMaquinas(cnpj) {
+    console.log("ACESSEI O USUARIO MODEL \n \n\t\t >> Se aqui der erro de 'Error: connect ECONNREFUSED',\n \t\t >> verifique suas credenciais de acesso ao banco\n \t\t >> e se o servidor de seu BD está rodando corretamente. \n\n function listar()");
+
+    var instrucao = '';
+
+    if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
+        var instrucao = `
+        SELECT serialNumber, nome FROM tbMaquina where fkEmpresa = '${cnpj}';
+        `;
+    }
+    else if (process.env.AMBIENTE_PROCESSO == "producao") {
+        var instrucao = `
+        SELECT serialNumber, nome FROM tbMaquina where fkEmpresa = '${cnpj}';
+        `;
+    }
+
+    console.log("Executando a instrução SQL: \n" + instrucao);
+    return database.executar(instrucao)
+}
+
+function obterDadosTodasMaquinas(cnpj) {
+    console.log("ACESSEI O USUARIO MODEL \n \n\t\t >> Se aqui der erro de 'Error: connect ECONNREFUSED',\n \t\t >> verifique suas credenciais de acesso ao banco\n \t\t >> e se o servidor de seu BD está rodando corretamente. \n\n function listar()");
+
+    var instrucao = '';
+
+    if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
+        var instrucao = `
+        select serialNumber, nome, max(usoOcioso) as usoOcioso, 
+        usoUsuario from tbMaquina join tbOciosidade on fkEmpresa = '${cnpj}' and fkMaquina = serialNumber group by nome;
+        `;
+    }
+    else if (process.env.AMBIENTE_PROCESSO == "producao") {
+        var instrucao = `
+        select fkMaquina, nome, max(usoOcioso) as usoOcioso, max(usoUsuario) as usoUsuario, cep from [dbo].[tbOciosidade], [dbo].[tbMaquina] 
+where fkEmpresa = '${cnpj}' and fkMaquina = serialNumber group by fkMaquina, cep, nome;
+        `;
+    }
+
+    console.log("Executando a instrução SQL: \n" + instrucao);
+    return database.executar(instrucao)
+}
+
 function selectCargo(query) {
     console.log("ACESSEI O USUARIO MODEL \n \n\t\t >> Se aqui der erro de 'Error: connect ECONNREFUSED',\n \t\t >> verifique suas credenciais de acesso ao banco\n \t\t >> e se o servidor de seu BD está rodando corretamente. \n\n function listar()");
     var instrucao = `
@@ -207,5 +249,7 @@ module.exports = {
     deletarComponentes,
     deletarCaixa,
     listarTemperatura,
-    listarSelect
+    listarSelect,
+    selecionarMaquinas,
+    obterDadosTodasMaquinas
 };
