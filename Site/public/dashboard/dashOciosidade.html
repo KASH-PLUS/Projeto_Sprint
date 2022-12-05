@@ -315,23 +315,31 @@
         divGrafico.appendChild(canvas);
 
         if (proximaAtualizacao != undefined) {
-            clearTimeout(proximaAtualizacao);
+            clearTimeout(proximaAtualizacao); 
         }
 
         fetch(`/medidas/ultimasOciosidade/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
             if (response.ok) {
                 response.json().then(function (resposta) {
-                    resposta.reverse();
 
                     card_cpu.style.display = "block";
                     aviso_componente.style.display = "none";
 
-                    for (i = 0; i < resposta.length; i++) {
-                        span_tempoUso.innerHTML = resposta[i].usoUsuario + "Horas";
-                        span_tempoOcioso.innerHTML = resposta[i].usoOcioso + "Horas";
-                    }
+                    usoUsuario = new Date(resposta[0].usoUsuario * 1000);
+                    hoursUsuario = usoUsuario.getUTCHours();
+                    minutesUsuario = usoUsuario.getUTCMinutes();
+                    secondsUsuario = usoUsuario.getSeconds();
 
+                    usoOcioso = new Date(resposta[0].usoOcioso * 1000);
+                    daysOcioso = usoOcioso.getUTCDate() - 1;
+                    hoursOcioso = usoOcioso.getUTCHours();
+                    minutesOcioso = usoOcioso.getUTCMinutes();
+                    secondsOcioso = usoOcioso.getSeconds();
 
+                    span_tempoUso.innerHTML = hoursUsuario + " Horas " + minutesUsuario + " Minutos ";
+                    span_tempoOcioso.innerHTML = daysOcioso + " Dias " + hoursOcioso + " Horas " + minutesOcioso + " Minutos ";
+                    
+                    resposta.reverse();
 
                     plotarGraficoTempoUso(resposta, serialNumber);
 

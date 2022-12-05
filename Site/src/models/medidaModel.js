@@ -162,7 +162,7 @@ function buscarMedidasEmTempoRealTempoUso(serialNumber) {
     
     if (process.env.AMBIENTE_PROCESSO == "producao") {       
         instrucaoSql = `select top 1 usoUsuario, usoOcioso,
-        FORMAT(datahora,'%H:%i:%s') as datahora from tbOciosidade where fkMaquina = '${serialNumber}' 
+        FORMAT(datahora,'%H:%m:%s') as datahora from tbOciosidade where fkMaquina = '${serialNumber}' 
          order by idRegistro desc;`;
         
     } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
