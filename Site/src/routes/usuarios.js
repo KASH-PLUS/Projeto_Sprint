@@ -60,4 +60,8 @@ router.post("/deletarCaixa", function (req, res) {
     usuarioController.deletarCaixa(req, res);
 })
 
+router.post("/gerarSelect", function (req, res) {
+    usuarioController.gerarSelect(req, res);
+})
+
 module.exports = router;

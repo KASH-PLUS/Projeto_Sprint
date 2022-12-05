@@ -12,11 +12,10 @@ from random import randint
 from matplotlib.animation import FuncAnimation
 import matplotlib.pyplot as plt  # Definindo um "apelido" para a biblioteca
 import openpyxl
-#from wordCloud import cloud
 import requests
+# from slack import chamadoSlack
 
 if os.name == "nt":
-    sistema = "Windows"
     codeCleaner = "cls"
 else:
     sistema = "Linux"
@@ -68,16 +67,19 @@ def metricasMaximas(idCpu, idDisco, idRam):
 
     for i in idCpu:
         queryCpu = f"UPDATE tbComponente SET metricaMaxima = 100 WHERE idComponente = {i};"
+        print(queryCpu)
         time.sleep(1)
         insert(queryCpu)
 
     for i in idDisco:
         queryDisco = f"UPDATE tbComponente SET metricaMaxima = {conversao_bytes(disk_usage(disco).total, 3)} WHERE idComponente = {i};"
+        print(queryDisco)
         time.sleep(1)
         insert(queryDisco)
 
     for i in idRam:
         queryRam = f"UPDATE tbComponente SET metricaMaxima = {conversao_bytes(virtual_memory().total, 3)} WHERE idComponente = {i};"
+        print(queryRam)
         time.sleep(1)
         insert(queryRam)
 
@@ -119,6 +121,7 @@ def getMac(serialNumber):
     dados = select(query)
     
     return dados
+
 
 def monitorar():
     while (True):
@@ -336,7 +339,28 @@ def insertPeriodico(idCpu, idDisco, idRam, macAddress, serialNumber, urlOpen):
 
         # print(response.text, "oi")
 
-        
+
+        # Processos
+        listaProcessos = []
+
+        for proc in process_iter():
+            infoProc = proc.as_dict(['name','cpu_percent', 'memory_percent'])
+            if infoProc['cpu_percent'] > 0 and infoProc['name'] != 'System Idle Process':
+                listaProcessos.append(infoProc)
+
+        def func(e):
+            return e['cpu_percent']
+
+        listaProcessos.sort(key=func, reverse=True)
+
+        for proc in listaProcessos[:1]:
+            nomeProcesso = proc['name']
+            cpuProcesso = proc['cpu_percent']
+            ramProcesso = round(proc['memory_percent'],2)
+            
+            queryProc = f"INSERT INTO tbProcesso(fkMaquina, processo, usoCpu, usoRam, dataHora) VALUES ('{serialNumber}', '{nomeProcesso}', '{cpuProcesso}', '{ramProcesso}', '{dataHora}');"
+            insert(queryProc)
+
         # Pegando dados de rede
 
         bytesRecebidos = net_io_counters().bytes_recv

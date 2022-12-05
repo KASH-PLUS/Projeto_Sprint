@@ -48,7 +48,8 @@ idComponente INT PRIMARY KEY AUTO_INCREMENT
 ,tipo VARCHAR(100)
 ,metrica VARCHAR(100)
 ,metricaMaxima INT
-);
+)
+;
 
 CREATE TABLE tbRegistro(
 idRegistro INT PRIMARY KEY AUTO_INCREMENT
@@ -77,13 +78,23 @@ CREATE TABLE tbRegistroRede(
  ,pacotesRecebidos INT
  ,dataHora DATETIME
  , FOREIGN KEY(fkPlaca) REFERENCES tbRede(macAddress)
-)
+);
+
 CREATE TABLE tbTemperatura (
 id INT PRIMARY KEY AUTO_INCREMENT,
 fkMaquina VARCHAR(30), FOREIGN KEY(fkMaquina) REFERENCES tbMaquina(serialNumber),
 tempAtual INT,
 clock INT,
 dataHora DATETIME
+);
+
+CREATE TABLE tbProcesso(
+idProcesso INT PRIMARY KEY AUTO_INCREMENT
+,fkMaquina VARCHAR(30), FOREIGN KEY(fkMaquina) REFERENCES tbMaquina(serialNumber)
+,processo VARCHAR(60)
+,usoCpu VARCHAR(45)
+,usoRam VARCHAR(45)
+,dataHora DATETIME
 );
 
 -- Criando Views --

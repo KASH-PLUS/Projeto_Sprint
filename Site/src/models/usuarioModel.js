@@ -121,7 +121,7 @@ function listarMaquinasRegiao(query, cnpj, select) {
             SELECT serialNumber, cep, cidade, regiao FROM tbMaquina WHERE fkEmpresa = ${cnpj} AND regiao = '${query}';
         `;
     }
-   
+
     console.log("Executando a instrução SQL: \n" + instrucao);
     return database.executar(instrucao)
 
@@ -181,6 +181,15 @@ function deletarCaixa(serialNumber) {
     console.log("Executando a instrução SQL: \n" + instrucao);
     return database.executar(instrucao);
 }
+    
+function listarSelect(cnpj) {
+    console.log("ACESSEI O USUARIO MODEL \n \n\t\t >> Se aqui der erro de 'Error: connect ECONNREFUSED',\n \t\t >> verifique suas credenciais de acesso ao banco\n \t\t >> e se o servidor de seu BD está rodando corretamente. \n\n function listar()");
+
+    var instrucao = `SELECT serialNumber, nome FROM tbMaquina where fkEmpresa = '${cnpj}';`;
+
+    console.log("Executando a instrução SQL: \n" + instrucao);
+    return database.executar(instrucao)
+}
 
 module.exports = {
     entrar,
@@ -197,5 +206,6 @@ module.exports = {
     deletarRegistros,
     deletarComponentes,
     deletarCaixa,
-    listarTemperatura
+    listarTemperatura,
+    listarSelect
 };

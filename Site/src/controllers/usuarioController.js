@@ -264,7 +264,7 @@ function enviarEmailContato(req, res) {
     var descricao = req.body.descricaoServer;
     var emailRemetente = req.body.emailRemetenteServer;
 
-    
+
 
     var transporter = nodemailer.createTransport({
         service: 'outlook',
@@ -405,26 +405,26 @@ function deletarCaixa(req, res) {
     var serialNumber = req.body.serialNumberServer;
 
     usuarioModel.deletarRegistros(serialNumber)
-    .then(function (resultado) {
-        res.json(resultado);
-    }).catch(
-        function (erro) {
-            console.log(erro);
-            console.log("Houve um erro ao realizar o cadastro! Erro: ", erro.sqlMessage);
-            res.status(500).json(erro.sqlMessage);
-        }
-    );
+        .then(function (resultado) {
+            res.json(resultado);
+        }).catch(
+            function (erro) {
+                console.log(erro);
+                console.log("Houve um erro ao realizar o cadastro! Erro: ", erro.sqlMessage);
+                res.status(500).json(erro.sqlMessage);
+            }
+        );
 
     usuarioModel.deletarComponentes(serialNumber)
-    .then(function (resultado) {
-        res.json(resultado);
-    }).catch(
-        function (erro) {
-            console.log(erro);
-            console.log("Houve um erro ao realizar o cadastro! Erro: ", erro.sqlMessage);
-            res.status(500).json(erro.sqlMessage);
-        }
-    );
+        .then(function (resultado) {
+            res.json(resultado);
+        }).catch(
+            function (erro) {
+                console.log(erro);
+                console.log("Houve um erro ao realizar o cadastro! Erro: ", erro.sqlMessage);
+                res.status(500).json(erro.sqlMessage);
+            }
+        );
 
     usuarioModel.deletarCaixa(serialNumber)
         .then(function (resultado) {
@@ -436,6 +436,31 @@ function deletarCaixa(req, res) {
                 res.status(500).json(erro.sqlMessage);
             }
         );
+}
+
+
+function gerarSelect(req, res) {
+    var cnpj = req.body.cnpjServer;
+
+    if (cnpj == undefined) {
+        res.status(400).send("Seu cnpj está undefined!");
+    }
+    else {
+        usuarioModel.listarSelect(cnpj)
+            .then(function (resultado) {
+                if (resultado.length > 0) {
+                    res.status(200).json(resultado);
+                } else {
+                    res.status(204).send("Nenhum resultado encontrado!")
+                }
+            }).catch(
+                function (erro) {
+                    console.log(erro);
+                    console.log("Houve um erro ao realizar a consulta! Erro: ", erro.sqlMessage);
+                    res.status(500).json(erro.sqlMessage);
+                }
+            );
+    }
 
 }
 
@@ -453,5 +478,6 @@ module.exports = {
     enviarEmailContato,
     criarMapaCaixas,
     deletarCaixa,
-    verificarTemperatura
+    verificarTemperatura,
+    gerarSelect,
 }

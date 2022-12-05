@@ -271,7 +271,6 @@ function buscarMedidasEmTempoRealPacotes(req, res) {
 }
 
 function buscarUltimasMedidasTemp(req, res) {
-
     const limite_linhas = 8;
 
     var serialNumber = req.params.serialNumber;
@@ -291,14 +290,15 @@ function buscarUltimasMedidasTemp(req, res) {
     });
 }
 
+function buscarUltimasMedidasProcCpu(req, res) {
 
-function obterDadosPlacaRede(req, res) {
+    const limite_linhas = 8;
 
     var serialNumber = req.params.serialNumber;
 
-    console.log(`Recuperando medidas em tempo real`);
+    console.log(`Recuperando as ultimas ${limite_linhas} medidas`);
 
-    medidaModel.obterDadosPlacaRede(serialNumber).then(function (resultado) {
+    medidaModel.buscarUltimasMedidasProcCpu(serialNumber, limite_linhas).then(function (resultado) {
         if (resultado.length > 0) {
             res.status(200).json(resultado);
         } else {
@@ -306,7 +306,47 @@ function obterDadosPlacaRede(req, res) {
         }
     }).catch(function (erro) {
         console.log(erro);
-        console.log("Houve um erro ao buscar as medidas em tempo real.", erro.sqlMessage);
+        console.log("Houve um erro ao buscar as ultimas medidas.", erro.sqlMessage);
+        res.status(500).json(erro.sqlMessage);
+    });
+}
+
+
+function obterDadosPlacaRede(req, res) {
+    var serialNumber = req.params.serialNumber;
+
+    console.log(`Recuperando medidas em tempo real`);
+
+    medidaModel.obterDadosPlacaRede(serialNumber).then(function (resultado) {
+
+        if (resultado.length > 0) {
+            res.status(200).json(resultado);
+        } else {
+            res.status(204).send("Nenhum resultado encontrado!")
+        }
+    }).catch(function (erro) {
+        console.log(erro);
+        console.log("Houve um erro ao buscar as ultimas medidas.", erro.sqlMessage);
+        res.status(500).json(erro.sqlMessage);
+    });
+}
+
+
+function buscarMedidasEmTempoRealProcCpu(req, res) {
+
+    var serialNumber = req.params.serialNumber;
+
+    console.log(`Recuperando medidas em tempo real`);
+
+    medidaModel.buscarMedidasEmTempoRealProcCpu(serialNumber).then(function (resultado) {
+        if (resultado.length > 0) {
+            res.status(200).json(resultado);
+        } else {
+            res.status(204).send("Nenhum resultado encontrado!")
+        }
+    }).catch(function (erro) {
+        console.log(erro);
+        console.log("Houve um erro ao buscar as ultimas medidas.", erro.sqlMessage);
         res.status(500).json(erro.sqlMessage);
     });
 }
@@ -330,6 +370,27 @@ function buscarMedidasEmTempoRealTemp(req, res) {
     });
 }
 
+function buscarUltimasMedidasProcRam(req, res) {
+
+    const limite_linhas = 8;
+
+    var serialNumber = req.params.serialNumber;
+
+    console.log(`Recuperando as ultimas ${limite_linhas} medidas`);
+
+    medidaModel.buscarUltimasMedidasProcRam(serialNumber, limite_linhas).then(function (resultado) {
+        if (resultado.length > 0) {
+            res.status(200).json(resultado);
+        } else {
+            res.status(204).send("Nenhum resultado encontrado!")
+        }
+    }).catch(function (erro) {
+        console.log(erro);
+        console.log("Houve um erro ao buscar as ultimas medidas.", erro.sqlMessage);
+        res.status(500).json(erro.sqlMessage);
+    });
+}
+
 function buscarClockEmTempoReal(req, res) {
 
     var serialNumberVar = req.params.serialNumber;
@@ -345,6 +406,25 @@ function buscarClockEmTempoReal(req, res) {
     }).catch(function (erro) {
         console.log(erro);
         console.log("Houve um erro ao buscar o valor do clock em tempo real.", erro.sqlMessage);
+        res.status(500).json(erro.sqlMessage);
+    });
+}
+
+function buscarMedidasEmTempoRealProcRam(req, res) {
+
+    var serialNumber = req.params.serialNumber;
+
+    console.log(`Recuperando medidas em tempo real`);
+
+    medidaModel.buscarMedidasEmTempoRealProcRam(serialNumber).then(function (resultado) {
+        if (resultado.length > 0) {
+            res.status(200).json(resultado);
+        } else {
+            res.status(204).send("Nenhum resultado encontrado!")
+        }
+    }).catch(function (erro) {
+        console.log(erro);
+        console.log("Houve um erro ao buscar as ultimas medidas.", erro.sqlMessage);
         res.status(500).json(erro.sqlMessage);
     });
 }
@@ -367,5 +447,9 @@ module.exports = {
     buscarMaxRam,
     buscarUltimasMedidasTemp,
     buscarMedidasEmTempoRealTemp,
-    buscarClockEmTempoReal
+    buscarClockEmTempoReal,
+    buscarUltimasMedidasProcCpu,
+    buscarMedidasEmTempoRealProcCpu,
+    buscarUltimasMedidasProcRam,
+    buscarMedidasEmTempoRealProcRam
 }
