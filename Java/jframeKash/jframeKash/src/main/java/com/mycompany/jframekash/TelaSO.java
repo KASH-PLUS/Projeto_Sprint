@@ -72,6 +72,7 @@ public class TelaSO extends javax.swing.JFrame {
         lblTempoAtivo = new javax.swing.JLabel();
         btnProcessos = new javax.swing.JButton();
         btnTemp = new javax.swing.JButton();
+        btnRede = new javax.swing.JButton();
 
         lblTotalProcessos.setText("Total de Processos: ");
 
@@ -152,33 +153,44 @@ public class TelaSO extends javax.swing.JFrame {
             }
         });
 
+        btnRede.setFont(new java.awt.Font("Consolas", 0, 16)); // NOI18N
+        btnRede.setText("Rede");
+        btnRede.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        btnRede.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRedeActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(lblLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(66, 66, 66)
-                .addComponent(lblTitulo)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
-                .addGap(88, 88, 88)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnCPU)
-                    .addComponent(btnDisco)
-                    .addComponent(btnMemo)
-                    .addComponent(btnProcessos)
-                    .addComponent(btnTemp))
-                .addGap(240, 240, 240)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblTempoAtivo)
-                    .addComponent(lblArquitetura)
-                    .addComponent(lblInicializado)
-                    .addComponent(lblFabricante)
-                    .addComponent(lblSistema)
-                    .addComponent(lblPermissao))
-                .addContainerGap(285, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(lblLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(66, 66, 66)
+                        .addComponent(lblTitulo))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(91, 91, 91)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnCPU)
+                            .addComponent(btnDisco)
+                            .addComponent(btnMemo)
+                            .addComponent(btnProcessos)
+                            .addComponent(btnTemp)
+                            .addComponent(btnRede))
+                        .addGap(237, 237, 237)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblTempoAtivo)
+                            .addComponent(lblArquitetura)
+                            .addComponent(lblInicializado)
+                            .addComponent(lblFabricante)
+                            .addComponent(lblSistema)
+                            .addComponent(lblPermissao))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -192,9 +204,9 @@ public class TelaSO extends javax.swing.JFrame {
                         .addComponent(lblTitulo)))
                 .addGap(37, 37, 37)
                 .addComponent(lblSistema)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
                         .addComponent(lblFabricante)
                         .addGap(18, 18, 18)
                         .addComponent(lblArquitetura)
@@ -203,10 +215,8 @@ public class TelaSO extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(lblPermissao)
                         .addGap(18, 18, 18)
-                        .addComponent(lblTempoAtivo)
-                        .addGap(33, 78, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(lblTempoAtivo))
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(btnCPU)
                         .addGap(18, 18, 18)
                         .addComponent(btnDisco)
@@ -216,7 +226,9 @@ public class TelaSO extends javax.swing.JFrame {
                         .addComponent(btnProcessos)
                         .addGap(18, 18, 18)
                         .addComponent(btnTemp)
-                        .addGap(85, 85, 85))))
+                        .addGap(18, 18, 18)
+                        .addComponent(btnRede)))
+                .addGap(33, 92, Short.MAX_VALUE))
         );
 
         pack();
@@ -261,6 +273,14 @@ public class TelaSO extends javax.swing.JFrame {
         in.setResizable(false);
         this.dispose();    }//GEN-LAST:event_btnTempActionPerformed
 
+    private void btnRedeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRedeActionPerformed
+        TelaRede in = new TelaRede();
+        in.setLocationRelativeTo(null);
+        in.setVisible(true);
+        in.setResizable(false);
+        this.dispose();
+    }//GEN-LAST:event_btnRedeActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -301,6 +321,7 @@ public class TelaSO extends javax.swing.JFrame {
     private javax.swing.JButton btnDisco;
     private javax.swing.JButton btnMemo;
     private javax.swing.JButton btnProcessos;
+    private javax.swing.JButton btnRede;
     private javax.swing.JButton btnTemp;
     private javax.swing.JLabel lblArquitetura;
     private javax.swing.JLabel lblFabricante;

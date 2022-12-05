@@ -73,6 +73,7 @@ public class TelaMemoria extends javax.swing.JFrame {
         prgUso = new javax.swing.JProgressBar();
         prgDisponivel = new javax.swing.JProgressBar();
         btnTemp = new javax.swing.JButton();
+        btnRede = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -148,6 +149,15 @@ public class TelaMemoria extends javax.swing.JFrame {
             }
         });
 
+        btnRede.setFont(new java.awt.Font("Consolas", 0, 16)); // NOI18N
+        btnRede.setText("Rede");
+        btnRede.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        btnRede.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRedeActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -164,7 +174,8 @@ public class TelaMemoria extends javax.swing.JFrame {
                             .addComponent(btnCPU)
                             .addComponent(btnSO)
                             .addComponent(btnProcessos)
-                            .addComponent(btnTemp))))
+                            .addComponent(btnTemp)
+                            .addComponent(btnRede))))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(219, 219, 219)
@@ -226,7 +237,9 @@ public class TelaMemoria extends javax.swing.JFrame {
                         .addComponent(btnProcessos)
                         .addGap(18, 18, 18)
                         .addComponent(btnTemp)))
-                .addContainerGap(106, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(btnRede)
+                .addContainerGap(67, Short.MAX_VALUE))
         );
 
         pack();
@@ -272,6 +285,14 @@ public class TelaMemoria extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_btnTempActionPerformed
 
+    private void btnRedeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRedeActionPerformed
+        TelaRede in = new TelaRede();
+        in.setLocationRelativeTo(null);
+        in.setVisible(true);
+        in.setResizable(false);
+        this.dispose();
+    }//GEN-LAST:event_btnRedeActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -311,6 +332,7 @@ public class TelaMemoria extends javax.swing.JFrame {
     private javax.swing.JButton btnCPU;
     private javax.swing.JButton btnDisco;
     private javax.swing.JButton btnProcessos;
+    private javax.swing.JButton btnRede;
     private javax.swing.JButton btnSO;
     private javax.swing.JButton btnTemp;
     private javax.swing.JLabel lblDisponivel;

@@ -2,7 +2,7 @@ from functions import divisaoComponentes, metricasMaximas, monitorar, info, plot
 from psutil import * 
 import time
 import os
-from functions import verificarComponentes, codeCleaner, insertPeriodico, plotar, metricasMaximas
+from functions import verificarComponentes, codeCleaner, insertPeriodico, plotar, metricasMaximas, cadastroRede, getMac
 from login import login
 from dash import dashboard
 import threading
@@ -10,8 +10,8 @@ from gerarGraficos import gerarGraficoCpu, gerarGraficoDisco, gerarGraficoMemori
 #from wordCloud import cloud
 
 
-def menu(serialNumber, nome, idCpu, idDisco, idRam):
-    threading.Thread(target=insertPeriodico, kwargs={'idCpu':idCpu, 'idDisco':idDisco, 'idRam':idRam, 'serialNumber':serialNumber, 'nome':nome, } ).start()
+def menu(serialNumber, nome, idCpu, idDisco, idRam, macAddress):
+    threading.Thread(target=insertPeriodico, kwargs={'idCpu':idCpu, 'idDisco':idDisco, 'idRam':idRam, 'macAddress':macAddress, } ).start()
 
     os.system(codeCleaner)
 
@@ -99,7 +99,9 @@ def main():
         idDisco = componentes[1]
         idRam = componentes[2]
         metricasMaximas(idCpu, idDisco, idRam)
-        menu(serialNumber, nome, idCpu, idDisco, idRam)
+        cadastroRede(serialNumber)
+        macAddress = getMac(serialNumber)
+        menu(serialNumber, nome, idCpu, idDisco, idRam, macAddress[0])
     elif opcao1tela == "2":
         print("Obrigado por utilizar nossos serviços")
         time.sleep(1)
@@ -112,7 +114,7 @@ def main():
 print(r"""
          ___________
         ||         ||            _______
-        ||  HDWR   ||           | _____ |
+        ||  KASH+  ||           | _____ |
         || MONITOR ||           ||_____||
         ||_________||           |  ___  |
         |  + + + +  |           | |___| |

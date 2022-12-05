@@ -15,7 +15,6 @@ public class ConexaoAzure {
 
         dataSource​.setUrl("jdbc:sqlserver://kashmonitoramento.database.windows.net:1433;database=dbkashplus;user=kashplus@kashmonitoramento;password=1cco*grupo10;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;");
 
-
         this.connection = new JdbcTemplate(dataSource);
 
     }

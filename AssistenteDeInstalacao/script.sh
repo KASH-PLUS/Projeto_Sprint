@@ -63,7 +63,7 @@ cd ..
 # Copiando api python para o container
 sudo docker cp API-Python/ ContainerPy:/
 sudo docker cp ./scriptPy.sh ContainerPy:/
-# Startando o containerSql no bash
+# Startando o container python no bash
 sudo docker exec -it ContainerPy bash scriptPy.sh
 
 

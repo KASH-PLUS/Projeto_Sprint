@@ -26,7 +26,7 @@ public class TbMaquinaCrud {
     }
     
     public TbMaquina selectMaquinaSerial(String serial){
-        Conexao conexao = new Conexao();
+        ConexaoAzure conexao = new ConexaoAzure();
         JdbcTemplate cursor = conexao.getConexao();
         List <TbMaquina> listaMaquina;
         listaMaquina = cursor.query(String.format("SELECT * FROM tbMaquina WHERE serialNumber LIKE '%s';", serial), new BeanPropertyRowMapper(TbMaquina.class));

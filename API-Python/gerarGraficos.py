@@ -6,6 +6,7 @@ import datetime
 from database import select
 from functions import conversao_bytes
 from functions import codeCleaner
+from database import ambiente 
 
 if os.name == 'nt':
     sistem="C:\\"
@@ -39,7 +40,13 @@ def gerarGraficoDisco():
     plt.show()
 
 def gerarGraficoCpu(idCpu):
-    query = f'SELECT registro, dataHora FROM tbRegistro, tbComponente WHERE idComponente = {idCpu} AND fkComponente = idComponente ORDER BY idRegistro DESC LIMIT 8;'
+    if ambiente == "producao":
+        query = f'SELECT TOP 8 registro, dataHora FROM tbRegistro, tbComponente WHERE idComponente = {idCpu[0]} AND fkComponente = idComponente ORDER BY idRegistro DESC'
+    else:
+        query = f'SELECT registro, dataHora FROM tbRegistro, tbComponente WHERE idComponente = {idCpu[0]} AND fkComponente = idComponente ORDER BY idRegistro DESC LIMIT 8;'
+
+
+    print(query)
     dados = []
     dados.append(select(query, True))
 
@@ -60,7 +67,11 @@ def gerarGraficoCpu(idCpu):
     plt.show()
 
 def gerarGraficoMemoria(idRam):
-    query = f'SELECT registro, dataHora FROM tbRegistro, tbComponente WHERE idComponente = {idRam} AND fkComponente = idComponente ORDER BY idRegistro DESC LIMIT 8;'
+    if ambiente == "producao":
+        query = f'SELECT TOP 8 registro, datahora  FROM tbRegistro, tbComponente WHERE idComponente = {idRam[0]} AND fkComponente = idComponente ORDER BY idRegistro DESC'
+    else:
+        query = f'SELECT registro, dataHora FROM tbRegistro, tbComponente WHERE idComponente = {idRam[0]} AND fkComponente = idComponente ORDER BY idRegistro DESC LIMIT 8;'
+    
     dados = []
     dados.append(select(query, True))
 

@@ -1,8 +1,9 @@
 import mysql.connector
 import pyodbc
+import os
 
-# ambiente = 'desenvolvimento'
-ambiente = 'producao'
+ambiente = 'desenvolvimento'
+# ambiente = 'producao'
 
 if ambiente == 'desenvolvimento':
     cnx = mysql.connector.connect(user="kashUser",
@@ -41,13 +42,18 @@ if ambiente == 'desenvolvimento':
                 cursor.close()
                 cnx.close()
                 return dados
+
 else:
-    cnx = pyodbc.connect(
-        #Para windows
-        "DRIVER={SQL Server}; Server=kashmonitoramento.database.windows.net;Database=dbkashplus; Port=myport;UID=kashplus ;PWD=1cco*grupo10")
-        #Para Linux
-        #"DRIVER={ODBC Driver 18 for SQL Server}; Server=kashmonitoramento.database.windows.net;Database=dbkashplus; Port=myport;UID=kashplus ;PWD=1cco*grupo10")
-        
+    if os.name == "nt":  # Windows
+        cnx = pyodbc.connect(
+            "DRIVER={SQL Server}; Server=kashmonitoramento.database.windows.net;Database=dbkashplus; Port=myport;UID=kashplus ;PWD=1cco*grupo10"
+        )
+
+    else:  # Linux
+        cnx = pyodbc.connect(
+            "DRIVER={ODBC Driver 17 for SQL Server}; Server=kashmonitoramento.database.windows.net;Database=dbkashplus; Port=myport;UID=kashplus ;PWD=1cco*grupo10"
+        )
+
     def insert(query):
         cursor = cnx.cursor()
         cursor.execute(query)
@@ -64,5 +70,5 @@ else:
         else:
             dados = cursor.fetchone()
             cursor.close()
-        
+
         return dados

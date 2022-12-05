@@ -38,8 +38,8 @@
                         </div>
                     </li>
                 </ul>
-                <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0"
-                        id="sidebarToggle" type="button"></button></div>
+                <div class="text-center d-none d-md-inline"><button onclick="movaNav()"
+                        class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
             </div>
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
@@ -129,6 +129,7 @@
                     </footer>
                 </div>
             </div>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
             <script src="assets/bootstrap/js/bootstrap.min.js"></script>
             <script src="assets/js/script.min.js"></script>
             <script src="../js/funcoes.js"></script>
@@ -141,6 +142,8 @@
     var regiao = '';
     var componentesUsados = [];
 
+    verifyNav()
+
     function recuperarDados() {
 
         cep = ipt_cep.value;
@@ -150,13 +153,16 @@
             script.src = 'https://viacep.com.br/ws/' + cep + '/json/?callback=cadastrarCaixa';
             document.body.appendChild(script);
         } else {
-            alert("Insira um CEP")
+            Swal.fire({
+                title: 'Informe um cep',
+                confirmButtonText: 'OK'
+            })
         }
 
     }
 
     function verificarComponentes() {
- 
+
         for (var i = 0; i < componentesUsados.length; i++) {
             if (componentesUsados[i] == "cpu") {
                 slct_componente.remove(0);
@@ -173,6 +179,7 @@
 
     function cadastrarCaixa(conteudo) {
 
+        var validacao = 0;
         var componente = slct_componente.value;
 
         var cidades = ["São Paulo", "Cajamar", "Caieiras", "Franco da Rocha", "Francisco Morato", "Mairiporã", "Pirapora do Bom Jesus", "Santana de Parnaíba", "Barueri", "Osasco", "Carapicuíba", "Jandira", "Itapevi", "Vargem Grande Paulista", "Cotia", "Taboão da Serra", "Embu das Artes", "Itapecirica da Serra", "Embu-Guaçu", "São Lourenço da Serra", "Juquitiba", "São Caetano do Sul", "Diadema", "São Bernardo do Campo", "Santo André", "Mauá", "Ribeirão Pires", "Rio Grande da Serra", "Guarulhos", "Arujá", "Santa Isabel", "Itaquaquecetuba", "Poá", "Ferraz de Vasconcelos", "Suzano", "Guararema", "Mogi das Cruzes", "Biritiba Mirim", "Salesópolis"]
@@ -225,7 +232,12 @@
         }
 
         if (cobreRegiao == 0) {
-            alert("Desculpe, não cobrimos sua região")
+            Swal.fire({
+                title: 'Não cobrimos sua região',
+                icon: 'error',     
+                confirmButtonText: 'OK'
+            })
+            validacao ++;
         }
 
         //Recupere o valor da nova input pelo nome do id
@@ -250,80 +262,82 @@
             return false;
         }
 
-        // Enviando o valor da nova input
-        fetch("/usuarios/cadastrarMaquina", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                // crie um atributo que recebe o valor recuperado aqui
-                // Agora vá para o arquivo routes/usuario.js
-                nomeServer: nomeVar,
-                cepServer: cepVar,
-                serialNumberServer: serialNumberVar,
-                componenteServer: componente,
-                cnpjServer: cnpjVar,
-                cidadeServer: cidadeVar,
-                regiaoServer: regiaoVar
-            })
-        }).then(function (resposta) {
-
-            console.log("resposta: ", resposta);
-
-            if (resposta.ok) {
-
-                componentesUsados.push(componente);
-                verificarComponentes();
-
-                Swal.fire({
-                    title: 'Cadastro da maquina e componente realizado com sucesso!',
-                    text: "Deseja cadastrar outro componente?",
-                    icon: 'success',
-                    showCancelButton: true,
-                    cancelButtonText: 'Não',
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Sim'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        botao = document.getElementById("btn_cadastro");
-                        strong_titulo.innerHTML = "Próximo componente";
-                        ipt_cep.disabled = true;
-                        ipt_nome_maquina.disabled = true;
-                        ipt_serial_number.disabled = true;
-                        botao.innerHTML = "Cadastrar novo componente";
-                        botao.setAttribute('onclick', 'cadastrarComponente()')
-                    }
-                    else {
-                        setTimeout(() => {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Cadastro de máquina e componentes finalizados',
-                            })
-                            window.location.href = "./addCaixa.html";
-                        })
-                    }
+        if (validacao == 0) {
+            // Enviando o valor da nova input
+            fetch("/usuarios/cadastrarMaquina", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    // crie um atributo que recebe o valor recuperado aqui
+                    // Agora vá para o arquivo routes/usuario.js
+                    nomeServer: nomeVar,
+                    cepServer: cepVar,
+                    serialNumberServer: serialNumberVar,
+                    componenteServer: componente,
+                    cnpjServer: cnpjVar,
+                    cidadeServer: cidadeVar,
+                    regiaoServer: regiaoVar
                 })
+            }).then(function (resposta) {
 
-            } else {
-                throw ("Houve um erro ao tentar realizar o cadastro!");
-                mensagem_erro.classList.add("erro");
-                mensagem_erro.style.display = "flex";
+                console.log("resposta: ", resposta);
 
-                mensagem_erro.innerHTML = "Houve um erro ao tentar realizr o cadastro!";
+                if (resposta.ok) {
 
-                setTimeout(() => {
-                    mensagem_erro.style.display = "none";
-                    mensagem_erro.classList.remove("erro");
-                    mensagem_erro.innerHTML = "";
-                }, 5000)
-            }
-        }).catch(function (resposta) {
-            console.log(`#ERRO: ${resposta}`);
-        });
+                    componentesUsados.push(componente);
+                    verificarComponentes();
 
-        return false;
+                    Swal.fire({
+                        title: 'Cadastro da maquina e componente realizado com sucesso!',
+                        text: "Deseja cadastrar outro componente?",
+                        icon: 'success',
+                        showCancelButton: true,
+                        cancelButtonText: 'Não',
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Sim'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            botao = document.getElementById("btn_cadastro");
+                            strong_titulo.innerHTML = "Próximo componente";
+                            ipt_cep.disabled = true;
+                            ipt_nome_maquina.disabled = true;
+                            ipt_serial_number.disabled = true;
+                            botao.innerHTML = "Cadastrar novo componente";
+                            botao.setAttribute('onclick', 'cadastrarComponente()')
+                        }
+                        else {
+                            setTimeout(() => {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Cadastro de máquina e componentes finalizados',
+                                })
+                                window.location.href = "./addCaixa.html";
+                            })
+                        }
+                    })
+
+                } else {
+                    throw ("Houve um erro ao tentar realizar o cadastro!");
+                    mensagem_erro.classList.add("erro");
+                    mensagem_erro.style.display = "flex";
+
+                    mensagem_erro.innerHTML = "Houve um erro ao tentar realizr o cadastro!";
+
+                    setTimeout(() => {
+                        mensagem_erro.style.display = "none";
+                        mensagem_erro.classList.remove("erro");
+                        mensagem_erro.innerHTML = "";
+                    }, 5000)
+                }
+            }).catch(function (resposta) {
+                console.log(`#ERRO: ${resposta}`);
+            });
+
+            return false;
+        }
 
     }
 
@@ -408,6 +422,23 @@
 
         return false;
 
+    }
+
+    function movaNav() {
+        if (localStorage.getItem("mode") != "aberto" && localStorage.getItem("mode") != "fechado") {
+            localStorage.setItem("mode", "fechado");
+        } else if (localStorage.getItem("mode") == "aberto") {
+            localStorage.setItem("mode", "fechado");
+        } else if (localStorage.getItem("mode") == "fechado") {
+            localStorage.setItem("mode", "aberto");
+        }
+    }
+
+    function verifyNav() {
+        if (localStorage.getItem("mode") == "aberto") {
+            $("#sidebarToggle").click();
+            localStorage.setItem("mode", "aberto");
+        }
     }
 
 </script>
