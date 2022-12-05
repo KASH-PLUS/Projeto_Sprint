@@ -310,6 +310,60 @@
 								</div>
 							</div>
 						</div>
+
+						<div class="row">
+							<div class="col-lg-9 col-xl-9">
+								<div class="card shadow mb-4" id="card_condicao" style="display: block;">
+									<div class="card-header d-flex justify-content-between align-items-center">
+										<h6 class="text-primary fw-bold m-0">Registro de Status: </h6>
+									</div>
+									<div class="card-body">
+										<div class="chart-area" id="Condicao_area">
+											<div class="chart-container" id="grafico_condicao">
+												<canvas id="myChartCondicao">
+												</canvas>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="col-lg-3 col-xl-3">
+								<div class="card shadow mb-4" id="card_condicao" style="display: block;">
+									<div class="card-header d-flex justify-content-between align-items-center">
+										<h6 class="text-primary fw-bold m-0">Legenda Status: </h6>
+									</div>
+									<div class="card-body">
+										<div class="div_legenda">
+											<table>
+												<tr class="leg_bom">
+													<td>
+														<div class="leg_circulo" id="leg_c_bom"></div>
+													</td>
+													<td id="leg_bom">3</td>
+													<td>Bom</td>
+												</tr>
+												<tr class="leg_analise">
+													<td>
+														<div class="leg_circulo" id="leg_c_analise"></div>
+													</td>
+													<td id="leg_analise">2</td>
+													<td>Análise</td>
+												</tr>
+												<tr class="leg_critico">
+													<td>
+														<div class="leg_circulo" id="leg_c_critico"></div>
+													</td>
+													<td id="leg_critico">1</td>
+													<td>Crítico</td>
+												</tr>
+											</table>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
 						<div class="row">
 							<div id="container_mapa">
 								<h3>Localização deste Caixa:</h3>
@@ -738,19 +792,19 @@
 		}
 
 		fetch(`/medidas/ultimasTemp/${serialNumber}`, {
-				cache: 'no-store'
-			}).then(function (response) {
-				if (response.ok) {
-					response.json().then(function (resposta) {
-						console.log(`Dados recebidos de temperatura: ${JSON.stringify(resposta)}`);
-						resposta.reverse();
+			cache: 'no-store'
+		}).then(function (response) {
+			if (response.ok) {
+				response.json().then(function (resposta) {
+					console.log(`Dados recebidos de temperatura: ${JSON.stringify(resposta)}`);
+					resposta.reverse();
 
-						plotarGraficoTemp(resposta, serialNumber);
-					});
-				} else {
-					console.error('Nenhum dado encontrado ou erro na API');
-				}
-			})
+					plotarGraficoTemp(resposta, serialNumber);
+				});
+			} else {
+				console.error('Nenhum dado encontrado ou erro na API');
+			}
+		})
 			.catch(function (error) {
 				console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
 			});
@@ -780,7 +834,7 @@
 				data: [0, 50, 20, 45, 10, 30, 22, 55, 35, 10, 95, 50],
 				fill: true,
 				data: [],
-			}, ],
+			},],
 			options: {
 				maintainAspectRatio: false,
 				responsive: true
@@ -815,46 +869,46 @@
 
 	function atualizarGraficoTemp(serialNumber, dados, myChartTemp) {
 		fetch(`/medidas/tempo-realTemp/${serialNumber}`, {
-				cache: 'no-store'
-			}).then(function (response) {
-				if (response.ok) {
-					response.json().then(function (novoRegistro) {
+			cache: 'no-store'
+		}).then(function (response) {
+			if (response.ok) {
+				response.json().then(function (novoRegistro) {
 
-						console.log(`Dados de temperatura recebidos: ${JSON.stringify(novoRegistro)}`);
+					console.log(`Dados de temperatura recebidos: ${JSON.stringify(novoRegistro)}`);
 
-						dados.labels.shift();
-						dados.labels.push(novoRegistro[0].momento_grafico);
+					dados.labels.shift();
+					dados.labels.push(novoRegistro[0].momento_grafico);
 
-						dados.datasets[0].data.shift();
-						dados.datasets[0].data.push((novoRegistro[0].Temperatura));
+					dados.datasets[0].data.shift();
+					dados.datasets[0].data.push((novoRegistro[0].Temperatura));
 
-						registro = novoRegistro[0].Temperatura
+					registro = novoRegistro[0].Temperatura
 
-						if (registro <= 20) { // 40 - 65 // 70-85
-							cor = "red";
-							pesoTemp = 8;
-						} else if (registro >= 65) {
-							cor = "yellow";
-							pesoTemp = 4;
-						} else if (registro >= 85) {
-							cor = "red";
-							pesoTemp = 8;
-						} else {
-							cor = "green";
-							pesoTemp = 0;
-						}
+					if (registro <= 20) { // 40 - 65 // 70-85
+						cor = "red";
+						pesoTemp = 8;
+					} else if (registro >= 65) {
+						cor = "yellow";
+						pesoTemp = 4;
+					} else if (registro >= 85) {
+						cor = "red";
+						pesoTemp = 8;
+					} else {
+						cor = "green";
+						pesoTemp = 0;
+					}
 
-						myChartTemp.update();
+					myChartTemp.update();
 
-						proximaAtualizacao = setTimeout(() => atualizarGraficoTemp(serialNumber, dados,
-							myChartTemp), 2000);
-					});
-				} else {
-					console.error('Nenhum dado encontrado ou erro na API');
-					proximaAtualizacao = setTimeout(() => atualizarGraficoTemp(serialNumber, dados, myChartTemp),
+					proximaAtualizacao = setTimeout(() => atualizarGraficoTemp(serialNumber, dados,
+						myChartTemp), 2000);
+				});
+			} else {
+				console.error('Nenhum dado encontrado ou erro na API');
+				proximaAtualizacao = setTimeout(() => atualizarGraficoTemp(serialNumber, dados, myChartTemp),
 					2000);
-				}
-			})
+			}
+		})
 			.catch(function (error) {
 				console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
 			});
@@ -924,25 +978,25 @@
 
 	function atualizarKpiClock(serialNumber) {
 		fetch(`/medidas/tempo-realClock/${serialNumber}`, {
-				cache: 'no-store'
-			}).then(function (response) {
-				if (response.ok) {
-					response.json().then(function (novoRegistro) {
+			cache: 'no-store'
+		}).then(function (response) {
+			if (response.ok) {
+				response.json().then(function (novoRegistro) {
 
-						console.log(`Dados atuais da Kpi ${JSON.stringify(novoRegistro)}`);
+					console.log(`Dados atuais da Kpi ${JSON.stringify(novoRegistro)}`);
 
-						span_clockAtual.innerHTML = novoRegistro[0].Clock;
+					span_clockAtual.innerHTML = novoRegistro[0].Clock;
 
-						console.log('serial: ' + serialNumber)
-						ClockCor(novoRegistro[0].Clock);
+					console.log('serial: ' + serialNumber)
+					ClockCor(novoRegistro[0].Clock);
 
-						proximaAtualizacao = setTimeout(() => atualizarKpiClock(serialNumber), 2000);
-					});
-				} else {
-					console.error('Nenhum dado encontrado ou erro na API');
 					proximaAtualizacao = setTimeout(() => atualizarKpiClock(serialNumber), 2000);
-				}
-			})
+				});
+			} else {
+				console.error('Nenhum dado encontrado ou erro na API');
+				proximaAtualizacao = setTimeout(() => atualizarKpiClock(serialNumber), 2000);
+			}
+		})
 			.catch(function (error) {
 				console.error(`Erro na obtenção dos dados p/ kpi: ${error.message}`);
 			});
@@ -962,19 +1016,19 @@
 		}
 
 		fetch(`/medidas/ultimasCpu/${serialNumber}`, {
-				cache: 'no-store'
-			}).then(function (response) {
-				if (response.ok) {
-					response.json().then(function (resposta) {
-						console.log(`Dados recebidos: ${JSON.stringify(resposta)}`);
-						resposta.reverse();
+			cache: 'no-store'
+		}).then(function (response) {
+			if (response.ok) {
+				response.json().then(function (resposta) {
+					console.log(`Dados recebidos: ${JSON.stringify(resposta)}`);
+					resposta.reverse();
 
-						plotarGraficoCpu(resposta, serialNumber);
-					});
-				} else {
-					console.error('Nenhum dado encontrado ou erro na API');
-				}
-			})
+					plotarGraficoCpu(resposta, serialNumber);
+				});
+			} else {
+				console.error('Nenhum dado encontrado ou erro na API');
+			}
+		})
 			.catch(function (error) {
 				console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
 			});
@@ -1005,7 +1059,7 @@
 				data: [0, 50, 20, 45, 10, 30, 22, 55, 35, 10, 95, 50],
 				fill: true,
 				data: [],
-			}, ],
+			},],
 			options: {
 				maintainAspectRatio: false,
 				responsive: true
@@ -1041,38 +1095,38 @@
 	function atualizarGraficoCpu(serialNumber, dados, myChartCpu) {
 
 		fetch(`/medidas/tempo-realCpu/${serialNumber}`, {
-				cache: 'no-store'
-			}).then(function (response) {
-				if (response.ok) {
-					response.json().then(function (novoRegistro) {
+			cache: 'no-store'
+		}).then(function (response) {
+			if (response.ok) {
+				response.json().then(function (novoRegistro) {
 
-						console.log(`Dados recebidos: ${JSON.stringify(novoRegistro)}`);
-						console.log(`Dados atuais do gráfico: ${dados}`);
+					console.log(`Dados recebidos: ${JSON.stringify(novoRegistro)}`);
+					console.log(`Dados atuais do gráfico: ${dados}`);
 
-						span_usoCpu.innerHTML = novoRegistro[0].Registro + "%";
+					span_usoCpu.innerHTML = novoRegistro[0].Registro + "%";
 
-						CpuCor(novoRegistro[0].Registro);
+					CpuCor(novoRegistro[0].Registro);
 
-						// tirando e colocando valores no gráfico
-						dados.labels.shift(); // apagar o primeiro
-						dados.labels.push(novoRegistro[0].momento_grafico); // incluir um novo momento
+					// tirando e colocando valores no gráfico
+					dados.labels.shift(); // apagar o primeiro
+					dados.labels.push(novoRegistro[0].momento_grafico); // incluir um novo momento
 
-						dados.datasets[0].data.shift();
-						dados.datasets[0].data.push((novoRegistro[0].Registro));
+					dados.datasets[0].data.shift();
+					dados.datasets[0].data.push((novoRegistro[0].Registro));
 
-						myChartCpu.update();
+					myChartCpu.update();
 
 
-						// Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
-						proximaAtualizacao = setTimeout(() => atualizarGraficoCpu(serialNumber, dados,
-							myChartCpu), 2000);
-					});
-				} else {
-					console.error('Nenhum dado encontrado ou erro na API');
 					// Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
-					proximaAtualizacao = setTimeout(() => atualizarGraficoCpu(serialNumber, dados, myChartCpu), 2000);
-				}
-			})
+					proximaAtualizacao = setTimeout(() => atualizarGraficoCpu(serialNumber, dados,
+						myChartCpu), 2000);
+				});
+			} else {
+				console.error('Nenhum dado encontrado ou erro na API');
+				// Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
+				proximaAtualizacao = setTimeout(() => atualizarGraficoCpu(serialNumber, dados, myChartCpu), 2000);
+			}
+		})
 			.catch(function (error) {
 				console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
 			});
@@ -1094,19 +1148,19 @@
 		}
 
 		fetch(`/medidas/ultimasRam/${serialNumber}`, {
-				cache: 'no-store'
-			}).then(function (response) {
-				if (response.ok) {
-					response.json().then(function (resposta) {
-						console.log(`Dados recebidos: ${JSON.stringify(resposta)}`);
-						resposta.reverse();
+			cache: 'no-store'
+		}).then(function (response) {
+			if (response.ok) {
+				response.json().then(function (resposta) {
+					console.log(`Dados recebidos: ${JSON.stringify(resposta)}`);
+					resposta.reverse();
 
-						plotarGraficoRam(resposta, serialNumber);
-					});
-				} else {
-					console.error('Nenhum dado encontrado ou erro na API');
-				}
-			})
+					plotarGraficoRam(resposta, serialNumber);
+				});
+			} else {
+				console.error('Nenhum dado encontrado ou erro na API');
+			}
+		})
 			.catch(function (error) {
 				console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
 			});
@@ -1137,7 +1191,7 @@
 				data: [0, 50, 20, 45, 10, 30, 22, 55, 35, 10, 95, 50],
 				fill: true,
 				data: [],
-			}, ],
+			},],
 			options: {
 				maintainAspectRatio: false,
 				responsive: true
@@ -1173,41 +1227,41 @@
 	function atualizarGraficoRam(serialNumber, dados, myChartRam) {
 
 		fetch(`/medidas/tempo-realRam/${serialNumber}`, {
-				cache: 'no-store'
-			}).then(function (response) {
-				if (response.ok) {
-					response.json().then(function (novoRegistro) {
+			cache: 'no-store'
+		}).then(function (response) {
+			if (response.ok) {
+				response.json().then(function (novoRegistro) {
 
-						console.log(`Dados recebidos: ${JSON.stringify(novoRegistro)}`);
-						console.log(`Dados atuais do gráfico: ${dados}`);
+					console.log(`Dados recebidos: ${JSON.stringify(novoRegistro)}`);
+					console.log(`Dados atuais do gráfico: ${dados}`);
 
-						span_usoRam.innerHTML = novoRegistro[0].Registro + "GB";
+					span_usoRam.innerHTML = novoRegistro[0].Registro + "GB";
 
-						RamCor(novoRegistro[0].Registro);
+					RamCor(novoRegistro[0].Registro);
 
-						// tirando e colocando valores no gráfico
-						dados.labels.shift(); // apagar o primeiro
-						dados.labels.push(novoRegistro[0].momento_grafico); // incluir um novo momento
+					// tirando e colocando valores no gráfico
+					dados.labels.shift(); // apagar o primeiro
+					dados.labels.push(novoRegistro[0].momento_grafico); // incluir um novo momento
 
-						dados.datasets[0].data.shift(); // apagar o primeiro de umidade
-						dados.datasets[0].data.push((novoRegistro[0]
+					dados.datasets[0].data.shift(); // apagar o primeiro de umidade
+					dados.datasets[0].data.push((novoRegistro[0]
 						.Registro)); // incluir uma nova medida de umidade
 
-						// dados.datasets[1].data.shift();  // apagar o primeiro de temperatura
-						// dados.datasets[1].data.push(novoRegistro[0].temperatura); // incluir uma nova medida de temperatura
+					// dados.datasets[1].data.shift();  // apagar o primeiro de temperatura
+					// dados.datasets[1].data.push(novoRegistro[0].temperatura); // incluir uma nova medida de temperatura
 
-						myChartRam.update();
+					myChartRam.update();
 
-						// Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
-						proximaAtualizacao = setTimeout(() => atualizarGraficoRam(serialNumber, dados,
-							myChartRam), 2000);
-					});
-				} else {
-					console.error('Nenhum dado encontrado ou erro na API');
 					// Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
-					proximaAtualizacao = setTimeout(() => atualizarGraficoRam(serialNumber, dados, myChartRam), 2000);
-				}
-			})
+					proximaAtualizacao = setTimeout(() => atualizarGraficoRam(serialNumber, dados,
+						myChartRam), 2000);
+				});
+			} else {
+				console.error('Nenhum dado encontrado ou erro na API');
+				// Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
+				proximaAtualizacao = setTimeout(() => atualizarGraficoRam(serialNumber, dados, myChartRam), 2000);
+			}
+		})
 			.catch(function (error) {
 				console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
 			});
@@ -1306,7 +1360,7 @@
 					'rgb(50,205,50)',
 					'rgb(255,0,0)'
 				],
-			}, ],
+			},],
 		};
 
 		console.log(JSON.stringify(dados));
@@ -1325,6 +1379,199 @@
 			config
 		);
 
+	}
+
+	function obterDadosGraficoCondicao(serialNumber) {
+
+		document.getElementById("myChartCondicao").remove();
+
+		var divGrafico = document.getElementById("grafico_condicao");
+		var canvas = document.createElement("canvas");
+		canvas.id = "myChartCondicao";
+
+		divGrafico.appendChild(canvas);
+
+		if (proximaAtualizacao != undefined) {
+			clearTimeout(proximaAtualizacao);
+		}
+
+		peso = [];
+
+		fetch(`/medidas/ultimasCondicaoCpu/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
+			if (response.ok) {
+				response.json().then(function (resposta) {
+					console.log(`Dados recebidos: ${JSON.stringify(resposta)}`);
+					resposta.reverse();
+
+					for (let i = 0; i < resposta.length; i++) {
+
+						if (resposta[i] <= 0.0) {
+							cal = 8;
+						} else if (resposta[i] >= 85.0) {
+							cal = 4;
+						} else if (resposta[i] >= 70.0) {
+							cal = 2;
+						} else {
+							cal = 0;
+						}
+
+						peso.push(cal);
+					}
+
+				});
+			} else {
+				console.error('Nenhum dado encontrado ou erro na API condicao');
+			}
+		})
+			.catch(function (error) {
+				console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
+			});
+
+
+		fetch(`/medidas/ultimasCondicaoRam/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
+			if (response.ok) {
+				response.json().then(function (resposta) {
+					console.log(`Dados recebidos: ${JSON.stringify(resposta)}`);
+					resposta.reverse();
+
+					for (let i = 0; i < resposta.length; i++) {
+
+						porcRam = (resposta[i] * 100) / valorMaximoR;
+
+						if (porcRam <= 0.0) {
+							cal = 8;
+						} else if (porcRam >= 85.0) {
+							cal = 4;
+						} else if (porcRam >= 70.0) {
+							cal = 2;
+						} else {
+							cal = 0;
+						}
+
+						peso[i] += cal;
+					}
+
+				});
+			} else {
+				console.error('Nenhum dado encontrado ou erro na API condicao');
+			}
+		})
+			.catch(function (error) {
+				console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
+			});
+
+
+		fetch(`/medidas/ultimasCondicaoDisco/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
+			if (response.ok) {
+				response.json().then(function (resposta) {
+					console.log(`Dados recebidos: ${JSON.stringify(resposta)}`);
+					resposta.reverse();
+
+					for (let i = 0; i < resposta.length; i++) {
+
+						porcentagemDisco = Math.round((resposta[i] / valorMaximoD) * 100);
+
+						if (porcentagemDisco <= 0.0) {
+							cal = 8;
+						} else if (porcentagemDisco >= 60.0) {
+							cal = 4;
+						} else if (porcentagemDisco >= 90.0) {
+							cal = 2;
+						} else {
+							cal = 0;
+						}
+
+						peso[i] += cal;
+					}
+
+					plotarGraficoCondicao(resposta, peso)
+				});
+			} else {
+				console.error('Nenhum dado encontrado ou erro na API condicao');
+			}
+		})
+			.catch(function (error) {
+				console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
+			});
+	}
+
+	function plotarGraficoCondicao(resposta, peso) {
+		console.log('iniciando plotagem do gráfico...');
+		console.log(peso);
+
+		let labels = [];
+		let cores = [];
+
+		for (let i = 0; i < peso.length; i++) {
+			if (peso[i] >= 8) {
+				cores.push("red")
+			} else if (peso[i] >= 4) {
+				cores.push("yellow")
+			} else {
+				cores.push("green")
+			}
+		}
+
+		var dados = {
+			labels: labels,
+			datasets: [
+				{
+					yAxisID: 'y-condicao',
+					label: 'Status',
+					lineTension: 0.3,
+					backgroundColor: cores,
+					borderColor: cores,
+					pointRadius: 3,
+					pointBackgroundColor: cores,
+					pointBorderColor: cores,
+					pointHoverRadius: 3,
+					pointHoverBackgroundColor: cores,
+					pointHoverBorderColor: cores,
+					pointHitRadius: 10,
+					pointBorderWidth: 2,
+					data: [0, 50, 20, 45, 10, 30, 22, 55, 35, 10, 95, 50],
+					fill: true,
+					data: [],
+				},
+			],
+			options: {
+				maintainAspectRatio: false,
+				responsive: true
+			}
+		};
+
+		for (i = 0; i < resposta.length; i++) {
+			var registro = resposta[i];
+			var p = peso[i]
+			labels.push(registro.Data);
+
+			if (p >= 8) {
+				v_condicao = 1;
+			} else if (p >= 4) {
+				v_condicao = 2;
+			} else {
+				v_condicao = 3;
+			}
+
+			dados.datasets[0].data.push(v_condicao);
+		}
+
+		console.log(JSON.stringify(dados));
+
+		const configCondicao = {
+			type: 'bar',
+			data: dados,
+			options: {
+				maintainAspectRatio: false,
+				responsive: true,
+			}
+
+		};
+
+		let myChartCondicao = new Chart(
+			document.getElementById('myChartCondicao'),
+			configCondicao
+		);
 	}
 
 	function verificarComponentes(serialNumber) {

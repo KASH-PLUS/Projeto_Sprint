@@ -42,10 +42,68 @@ h6:hover{color:#000}
   height: 42vh;
 }
 
+#myChartCondicao{
+  height: 20vh;
+}
+
 #mapaCaixa{
   height: 40vh;
 }
 
+
+.div_legenda{
+  font-size: 22px;
+  height: 10rem;
+  display: flex;
+  justify-items: center;
+  align-items: center;
+}
+
+.leg_bom {
+  display: flex;
+  align-items: center;
+}
+
+.leg_analise {
+  display: flex;
+  align-items: center;
+}
+
+.leg_critico {
+  display: flex;
+  align-items: center;
+}
+
+.leg_circulo {
+  height: 22px;
+  width: 22px;
+  border-radius: 100%;
+  margin-right: 5px;
+}
+
+#leg_bom {
+  color: green;
+}
+
+#leg_analise {
+  color: rgb(196, 119, 4);
+}
+
+#leg_critico {
+  color: red;
+}
+
+#leg_c_bom{
+  background-color: green;
+}
+
+#leg_c_analise{
+  background-color: #e8bb1a;
+}
+
+#leg_c_critico{
+  background-color: red;
+}
 
 @media (max-width: 765px){
   #myChartCpu{
@@ -56,10 +114,13 @@ h6:hover{color:#000}
     height: 15vh !important;
   }
 
- #mapaCaixa{
+  #mapaCaixa{
     height: 15vh !important;
   }
  
+  #myChartCondicao{
+    height: 20vh !important;
+  }
 }
 
 .btn_temp {

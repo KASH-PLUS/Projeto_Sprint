@@ -27,6 +27,100 @@ function buscarUltimasMedidasCpu(serialNumber, limite_linhas) {
     return database.executar(instrucaoSql);
 }
 
+function buscarUltimasCondicaoCpu(serialNumber) {
+
+    var instrucaoSql = ''
+
+    if (process.env.AMBIENTE_PROCESSO == "producao") {
+        instrucaoSql = `select 
+                            CONVERT(varchar, Horario, 111) as 'Data',
+                            round(avg(Registro),2) as 'CPU'	
+                        from vwConsumo2
+                            where Componente = 'cpu' 
+                            and NumeroSerial = '${serialNumber}' 
+                            and cast(Horario as time) between '10:00:00' and '22:00:00'
+                        group by CONVERT(varchar, Horario, 111);`;
+    } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
+        instrucaoSql = `select 
+                            round(avg(Registro),2) as 'CPU'	
+                        from vwConsumo 
+                            where Componente = 'cpu'
+                            and NumeroSerial = '${serialNumber}' 
+                            and cast(Horario as time) between '10:00:00' and '22:00:00'
+                        group by cast(Horario as date)
+                        limit 7;`;
+    } else {
+        console.log("\nO AMBIENTE (produção OU desenvolvimento) NÃO FOI DEFINIDO EM app.js\n");
+        return
+    }
+
+    console.log("Executando a instrução SQL: \n" + instrucaoSql);
+    return database.executar(instrucaoSql);
+}
+
+function buscarUltimasCondicaoRam(serialNumber) {
+
+    var instrucaoSql = ''
+
+    if (process.env.AMBIENTE_PROCESSO == "producao") {
+        instrucaoSql = `select 
+                            CONVERT(varchar, Horario, 111) as 'Data',
+                            round(avg(Registro),2) as 'RAM'	
+                        from vwConsumo2
+                            where Componente = 'ram' 
+                            and NumeroSerial = '${serialNumber}' 
+                            and cast(Horario as time) between '10:00:00' and '22:00:00'
+                        group by CONVERT(varchar, Horario, 111);`;
+    } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
+        instrucaoSql = `select 
+                            round(avg(Registro),2) as 'RAM'	
+                        from vwConsumo 
+                            where Componente = 'ram'
+                            and NumeroSerial = '${serialNumber}' 
+                            and cast(Horario as time) between '10:00:00' and '22:00:00'
+                        group by cast(Horario as date)
+                        limit 7;`;
+    } else {
+        console.log("\nO AMBIENTE (produção OU desenvolvimento) NÃO FOI DEFINIDO EM app.js\n");
+        return
+    }
+
+    console.log("Executando a instrução SQL: \n" + instrucaoSql);
+    return database.executar(instrucaoSql);
+}
+
+function buscarUltimasCondicaoDisco(serialNumber) {
+
+    var instrucaoSql = ''
+
+    if (process.env.AMBIENTE_PROCESSO == "producao") {
+        instrucaoSql = `select 
+                            CONVERT(varchar, Horario, 111) as 'Data',
+                            round(avg(Registro),2) as 'Disco'	
+                        from vwConsumo2
+                            where Componente = 'disco' 
+                            and NumeroSerial = '${serialNumber}' 
+                            and cast(Horario as time) between '10:00:00' and '22:00:00'
+                        group by CONVERT(varchar, Horario, 111);`;
+    } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
+        instrucaoSql = `select 
+                            DATE_FORMAT(Horario,'%Y/%m/%d') as 'Data',
+                            round(avg(Registro),2) as 'Disco'	
+                        from vwConsumo 
+                            where Componente = 'disco'
+                            and NumeroSerial = '${serialNumber}' 
+                            and cast(Horario as time) between '10:00:00' and '22:00:00'
+                        group by cast(Horario as date)
+                        limit 7;`;
+    } else {
+        console.log("\nO AMBIENTE (produção OU desenvolvimento) NÃO FOI DEFINIDO EM app.js\n");
+        return
+    }
+
+    console.log("Executando a instrução SQL: \n" + instrucaoSql);
+    return database.executar(instrucaoSql);
+}
+
 function buscarUltimasMedidasRam(serialNumber, limite_linhas) {
 
     var instrucaoSql = ''
@@ -396,6 +490,9 @@ function buscarClockEmTempoReal(serialNumber) {
 module.exports = {
     buscarUltimasMedidasCpu,
     buscarUltimasMedidasRam,
+    buscarUltimasCondicaoCpu,
+    buscarUltimasCondicaoRam,
+    buscarUltimasCondicaoDisco,
     buscarMedidasEmTempoRealCpu,
     buscarUltimasMedidasRede,
     buscarUltimasMedidasPacotes,

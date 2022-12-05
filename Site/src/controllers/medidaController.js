@@ -26,6 +26,58 @@ function buscarUltimasMedidasCpu(req, res) {
     });
 }
 
+
+function buscarUltimasCondicaoCpu(req, res) {
+
+    var serialNumber = req.params.serialNumber;
+
+    medidaModel.buscarUltimasCondicaoCpu(serialNumber).then(function (resultado) {
+        if (resultado.length > 0) {
+            res.status(200).json(resultado);
+        } else {
+            res.status(204).send("Nenhum resultado encontrado!")
+        }
+    }).catch(function (erro) {
+        console.log(erro);
+        console.log("Houve um erro ao buscar as ultimas medidas.", erro.sqlMessage);
+        res.status(500).json(erro.sqlMessage);
+    });
+}
+
+function buscarUltimasCondicaoRam(req, res) {
+
+    var serialNumber = req.params.serialNumber;
+
+    medidaModel.buscarUltimasCondicaoRam(serialNumber).then(function (resultado) {
+        if (resultado.length > 0) {
+            res.status(200).json(resultado);
+        } else {
+            res.status(204).send("Nenhum resultado encontrado!")
+        }
+    }).catch(function (erro) {
+        console.log(erro);
+        console.log("Houve um erro ao buscar as ultimas medidas.", erro.sqlMessage);
+        res.status(500).json(erro.sqlMessage);
+    });
+}
+
+function buscarUltimasCondicaoDisco(req, res) {
+
+    var serialNumber = req.params.serialNumber;
+
+    medidaModel.buscarUltimasCondicaoDisco(serialNumber).then(function (resultado) {
+        if (resultado.length > 0) {
+            res.status(200).json(resultado);
+        } else {
+            res.status(204).send("Nenhum resultado encontrado!")
+        }
+    }).catch(function (erro) {
+        console.log(erro);
+        console.log("Houve um erro ao buscar as ultimas medidas.", erro.sqlMessage);
+        res.status(500).json(erro.sqlMessage);
+    });
+}
+
 function buscarUltimasMedidasRam(req, res) {
 
     const limite_linhas = 8;
@@ -302,6 +354,9 @@ module.exports = {
     buscarUltimasMedidasRam,
     buscarUltimasMedidasPacotes,
     buscarUltimasMedidasRede,
+    buscarUltimasCondicaoCpu,
+    buscarUltimasCondicaoRam,
+    buscarUltimasCondicaoDisco,
     buscarMedidasEmTempoRealCpu,
     buscarMedidasEmTempoRealRam,
     buscarMedidasEmTempoRealRede,

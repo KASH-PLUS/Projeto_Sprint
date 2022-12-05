@@ -126,6 +126,7 @@ function listarCaixas() {
                     obterDadosPlacaDeRede(caixas.serialNumber[0]);
                     obterDadosPacotes(caixas.serialNumber[0]);
                     setRamMax(caixas.serialNumber[0]);
+                    obterDadosGraficoCondicao(caixas.serialNumber[0]);
                     recuperarDados(caixas.cep[0]);
                     document.getElementById("span_serialNumber").innerHTML = caixas.serialNumber[0]
                 }
@@ -245,6 +246,7 @@ function addListeners() {
             obterDadosPlacaDeRede(key);
             obterDadosPacotes(key)
             setRamMax(key);
+            obterDadosGraficoCondicao(key);        
 
             document.getElementById("span_serialNumber").innerHTML = key
         })
