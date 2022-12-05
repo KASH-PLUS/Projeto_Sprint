@@ -131,7 +131,8 @@ function listarComponentes(serialNumber) {
 function listarTemperatura(serialNumber) {
     console.log("ACESSEI O USUARIO MODEL \n \n\t\t >> Se aqui der erro de 'Error: connect ECONNREFUSED',\n \t\t >> verifique suas credenciais de acesso ao banco\n \t\t >> e se o servidor de seu BD está rodando corretamente. \n\n function listarQuantidade():", serialNumber)
     var instrucao = `
-        SELECT COUNT(Temperatura) AS 'Contagem' FROM vwTemp WHERE NumeroSerial = '${serialNumber}'; 
+        SELECT COUNT(Temperatura) AS 'Contagem' FROM vwTemp, vwMaquina 
+	        WHERE vwTemp.NumeroSerial = '${serialNumber}' and vwMaquina.NumeroSerial = '${serialNumber}' and Componente = 'cpu'; 
     `;
     console.log("Executando a instrução SQL: \n" + instrucao);
     return database.executar(instrucao);

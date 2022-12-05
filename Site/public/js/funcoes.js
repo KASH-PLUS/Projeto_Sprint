@@ -129,6 +129,8 @@ function listarCaixas() {
 
             });
 
+
+
         } else {
             console.log("Houve um erro ao tentar listar os caixas!");
 
@@ -155,6 +157,7 @@ function recuperarDados(cep) {
     }
 
 }
+
 
 function performGeocodingRequest(conteudo) {
     const APIKEY = "2e20e7f8-9be2-4e04-a213-75b2a2040023";
@@ -218,6 +221,7 @@ function gerarMapa(latitude, longitude) {
     L.marker([latitude, longitude]).addTo(map)
         .bindPopup('')
 }
+
 
 function addListeners() {
     var caixas = JSON.parse(sessionStorage.INFO_CAIXA);

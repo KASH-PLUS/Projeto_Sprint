@@ -14,7 +14,7 @@
 		integrity="sha256-sA+zWATbFveLLNqWO2gtiw3HL/lh1giY/Inf1BJ0z14=" crossorigin="" />
 </head>
 
-<body id="page-top" onload="validarSessao(), listarCaixas(), verificarCargo()"> 
+<body id="page-top" onload="validarSessao(), listarCaixas(), verificarCargo()">
 	<div id="wrapper">
 		<nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
 			style="background: rgb(0, 132, 156);">
@@ -240,7 +240,8 @@
 									</div>
 								</div>
 							</div>
-							<div class="row col-lg-7 col-xl-5 align-content-around" id="kpis_temp" style="display: none;">
+							<div class="row col-lg-7 col-xl-5 align-content-around" id="kpis_temp"
+								style="display: none;">
 								<div class="col-md-6 col-xl-8 mb-4">
 									<div id="clock_cor" class="card shadow border-start-success py-2">
 										<div class="card-body">
@@ -254,7 +255,8 @@
 															id="span_clockAtual">0000</span>
 													</div>
 												</div>
-												<div class="col-auto"><i class="fas fa-clock fa-2x text-black-300" style="color: rgb(167, 57, 60)"></i>
+												<div class="col-auto"><i class="fas fa-clock fa-2x text-black-300"
+														style="color: rgb(167, 57, 60)"></i>
 												</div>
 											</div>
 										</div>
@@ -356,18 +358,20 @@
 			clearTimeout(proximaAtualizacao);
 		}
 
-		fetch(`/medidas/ultimasTemp/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
-			if (response.ok) {
-				response.json().then(function (resposta) {
-					console.log(`Dados recebidos de temperatura: ${JSON.stringify(resposta)}`);
-					resposta.reverse();
+		fetch(`/medidas/ultimasTemp/${serialNumber}`, {
+				cache: 'no-store'
+			}).then(function (response) {
+				if (response.ok) {
+					response.json().then(function (resposta) {
+						console.log(`Dados recebidos de temperatura: ${JSON.stringify(resposta)}`);
+						resposta.reverse();
 
-					plotarGraficoTemp(resposta, serialNumber);
-				});
-			} else {
-				console.error('Nenhum dado encontrado ou erro na API');
-			}
-		})
+						plotarGraficoTemp(resposta, serialNumber);
+					});
+				} else {
+					console.error('Nenhum dado encontrado ou erro na API');
+				}
+			})
 			.catch(function (error) {
 				console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
 			});
@@ -380,26 +384,24 @@
 
 		var dados = {
 			labels: labels,
-			datasets: [
-				{
-					yAxisID: 'y-usoTemp',
-					label: 'Uso da temp',
-					lineTension: 0.3,
-					backgroundColor: "rgba(167, 57, 60, 0.5)",
-					borderColor: "rgba(167, 57, 60, 1)",
-					pointRadius: 3,
-					pointBackgroundColor: "rgba(167, 57, 60, 1)",
-					pointBorderColor: "rgba(167, 57, 60, 1)",
-					pointHoverRadius: 3,
-					pointHoverBackgroundColor: "rgba(167, 57, 60, 1)",
-					pointHoverBorderColor: "rgba(167, 57, 60, 1)",
-					pointHitRadius: 10,
-					pointBorderWidth: 2,
-					data: [0, 50, 20, 45, 10, 30, 22, 55, 35, 10, 95, 50],
-					fill: true,
-					data: [],
-				},
-			],
+			datasets: [{
+				yAxisID: 'y-usoTemp',
+				label: 'Uso da temp',
+				lineTension: 0.3,
+				backgroundColor: "rgba(167, 57, 60, 0.5)",
+				borderColor: "rgba(167, 57, 60, 1)",
+				pointRadius: 3,
+				pointBackgroundColor: "rgba(167, 57, 60, 1)",
+				pointBorderColor: "rgba(167, 57, 60, 1)",
+				pointHoverRadius: 3,
+				pointHoverBackgroundColor: "rgba(167, 57, 60, 1)",
+				pointHoverBorderColor: "rgba(167, 57, 60, 1)",
+				pointHitRadius: 10,
+				pointBorderWidth: 2,
+				data: [0, 50, 20, 45, 10, 30, 22, 55, 35, 10, 95, 50],
+				fill: true,
+				data: [],
+			}, ],
 			options: {
 				maintainAspectRatio: false,
 				responsive: true
@@ -433,43 +435,47 @@
 	}
 
 	function atualizarGraficoTemp(serialNumber, dados, myChartTemp) {
-		fetch(`/medidas/tempo-realTemp/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
-			if (response.ok) {
-				response.json().then(function (novoRegistro) {
+		fetch(`/medidas/tempo-realTemp/${serialNumber}`, {
+				cache: 'no-store'
+			}).then(function (response) {
+				if (response.ok) {
+					response.json().then(function (novoRegistro) {
 
-					console.log(`Dados de temperatura recebidos: ${JSON.stringify(novoRegistro)}`);
+						console.log(`Dados de temperatura recebidos: ${JSON.stringify(novoRegistro)}`);
 
-					dados.labels.shift();
-					dados.labels.push(novoRegistro[0].momento_grafico); 
+						dados.labels.shift();
+						dados.labels.push(novoRegistro[0].momento_grafico);
 
-					dados.datasets[0].data.shift();
-					dados.datasets[0].data.push((novoRegistro[0].Temperatura));
+						dados.datasets[0].data.shift();
+						dados.datasets[0].data.push((novoRegistro[0].Temperatura));
 
-					registro = novoRegistro[0].Temperatura
+						registro = novoRegistro[0].Temperatura
 
-					if (registro <= 20) {  // 40 - 65 // 70-85
-						cor = "red";
-						pesoTemp = 8;
-					} else if (registro >= 65) {
-						cor = "yellow";
-						pesoTemp = 4;
-					} else if (registro >= 85) {
-						cor = "red";
-						pesoTemp = 8;
-					} else {
-						cor = "green";
-						pesoTemp = 0;
-					}
+						if (registro <= 20) { // 40 - 65 // 70-85
+							cor = "red";
+							pesoTemp = 8;
+						} else if (registro >= 65) {
+							cor = "yellow";
+							pesoTemp = 4;
+						} else if (registro >= 85) {
+							cor = "red";
+							pesoTemp = 8;
+						} else {
+							cor = "green";
+							pesoTemp = 0;
+						}
 
-					myChartTemp.update();
+						myChartTemp.update();
 
-					proximaAtualizacao = setTimeout(() => atualizarGraficoTemp(serialNumber, dados, myChartTemp), 2000);
-				});
-			} else {
-				console.error('Nenhum dado encontrado ou erro na API');
-				proximaAtualizacao = setTimeout(() => atualizarGraficoTemp(serialNumber, dados, myChartTemp), 2000);
-			}
-		})
+						proximaAtualizacao = setTimeout(() => atualizarGraficoTemp(serialNumber, dados,
+							myChartTemp), 2000);
+					});
+				} else {
+					console.error('Nenhum dado encontrado ou erro na API');
+					proximaAtualizacao = setTimeout(() => atualizarGraficoTemp(serialNumber, dados, myChartTemp),
+					2000);
+				}
+			})
 			.catch(function (error) {
 				console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
 			});
@@ -496,22 +502,22 @@
 				console.log('resposta: ' + resposta);
 
 				resposta.json().then(json => {
-					console.log('json: ' +  json);
+					console.log('json: ' + json);
 					console.log('jsonS: ' + JSON.stringify(json));
 
-					 if (json[0].Contagem != null && json[0].Contagem > 0) {
-						 document.getElementById("card_temp").style.display = "block";
-						 kpis_temp.style.display = "flex";
-						 obterDadosGraficoTemp(serialNumber);
-						 atualizarKpiClock(serialNumber);
-					 } else {
-						 // alert('Esta maquina não tem temperatura cadastrada');
-						 Swal.fire({
-							 title: 'Temperatura não encontrada',
-							 text: "Não encontramos nenhum dado de temperatura para essa máquina no nosso banco de dados",
-							 icon: 'warning'
-						 })
-					 }
+					if (json[0].Contagem != null && json[0].Contagem > 0) {
+						document.getElementById("card_temp").style.display = "block";
+						document.getElementById("kpis_temp").style.display = "flex";
+						obterDadosGraficoTemp(serialNumber);
+						atualizarKpiClock(serialNumber);
+					} else {
+						// alert('Esta maquina não tem temperatura cadastrada');
+						Swal.fire({
+							title: 'Temperatura não encontrada',
+							text: "Não encontramos nenhum dado de temperatura para essa máquina no nosso banco de dados",
+							icon: 'warning'
+						})
+					}
 
 				});
 
@@ -536,26 +542,28 @@
 		})
 
 	}
-	
+
 	function atualizarKpiClock(serialNumber) {
-		fetch(`/medidas/tempo-realClock/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
-			if (response.ok) {
-				response.json().then(function (novoRegistro) {
+		fetch(`/medidas/tempo-realClock/${serialNumber}`, {
+				cache: 'no-store'
+			}).then(function (response) {
+				if (response.ok) {
+					response.json().then(function (novoRegistro) {
 
-					console.log(`Dados atuais da Kpi ${JSON.stringify(novoRegistro)}`);
+						console.log(`Dados atuais da Kpi ${JSON.stringify(novoRegistro)}`);
 
-					span_clockAtual.innerHTML = novoRegistro[0].Clock;
+						span_clockAtual.innerHTML = novoRegistro[0].Clock;
 
-					console.log('serial: ' + serialNumber)
-					ClockCor(novoRegistro[0].Clock);
+						console.log('serial: ' + serialNumber)
+						ClockCor(novoRegistro[0].Clock);
 
+						proximaAtualizacao = setTimeout(() => atualizarKpiClock(serialNumber), 2000);
+					});
+				} else {
+					console.error('Nenhum dado encontrado ou erro na API');
 					proximaAtualizacao = setTimeout(() => atualizarKpiClock(serialNumber), 2000);
-				});
-			} else {
-				console.error('Nenhum dado encontrado ou erro na API');
-				proximaAtualizacao = setTimeout(() => atualizarKpiClock(serialNumber), 2000);
-			}
-		})
+				}
+			})
 			.catch(function (error) {
 				console.error(`Erro na obtenção dos dados p/ kpi: ${error.message}`);
 			});
@@ -574,18 +582,20 @@
 			clearTimeout(proximaAtualizacao);
 		}
 
-		fetch(`/medidas/ultimasCpu/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
-			if (response.ok) {
-				response.json().then(function (resposta) {
-					console.log(`Dados recebidos: ${JSON.stringify(resposta)}`);
-					resposta.reverse();
+		fetch(`/medidas/ultimasCpu/${serialNumber}`, {
+				cache: 'no-store'
+			}).then(function (response) {
+				if (response.ok) {
+					response.json().then(function (resposta) {
+						console.log(`Dados recebidos: ${JSON.stringify(resposta)}`);
+						resposta.reverse();
 
-					plotarGraficoCpu(resposta, serialNumber);
-				});
-			} else {
-				console.error('Nenhum dado encontrado ou erro na API');
-			}
-		})
+						plotarGraficoCpu(resposta, serialNumber);
+					});
+				} else {
+					console.error('Nenhum dado encontrado ou erro na API');
+				}
+			})
 			.catch(function (error) {
 				console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
 			});
@@ -599,26 +609,24 @@
 
 		var dados = {
 			labels: labels,
-			datasets: [
-				{
-					yAxisID: 'y-usoCpu',
-					label: 'Uso da cpu',
-					lineTension: 0.3,
-					backgroundColor: "rgba(78, 115, 223, 0.5)",
-					borderColor: "rgba(78, 115, 223, 1)",
-					pointRadius: 3,
-					pointBackgroundColor: "rgba(78, 115, 223, 1)",
-					pointBorderColor: "rgba(78, 115, 223, 1)",
-					pointHoverRadius: 3,
-					pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
-					pointHoverBorderColor: "rgba(78, 115, 223, 1)",
-					pointHitRadius: 10,
-					pointBorderWidth: 2,
-					data: [0, 50, 20, 45, 10, 30, 22, 55, 35, 10, 95, 50],
-					fill: true,
-					data: [],
-				},
-			],
+			datasets: [{
+				yAxisID: 'y-usoCpu',
+				label: 'Uso da cpu',
+				lineTension: 0.3,
+				backgroundColor: "rgba(78, 115, 223, 0.5)",
+				borderColor: "rgba(78, 115, 223, 1)",
+				pointRadius: 3,
+				pointBackgroundColor: "rgba(78, 115, 223, 1)",
+				pointBorderColor: "rgba(78, 115, 223, 1)",
+				pointHoverRadius: 3,
+				pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+				pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+				pointHitRadius: 10,
+				pointBorderWidth: 2,
+				data: [0, 50, 20, 45, 10, 30, 22, 55, 35, 10, 95, 50],
+				fill: true,
+				data: [],
+			}, ],
 			options: {
 				maintainAspectRatio: false,
 				responsive: true
@@ -653,36 +661,39 @@
 
 	function atualizarGraficoCpu(serialNumber, dados, myChartCpu) {
 
-		fetch(`/medidas/tempo-realCpu/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
-			if (response.ok) {
-				response.json().then(function (novoRegistro) {
+		fetch(`/medidas/tempo-realCpu/${serialNumber}`, {
+				cache: 'no-store'
+			}).then(function (response) {
+				if (response.ok) {
+					response.json().then(function (novoRegistro) {
 
-					console.log(`Dados recebidos: ${JSON.stringify(novoRegistro)}`);
-					console.log(`Dados atuais do gráfico: ${dados}`);
+						console.log(`Dados recebidos: ${JSON.stringify(novoRegistro)}`);
+						console.log(`Dados atuais do gráfico: ${dados}`);
 
-					span_usoCpu.innerHTML = novoRegistro[0].Registro + "%";
+						span_usoCpu.innerHTML = novoRegistro[0].Registro + "%";
 
-					CpuCor(novoRegistro[0].Registro);
+						CpuCor(novoRegistro[0].Registro);
 
-					// tirando e colocando valores no gráfico
-					dados.labels.shift(); // apagar o primeiro
-					dados.labels.push(novoRegistro[0].momento_grafico); // incluir um novo momento
+						// tirando e colocando valores no gráfico
+						dados.labels.shift(); // apagar o primeiro
+						dados.labels.push(novoRegistro[0].momento_grafico); // incluir um novo momento
 
-					dados.datasets[0].data.shift();
-					dados.datasets[0].data.push((novoRegistro[0].Registro));
+						dados.datasets[0].data.shift();
+						dados.datasets[0].data.push((novoRegistro[0].Registro));
 
-					myChartCpu.update();
+						myChartCpu.update();
 
 
+						// Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
+						proximaAtualizacao = setTimeout(() => atualizarGraficoCpu(serialNumber, dados,
+							myChartCpu), 2000);
+					});
+				} else {
+					console.error('Nenhum dado encontrado ou erro na API');
 					// Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
 					proximaAtualizacao = setTimeout(() => atualizarGraficoCpu(serialNumber, dados, myChartCpu), 2000);
-				});
-			} else {
-				console.error('Nenhum dado encontrado ou erro na API');
-				// Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
-				proximaAtualizacao = setTimeout(() => atualizarGraficoCpu(serialNumber, dados, myChartCpu), 2000);
-			}
-		})
+				}
+			})
 			.catch(function (error) {
 				console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
 			});
@@ -703,18 +714,20 @@
 			clearTimeout(proximaAtualizacao);
 		}
 
-		fetch(`/medidas/ultimasRam/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
-			if (response.ok) {
-				response.json().then(function (resposta) {
-					console.log(`Dados recebidos: ${JSON.stringify(resposta)}`);
-					resposta.reverse();
+		fetch(`/medidas/ultimasRam/${serialNumber}`, {
+				cache: 'no-store'
+			}).then(function (response) {
+				if (response.ok) {
+					response.json().then(function (resposta) {
+						console.log(`Dados recebidos: ${JSON.stringify(resposta)}`);
+						resposta.reverse();
 
-					plotarGraficoRam(resposta, serialNumber);
-				});
-			} else {
-				console.error('Nenhum dado encontrado ou erro na API');
-			}
-		})
+						plotarGraficoRam(resposta, serialNumber);
+					});
+				} else {
+					console.error('Nenhum dado encontrado ou erro na API');
+				}
+			})
 			.catch(function (error) {
 				console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
 			});
@@ -728,26 +741,24 @@
 
 		var dados = {
 			labels: labels,
-			datasets: [
-				{
-					yAxisID: 'y-usoRam',
-					label: 'Uso da ram',
-					lineTension: 0.3,
-					backgroundColor: "rgba(124, 252, 0, 0.5)",
-					borderColor: "rgba(124, 252, 0, 1)",
-					pointRadius: 3,
-					pointBackgroundColor: "rgba(124, 252, 0, 1)",
-					pointBorderColor: "rgba(124, 252, 0, 1)",
-					pointHoverRadius: 3,
-					pointHoverBackgroundColor: "rgba(124, 252, 0, 1)",
-					pointHoverBorderColor: "rgba(124, 252, 0, 1)",
-					pointHitRadius: 10,
-					pointBorderWidth: 2,
-					data: [0, 50, 20, 45, 10, 30, 22, 55, 35, 10, 95, 50],
-					fill: true,
-					data: [],
-				},
-			],
+			datasets: [{
+				yAxisID: 'y-usoRam',
+				label: 'Uso da ram',
+				lineTension: 0.3,
+				backgroundColor: "rgba(124, 252, 0, 0.5)",
+				borderColor: "rgba(124, 252, 0, 1)",
+				pointRadius: 3,
+				pointBackgroundColor: "rgba(124, 252, 0, 1)",
+				pointBorderColor: "rgba(124, 252, 0, 1)",
+				pointHoverRadius: 3,
+				pointHoverBackgroundColor: "rgba(124, 252, 0, 1)",
+				pointHoverBorderColor: "rgba(124, 252, 0, 1)",
+				pointHitRadius: 10,
+				pointBorderWidth: 2,
+				data: [0, 50, 20, 45, 10, 30, 22, 55, 35, 10, 95, 50],
+				fill: true,
+				data: [],
+			}, ],
 			options: {
 				maintainAspectRatio: false,
 				responsive: true
@@ -783,38 +794,42 @@
 
 	function atualizarGraficoRam(serialNumber, dados, myChartRam) {
 
-		fetch(`/medidas/tempo-realRam/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
-			if (response.ok) {
-				response.json().then(function (novoRegistro) {
+		fetch(`/medidas/tempo-realRam/${serialNumber}`, {
+				cache: 'no-store'
+			}).then(function (response) {
+				if (response.ok) {
+					response.json().then(function (novoRegistro) {
 
-					console.log(`Dados recebidos: ${JSON.stringify(novoRegistro)}`);
-					console.log(`Dados atuais do gráfico: ${dados}`);
+						console.log(`Dados recebidos: ${JSON.stringify(novoRegistro)}`);
+						console.log(`Dados atuais do gráfico: ${dados}`);
 
-					span_usoRam.innerHTML = novoRegistro[0].Registro + "GB";
+						span_usoRam.innerHTML = novoRegistro[0].Registro + "GB";
 
-					RamCor(novoRegistro[0].Registro);
+						RamCor(novoRegistro[0].Registro);
 
-					// tirando e colocando valores no gráfico
-					dados.labels.shift(); // apagar o primeiro
-					dados.labels.push(novoRegistro[0].momento_grafico); // incluir um novo momento
+						// tirando e colocando valores no gráfico
+						dados.labels.shift(); // apagar o primeiro
+						dados.labels.push(novoRegistro[0].momento_grafico); // incluir um novo momento
 
-					dados.datasets[0].data.shift();  // apagar o primeiro de umidade
-					dados.datasets[0].data.push((novoRegistro[0].Registro)); // incluir uma nova medida de umidade
+						dados.datasets[0].data.shift(); // apagar o primeiro de umidade
+						dados.datasets[0].data.push((novoRegistro[0]
+						.Registro)); // incluir uma nova medida de umidade
 
-					// dados.datasets[1].data.shift();  // apagar o primeiro de temperatura
-					// dados.datasets[1].data.push(novoRegistro[0].temperatura); // incluir uma nova medida de temperatura
+						// dados.datasets[1].data.shift();  // apagar o primeiro de temperatura
+						// dados.datasets[1].data.push(novoRegistro[0].temperatura); // incluir uma nova medida de temperatura
 
-					myChartRam.update();
+						myChartRam.update();
 
+						// Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
+						proximaAtualizacao = setTimeout(() => atualizarGraficoRam(serialNumber, dados,
+							myChartRam), 2000);
+					});
+				} else {
+					console.error('Nenhum dado encontrado ou erro na API');
 					// Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
 					proximaAtualizacao = setTimeout(() => atualizarGraficoRam(serialNumber, dados, myChartRam), 2000);
-				});
-			} else {
-				console.error('Nenhum dado encontrado ou erro na API');
-				// Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
-				proximaAtualizacao = setTimeout(() => atualizarGraficoRam(serialNumber, dados, myChartRam), 2000);
-			}
-		})
+				}
+			})
 			.catch(function (error) {
 				console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
 			});
@@ -840,7 +855,9 @@
 			clearTimeout(proximaAtualizacao);
 		}
 
-		fetch(`/medidas/maxDisco/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
+		fetch(`/medidas/maxDisco/${serialNumber}`, {
+			cache: 'no-store'
+		}).then(function (response) {
 			if (response.ok) {
 				response.json().then(function (resposta) {
 					console.log(`Dados recebidos: ${JSON.stringify(resposta)}`);
@@ -857,7 +874,9 @@
 		});
 
 
-		fetch(`/medidas/ultimasDisco/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
+		fetch(`/medidas/ultimasDisco/${serialNumber}`, {
+			cache: 'no-store'
+		}).then(function (response) {
 			if (response.ok) {
 				response.json().then(function (resposta) {
 					console.log(`Dados recebidos: ${JSON.stringify(resposta)}`);
@@ -903,15 +922,13 @@
 
 		var dados = {
 			labels: labels,
-			datasets: [
-				{
-					data: [valorMaximo, usoDisco],
-					backgroundColor: [
-						'rgb(50,205,50)',
-						'rgb(255,0,0)'
-					],
-				},
-			],
+			datasets: [{
+				data: [valorMaximo, usoDisco],
+				backgroundColor: [
+					'rgb(50,205,50)',
+					'rgb(255,0,0)'
+				],
+			}, ],
 		};
 
 		console.log(JSON.stringify(dados));
@@ -962,6 +979,7 @@
 						if (componente == "cpu") {
 							document.getElementById("card_cpu").style.display = "block";
 							document.getElementById("aviso_componente").style.display = "none";
+							alert(serialNumber);
 							verificarTemperatura(serialNumber);
 						}
 
@@ -1002,7 +1020,9 @@
 
 	function setRamMax(serialNumber) {
 
-		fetch(`/medidas/maxRam/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
+		fetch(`/medidas/maxRam/${serialNumber}`, {
+			cache: 'no-store'
+		}).then(function (response) {
 			if (response.ok) {
 				response.json().then(function (resposta) {
 					console.log(`Dados recebidos: ${JSON.stringify(resposta)}`);
@@ -1083,7 +1103,7 @@
 	}
 
 	function ClockCor(registroClock) {
-		if (registroClock <= 900) {  // 1000 - 3600
+		if (registroClock <= 900) { // 1000 - 3600
 			cor = "red";
 			pesoClock = 14;
 		} else if (registroClock <= 1999) {
@@ -1097,7 +1117,7 @@
 			pesoClock = 0;
 		}
 		clock_cor.style = "border-bottom: 3px solid " + cor;
-		
+
 		StatusCorTemp();
 	}
 
@@ -1196,5 +1216,4 @@
 
 
 	}
-
 </script>
