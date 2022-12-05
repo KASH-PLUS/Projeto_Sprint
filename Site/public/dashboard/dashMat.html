@@ -32,7 +32,10 @@
 								class="fas fa-server"></i><span>Cadastrar Caixa</span></a><a class="nav-link"
 							href="dashMapa.html" id="link_dash_mapa"><i class="fas fa-map"></i><span>Dash -
 								Região</span></a><a class="nav-link" href="dashMat.html" id="link_dash_proc"><i
-									class="fas fa-user"></i><span>Dash - Processos</span></a>
+								class="fas fa-user"></i><span>Dash - Processos</span></a>
+						<a class="nav-link" href="dashOciosidade.html" id="link_dash_mapa"><i
+								class="fas fa-map"></i><span>Dash -
+								Ociosidade</span></a>
 					</li>
 					<li class="nav-item"><a id="link_dash" class="nav-link" data-bs-toggle="collapse" href="#div_caixas"
 							role="button" aria-expanded="false" aria-controls="div_caixas"><i
@@ -79,37 +82,40 @@
 				</nav>
 				<div class="container-fluid">
 					<div class="d-sm-flex justify-content-between align-items-center mb-4">
-						<h3 class="text-dark mb-0" id="h3_titulo">Dashboard - Processos<span id="span_serialNumber"></span></h3>
+						<h3 class="text-dark mb-0" id="h3_titulo">Dashboard - Processos<span
+								id="span_serialNumber"></span></h3>
 					</div>
 				</div>
 				<div class="container-fluid">
-                    <div class="row mb-3">
-                        <div class="col-auto col-lg-8 col-xl-12">
-                            <div class="row">
-                                <div class="col-lg-12 col-xl-12 offset-lg-3 offset-xl-0">
-                                    <div class="card shadow mb-3">
-                                        <div class="card-body">
-                                            <div class="row">
-                                                <div class="col">
-                                                    <div>
-                                                        <label class="form-label"><strong id="strong_titulo">Escolha uma máquina</strong><br /></label>
-                                                        <select class="form-select" id="slct_caixas">
+					<div class="row mb-3">
+						<div class="col-auto col-lg-8 col-xl-12">
+							<div class="row">
+								<div class="col-lg-12 col-xl-12 offset-lg-3 offset-xl-0">
+									<div class="card shadow mb-3">
+										<div class="card-body">
+											<div class="row">
+												<div class="col">
+													<div>
+														<label class="form-label"><strong id="strong_titulo">Escolha uma
+																máquina</strong><br /></label>
+														<select class="form-select" id="slct_caixas">
 															<option value="maquina">--Escolha uma máquina--</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="text-center mb-3"><button class="btn btn-primary btn-sm"
-														onclick="obterDadosGraficoCpu(), obterDadosGraficoRam()" id="btn_ver" style="margin-top: 2%;">Ver</button>
-															
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+														</select>
+													</div>
+													<div class="text-center mb-3"><button class="btn btn-primary btn-sm"
+															onclick="obterDadosGraficoCpu(), obterDadosGraficoRam()"
+															id="btn_ver" style="margin-top: 2%;">Ver</button>
+
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 				<div class="container-fluid">
 					<div id="graficos" style="display: none;">
 						<div class="row">
@@ -121,7 +127,8 @@
 												<h6 class="text-primary fw-bold m-0">Uso da CPU - Processo (%)</h6>
 											</div>
 											<div class="card-body">
-												<div class="chart-container" id="grafico_cpu" style="position: relative; width: 75vw;">
+												<div class="chart-container" id="grafico_cpu"
+													style="position: relative; width: 75vw;">
 													<canvas id="myChartCpu">
 													</canvas>
 												</div>
@@ -136,7 +143,8 @@
 												<h6 class="text-primary fw-bold m-0">Uso da RAM - Processo (%)</h6>
 											</div>
 											<div class="card-body">
-												<div class="chart-container" id="grafico_ram" style="position: relative; width: 75vw;">
+												<div class="chart-container" id="grafico_ram"
+													style="position: relative; width: 75vw;">
 													<canvas id="myChartRam">
 													</canvas>
 												</div>
@@ -147,7 +155,7 @@
 							</div>
 						</div>
 					</div>
-				</div>	
+				</div>
 				<footer class="bg-white sticky-footer">
 					<div class="container my-auto">
 						<div class="text-center my-auto copyright"><span>Copyright © KASH+&nbsp;2022</span></div>
@@ -165,7 +173,7 @@
 
 </html>
 <script>
-	
+
 	let proximaAtualizacao;
 
 	function gerarSelect() {
@@ -189,7 +197,7 @@
 					nome = json[0].nome;
 
 					const select = document.querySelector('#slct_caixas');
-					
+
 					for (let i = 0; i < json.length; i++) {
 						select.options[select.options.length] = new Option(json[i].nome + ' - ' + json[i].serialNumber, json[i].serialNumber);
 					}
@@ -210,14 +218,14 @@
 
 		return false;
 	}
-	
+
 
 	function obterDadosGraficoCpu() {
 
 		var serialNumber = slct_caixas.value;
 
 		if (serialNumber != "maquina") {
-			
+
 			graficos.style.display = 'block';
 
 			document.getElementById("myChartCpu").remove();
@@ -236,7 +244,7 @@
 				if (response.ok) {
 					response.json().then(function (resposta) {
 
-				
+
 						resposta.reverse();
 
 						var jsonVar = resposta
@@ -253,10 +261,10 @@
 
 		} else {
 			Swal.fire({
-                title: 'Escolha uma máquina',
-                icon: 'error',     
-                confirmButtonText: 'OK'
-            })
+				title: 'Escolha uma máquina',
+				icon: 'error',
+				confirmButtonText: 'OK'
+			})
 			graficos.style.display = 'none';
 		}
 
@@ -310,8 +318,8 @@
 		for (let i = 0; i < jsonVar.length; i++) {
 			var registro = jsonVar[i];
 			labels.push(registro.processo + "-" + registro.dataHora);
-			dados.datasets[0].data.push(registro.registro); 
-			dados.datasets[1].data.push(((registro.registro * registro.usoCpu) / 100).toFixed(2)); 
+			dados.datasets[0].data.push(registro.registro);
+			dados.datasets[1].data.push(((registro.registro * registro.usoCpu) / 100).toFixed(2));
 		}
 
 		const config = {
@@ -337,7 +345,7 @@
 		fetch(`/medidas/tempo-realProcCpu/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
 			if (response.ok) {
 				response.json().then(function (novoRegistro) {
-					
+
 					// tirando e colocando valores no gráfico
 					dados.labels.shift(); // apagar o primeiro
 					dados.labels.push(novoRegistro[0].processo + "-" + novoRegistro[0].dataHora); // incluir um novo momento
@@ -387,7 +395,7 @@
 			fetch(`/medidas/ultimasProcRam/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
 				if (response.ok) {
 					response.json().then(function (resposta) {
-						
+
 						resposta.reverse();
 
 						var jsonVar = resposta;
@@ -403,10 +411,10 @@
 				});
 		} else {
 			Swal.fire({
-                title: 'Escolha uma máquina',
-                icon: 'error',     
-                confirmButtonText: 'OK'
-            })
+				title: 'Escolha uma máquina',
+				icon: 'error',
+				confirmButtonText: 'OK'
+			})
 			graficos.style.display = 'none';
 		}
 
@@ -421,7 +429,7 @@
 		var dados = {
 			labels: labels,
 			datasets: [
-			{
+				{
 					yAxisID: 'y-usoRam',
 					label: 'Uso da ram',
 					lineTension: 0.3,
