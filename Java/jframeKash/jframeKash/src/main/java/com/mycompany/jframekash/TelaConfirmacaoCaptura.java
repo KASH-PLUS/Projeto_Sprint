@@ -103,7 +103,7 @@ public class TelaConfirmacaoCaptura extends javax.swing.JFrame {
     private void btnConfirmacaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmacaoActionPerformed
         ThreadInsert thread1 = new ThreadInsert();
         thread1.setSerialNumber(this.serialNumber);
-        thread1.setMacAddress(this.macAddress);
+//        thread1.setMacAddress(this.macAddress);
         thread1.start();
         
         in.setLocationRelativeTo(null);

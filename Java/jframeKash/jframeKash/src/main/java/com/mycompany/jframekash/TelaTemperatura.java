@@ -79,8 +79,8 @@ public class TelaTemperatura extends javax.swing.JFrame {
         prgTemperatura = new javax.swing.JProgressBar();
         lblAviso = new javax.swing.JLabel();
         btnDisco = new javax.swing.JButton();
-        btnRede = new javax.swing.JButton();
         lblTemperatura = new javax.swing.JLabel();
+        btnRede = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(950, 510));
@@ -147,6 +147,9 @@ public class TelaTemperatura extends javax.swing.JFrame {
             }
         });
 
+        lblTemperatura.setFont(new java.awt.Font("Comic Sans MS", 0, 18)); // NOI18N
+        lblTemperatura.setText("Temperatura Atual: ");
+
         btnRede.setFont(new java.awt.Font("Consolas", 0, 16)); // NOI18N
         btnRede.setText("Rede");
         btnRede.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
@@ -155,8 +158,6 @@ public class TelaTemperatura extends javax.swing.JFrame {
                 btnRedeActionPerformed(evt);
             }
         });
-        lblTemperatura.setFont(new java.awt.Font("Comic Sans MS", 0, 18)); // NOI18N
-        lblTemperatura.setText("Temperatura Atual: ");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -169,7 +170,7 @@ public class TelaTemperatura extends javax.swing.JFrame {
                 .addComponent(lblTitulo)
                 .addGap(176, 176, 176))
             .addGroup(layout.createSequentialGroup()
-                .addGap(52, 52, 52)
+                .addGap(73, 73, 73)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btnRede)
@@ -179,7 +180,7 @@ public class TelaTemperatura extends javax.swing.JFrame {
                     .addComponent(btnCPU)
                     .addComponent(btnDisco)
                     .addComponent(btnSO))
-                .addGap(283, 283, 283)
+                .addGap(16, 16, 16)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(246, 246, 246)
@@ -208,24 +209,17 @@ public class TelaTemperatura extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(42, 42, 42)
                         .addComponent(lblTitulo)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(lblTemperatura)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(prgTemperatura, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(91, 91, 91)
-                        .addComponent(lblAviso))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(14, 14, 14)
                         .addComponent(lblClock)
                         .addGap(51, 51, 51)
-                        .addComponent(lblAviso)
-                        .addGap(107, 107, 107))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(62, 62, 62)
+                        .addComponent(lblAviso))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(btnCPU)
                         .addGap(18, 18, 18)
                         .addComponent(btnDisco)
@@ -238,7 +232,6 @@ public class TelaTemperatura extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(btnRede)))
                 .addGap(107, 107, 107))
-                        .addContainerGap(118, Short.MAX_VALUE))))
         );
 
         pack();
