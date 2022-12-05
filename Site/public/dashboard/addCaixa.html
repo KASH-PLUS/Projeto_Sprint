@@ -38,8 +38,8 @@
                         </div>
                     </li>
                 </ul>
-                <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0"
-                        id="sidebarToggle" type="button"></button></div>
+                <div class="text-center d-none d-md-inline"><button onclick="movaNav()"
+                        class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
             </div>
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
@@ -129,6 +129,7 @@
                     </footer>
                 </div>
             </div>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
             <script src="assets/bootstrap/js/bootstrap.min.js"></script>
             <script src="assets/js/script.min.js"></script>
             <script src="../js/funcoes.js"></script>
@@ -140,6 +141,8 @@
     var cep = '';
     var regiao = '';
     var componentesUsados = [];
+
+    verifyNav()
 
     function recuperarDados() {
 
@@ -159,7 +162,7 @@
     }
 
     function verificarComponentes() {
- 
+
         for (var i = 0; i < componentesUsados.length; i++) {
             if (componentesUsados[i] == "cpu") {
                 slct_componente.remove(0);
@@ -419,6 +422,23 @@
 
         return false;
 
+    }
+
+    function movaNav() {
+        if (localStorage.getItem("mode") != "aberto" && localStorage.getItem("mode") != "fechado") {
+            localStorage.setItem("mode", "fechado");
+        } else if (localStorage.getItem("mode") == "aberto") {
+            localStorage.setItem("mode", "fechado");
+        } else if (localStorage.getItem("mode") == "fechado") {
+            localStorage.setItem("mode", "aberto");
+        }
+    }
+
+    function verifyNav() {
+        if (localStorage.getItem("mode") == "aberto") {
+            $("#sidebarToggle").click();
+            localStorage.setItem("mode", "aberto");
+        }
     }
 
 </script>

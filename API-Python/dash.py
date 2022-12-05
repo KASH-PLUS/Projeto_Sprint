@@ -3,6 +3,8 @@ from dashing import *
 from psutil import *
 import os
 from functions import codeCleaner, sistema
+import math
+from itertools import cycle
 
 
 def dashboard():
@@ -29,17 +31,21 @@ def dashboard():
 
         ),
         VSplit(
-            HGauge(title='CPU %'),
-            HGauge(title='cpu_1 %'),
-            HGauge(title='cpu_2 %'),
-            HGauge(title='cpu_3 %'),
-            HGauge(title='cpu_4 %'),
-            HGauge(title='cpu_5 %'),
-            HGauge(title='cpu_6 %'),
-            HGauge(title='cpu_7 %'),
-            HGauge(title='cpu_8 %'),
-            title="CPU",
-            border_color=5,
+            VSplit(
+                HGauge(title='CPU %'),
+                HGauge(title='cpu_1 %'),
+                HGauge(title='cpu_2 %'),
+                HGauge(title='cpu_3 %'),
+                HGauge(title='cpu_4 %'),
+                HGauge(title='cpu_5 %'),
+                HGauge(title='cpu_6 %'),
+                title="CPU",
+                border_color=5,
+            ),
+            HSplit(
+                border_color=8,
+                title='Rede',
+            ),
         )
     )
 
@@ -56,7 +62,7 @@ def dashboard():
         ram.title = f"RAM: {usoMemoria.value}% "
 
         # CPU
-        cpu = ui.items[1]
+        cpu = ui.items[1].items[0]
         cpuPercentGraph = cpu.items[0]
         cpuPercent = cpu_percent()
         cpuPercentGraph.value = cpuPercent
@@ -77,7 +83,7 @@ def dashboard():
 
         particoes = []
         if sistema == "Windows":
-            for part in disk_partitions(all=False): # identificando partições
+            for part in disk_partitions(all=False):  # identificando partições
                 if part[0] == "F:\\":
                     break
                 elif part[0] == "E:\\":
@@ -86,7 +92,6 @@ def dashboard():
                     particoes.append(part[0])
         elif sistema == "Linux":
             particoes.append("/")
-
 
         porcentagemOcupados = []
         for j in enumerate(particoes[0:8]):
@@ -102,7 +107,7 @@ def dashboard():
         listaProcessos = []
 
         for proc in process_iter():
-            infoProc = proc.as_dict(['name','cpu_percent'])
+            infoProc = proc.as_dict(['name', 'cpu_percent'])
             if infoProc['cpu_percent'] > 0:
                 listaProcessos.append(infoProc)
 
@@ -115,6 +120,16 @@ def dashboard():
 
         for proc in listaProcessos[:10]:
             processos.text += f"\n{proc['name']:<25} {proc['cpu_percent']}"
+
+        # Rede
+
+        rede = ui.items[1].items[1]
+
+        bytesEnviados = net_io_counters().bytes_sent
+        bytesRecebidos = net_io_counters().bytes_recv
+
+        bytesEnviados = bytesEnviados / 1024 / 1024
+        bytesRecebidos = bytesRecebidos / 1024 / 1024
 
         os.system(codeCleaner)
 

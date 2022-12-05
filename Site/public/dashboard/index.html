@@ -39,8 +39,8 @@
 						</div>
 					</li>
 				</ul>
-				<div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0"
-						id="sidebarToggle" type="button"></button></div>
+				<div class="text-center d-none d-md-inline"><button onclick="movaNav()"
+						class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
 			</div>
 		</nav>
 		<div class="d-flex flex-column" id="content-wrapper">
@@ -78,7 +78,11 @@
 				<div class="container-fluid">
 					<div class="d-sm-flex justify-content-between align-items-center mb-4">
 						<h3 class="text-dark mb-0" id="h3_titulo">Dashboard - <span id="span_serialNumber"></span></h3>
-						<button class="btn btn-danger btn-sm" onclick="deletarCaixa()">Deletar Caixa</button>
+						<div>
+							<button class="btn btn-success btn-sm" style="color: white;" data-bs-toggle="modal"
+								data-bs-target="#exampleModal">Informações de rede</button>
+							<button class="btn btn-danger btn-sm" onclick="deletarCaixa()">Deletar Caixa</button>
+						</div>
 					</div>
 					<div class="row">
 						<div class="col-md-6 col-xl-3 mb-4">
@@ -172,8 +176,8 @@
 													style="color: green;">Bom</span></div>
 										</div>
 										<div class="col-auto">
-											<svg id="svg_status" class="fa-2x" xmlns="http://www.w3.org/2000/svg" width="1.5em"
-												height="1.5em" viewBox="0 0 24 24" fill="none"
+											<svg id="svg_status" class="fa-2x" xmlns="http://www.w3.org/2000/svg"
+												width="1.5em" height="1.5em" viewBox="0 0 24 24" fill="none"
 												style="color: var(--bs-green)">
 												<path
 													d="M5.63604 18.3639C2.12132 14.8492 2.12132 9.15071 5.63604 5.63599M18.364 5.63599C21.8787 9.15071 21.8787 14.8492 18.364 18.3639M8.46447 15.5355C6.51184 13.5829 6.51184 10.417 8.46447 8.46441M15.5355 8.46441C17.4882 10.417 17.4882 13.5829 15.5355 15.5355M13 11.9999C13 12.5522 12.5523 12.9999 12 12.9999C11.4477 12.9999 11 12.5522 11 11.9999C11 11.4477 11.4477 10.9999 12 10.9999C12.5523 10.9999 13 11.4477 13 11.9999Z"
@@ -193,7 +197,7 @@
 							<div class="card shadow mb-4" id="card_cpu" style="display: none;">
 								<div class="card-header d-flex justify-content-between align-items-center">
 									<h6 class="text-primary fw-bold m-0">Uso da CPU(%)</h6>
-								</div> 
+								</div>
 								<div class="card-body">
 									<div class="chart-area"
 										style="display: flex; align-items: center; justify-content: center;">
@@ -253,7 +257,40 @@
 					</div>
 				</footer>
 			</div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+
 		</div>
+
+		<!-- modal para gráfico de rede -->
+		<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered modal-dialog modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">Monitoramento de banda de rede</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="container">
+						<div class="row" style="margin-top: 2vh;">
+							<div class="col-sm">
+								<h6>IPV4: <span id="span_ipv4"></span></h6>
+							</div>
+							<div class="col-sm">
+								<h6>Mac Address: <span id="span_macAddress"></span></h6>
+							</div>
+							<div class="col-sm">
+								<h6>Máscara de rede: <span id="span_netmask"></span></h6>
+							</div>
+						</div>
+					</div>
+					<div class="modal-body">
+						<div id="myChartRede"></div>
+						<div id="myChartPacotes"></div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
 		<script src="assets/bootstrap/js/bootstrap.min.js"></script>
 		<script src="assets/js/script.min.js"></script>
 		<script src="../js/funcoes.js"></script>
@@ -261,7 +298,7 @@
 		<script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js"
 			integrity="sha256-o9N1jGDZrf5tS+Ft4gbIK7mYMipq9lqpVJ91xHSyKhg=" crossorigin=""></script>
 		<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+		<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 </body>
 
 </html>
@@ -271,6 +308,348 @@
 	setTimeout(addListeners, 500);
 
 	let proximaAtualizacao;
+
+	verifyNav()
+
+
+	function obterDadosPacotes(serialNumber) {
+
+		fetch(`/medidas/ultimosPacotes/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
+			if (response.ok) {
+				response.json().then(function (resposta) {
+					console.log(`Dados recebidos: ${JSON.stringify(resposta)}`);
+					resposta.reverse();
+
+					plotarGraficoPacotes(resposta, serialNumber);
+				});
+			} else {
+				console.error('Nenhum dado encontrado ou erro na API');
+			}
+		}).catch(function (error) {
+			console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
+		});
+
+	}
+
+	function plotarGraficoPacotes(resposta, serialNumber) {
+		var dadosEnviados = []
+		var dadosRecebidos = []
+		var labels = []
+
+		var options = {
+			chart: {
+				type: 'line',
+				animations: {
+					enabled: true,
+					easing: 'linear',
+					dynamicAnimation: {
+						speed: 1000
+					}
+				},
+				toolbar: {
+					show: false
+				},
+			},
+			title: {
+				text: 'Quantidade de pacotes enviados e recebidos',
+				align: 'left'
+			},
+			stroke: {
+				curve: 'smooth',
+			},
+			series: [
+				{
+					name: 'Pacotes Enviados',
+					data: dadosEnviados
+				},
+				{
+					name: 'Pacotes Recebidos',
+					data: dadosRecebidos
+				}
+			],
+			colors: ["#FF1654", "#247BA0"],
+			xaxis: {
+				categories: labels,
+				range: 7
+			},
+			yaxis: [
+				{
+					axisTicks: {
+						show: true
+					},
+					axisBorder: {
+						show: true,
+						color: "#FF1654"
+					},
+					labels: {
+						style: {
+							colors: "#FF1654"
+						}
+					},
+					title: {
+						text: "Pacotes Enviados",
+						style: {
+							color: "#FF1654"
+						}
+					}
+				},
+				{
+					opposite: true,
+					axisTicks: {
+						show: true
+					},
+					axisBorder: {
+						show: true,
+						color: "#247BA0"
+					},
+					labels: {
+						style: {
+							colors: "#247BA0"
+						}
+					},
+					title: {
+						text: "Pacotes Recebidos",
+						style: {
+							color: "#247BA0"
+						}
+					}
+				}
+			],
+		}
+
+		for (i = 0; i < resposta.length; i++) {
+			var registro = resposta[i];
+			labels.push(registro.momento_grafico);
+			dadosEnviados.push(registro.pacotesEnviados);
+			dadosRecebidos.push(registro.pacotesRecebidos);
+		}
+
+		var chartPacotes = new ApexCharts(document.querySelector("#myChartPacotes"), options);
+
+		chartPacotes.render();
+
+		atualizarGraficoPacotes(chartPacotes, dadosEnviados, dadosRecebidos, labels, serialNumber)
+	}
+
+	function atualizarGraficoPacotes(chart, dadosEnviados, dadosRecebidos, labels, serialNumber) {
+
+		fetch(`/medidas/tempo-realPacotes/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
+			if (response.ok) {
+				response.json().then(function (novoRegistro) {
+
+					console.log(`Dados recebidos: ${JSON.stringify(novoRegistro)}`);
+
+
+					dadosEnviados.push(novoRegistro[0].pacotesEnviados)
+					dadosRecebidos.push(novoRegistro[0].pacotesRecebidos)
+
+					labels.push(novoRegistro[0].momento_grafico)
+
+
+					chart.updateSeries(
+						[
+							{
+								data: dadosEnviados
+							},
+							{
+								data: dadosRecebidos
+							}
+						],
+
+					)
+
+					proximaAtualizacao = setTimeout(() => atualizarGraficoPacotes(chart, dadosEnviados, dadosRecebidos, labels, serialNumber), 1000);
+				});
+			} else {
+				console.error('Nenhum dado encontrado ou erro na API');
+				// Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
+				proximaAtualizacao = setTimeout(() => atualizarGraficoPacotes(chart, dadosEnviados, dadosRecebidos, labels, serialNumber), 1000);
+			}
+		}).catch(function (error) {
+			console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
+		});
+
+	}
+
+
+	function obterDadosPlacaDeRede(serialNumber) {
+		fetch(`/medidas/obterDadosPlacaRede/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
+			if (response.ok) {
+				response.json().then(function (resposta) {
+					console.log(`Dados recebidos: ${JSON.stringify(resposta)}`);
+
+					span_ipv4.innerHTML = resposta[0].ipv4;
+					span_macAddress.innerHTML = resposta[0].macAddress;
+					span_netmask.innerHTML = resposta[0].netmask4;
+
+				});
+			} else {
+				console.error('Nenhum dado encontrado ou erro na API');
+			}
+		}).catch(function (error) {
+			console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
+		});
+	}
+
+	function obterDadosGraficoRede(serialNumber) {
+
+		fetch(`/medidas/ultimasRede/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
+			if (response.ok) {
+				response.json().then(function (resposta) {
+					console.log(`Dados recebidos: ${JSON.stringify(resposta)}`);
+					resposta.reverse();
+
+					plotarGraficoRede(resposta, serialNumber);
+				});
+			} else {
+				console.error('Nenhum dado encontrado ou erro na API');
+			}
+		}).catch(function (error) {
+			console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
+		});
+
+	}
+
+	function plotarGraficoRede(resposta, serialNumber) {
+		var dadosEnviados = []
+		var dadosRecebidos = []
+		var labels = []
+
+		var options = {
+			chart: {
+				type: 'line',
+				animations: {
+					enabled: true,
+					easing: 'linear',
+					dynamicAnimation: {
+						speed: 1000
+					}
+				},
+				toolbar: {
+					show: false
+				},
+			},
+			title: {
+				text: 'Quantidade de dados enviados e recebidos',
+				align: 'left'
+			},
+			stroke: {
+				curve: 'smooth',
+			},
+			series: [
+				{
+					name: 'MB Enviados',
+					data: dadosEnviados
+				},
+				{
+					name: 'MB Recebidos',
+					data: dadosRecebidos
+				}
+			],
+			colors: ["#FF1654", "#247BA0"],
+			xaxis: {
+				categories: labels,
+				range: 7
+			},
+			yaxis: [
+				{
+					axisTicks: {
+						show: true
+					},
+					axisBorder: {
+						show: true,
+						color: "#FF1654"
+					},
+					labels: {
+						style: {
+							colors: "#FF1654"
+						}
+					},
+					title: {
+						text: "MB Enviados",
+						style: {
+							color: "#FF1654"
+						}
+					}
+				},
+				{
+					opposite: true,
+					axisTicks: {
+						show: true
+					},
+					axisBorder: {
+						show: true,
+						color: "#247BA0"
+					},
+					labels: {
+						style: {
+							colors: "#247BA0"
+						}
+					},
+					title: {
+						text: "MB Recebidos",
+						style: {
+							color: "#247BA0"
+						}
+					}
+				}
+			],
+		}
+
+		for (i = 0; i < resposta.length; i++) {
+			var registro = resposta[i];
+			labels.push(registro.momento_grafico);
+			dadosEnviados.push(registro.mbEnviados);
+			dadosRecebidos.push(registro.mbRecebidos);
+		}
+
+		var chart = new ApexCharts(document.querySelector("#myChartRede"), options);
+
+		chart.render();
+
+		atualizarGraficoRede(chart, dadosEnviados, dadosRecebidos, labels, serialNumber)
+	}
+
+
+	function atualizarGraficoRede(chart, dadosEnviados, dadosRecebidos, labels, serialNumber) {
+
+		fetch(`/medidas/tempo-realRede/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
+			if (response.ok) {
+				response.json().then(function (novoRegistro) {
+
+					console.log(`Dados recebidos: ${JSON.stringify(novoRegistro)}`);
+
+
+					dadosEnviados.push(novoRegistro[0].mbEnviados)
+					dadosRecebidos.push(novoRegistro[0].mbRecebidos)
+
+					labels.push(novoRegistro[0].momento_grafico)
+
+
+					chart.updateSeries(
+						[
+							{
+								data: dadosEnviados
+							},
+							{
+								data: dadosRecebidos
+							}
+						],
+
+					)
+
+					proximaAtualizacao = setTimeout(() => atualizarGraficoRede(chart, dadosEnviados, dadosRecebidos, labels, serialNumber), 1000);
+				});
+			} else {
+				console.error('Nenhum dado encontrado ou erro na API');
+				// Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
+				proximaAtualizacao = setTimeout(() => atualizarGraficoRede(chart, dadosEnviados, dadosRecebidos, labels, serialNumber), 1000);
+			}
+		}).catch(function (error) {
+			console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
+		});
+
+	}
 
 	function obterDadosGraficoCpu(serialNumber) {
 		document.getElementById("myChartCpu").remove();
@@ -477,10 +856,9 @@
 			type: 'line',
 			data: dados,
 			options: {
-				maintainAspectRatio: false,
 				responsive: true,
+				maintainAspectRatio: false,
 			}
-
 		};
 
 		let myChartRam = new Chart(
@@ -544,8 +922,8 @@
 		divGrafico.appendChild(canvas);
 
 
-		var valorMaximo = 0;
-		var usoDisco = 0;
+		var valorMaximo;
+		var usoDisco;
 
 		if (proximaAtualizacao != undefined) {
 			clearTimeout(proximaAtualizacao);
@@ -870,4 +1248,20 @@
 
 	}
 
+	function movaNav() {
+		if (localStorage.getItem("mode") != "aberto" && localStorage.getItem("mode") != "fechado") {
+			localStorage.setItem("mode", "fechado");
+		} else if (localStorage.getItem("mode") == "aberto") {
+			localStorage.setItem("mode", "fechado");
+		} else if (localStorage.getItem("mode") == "fechado") {
+			localStorage.setItem("mode", "aberto");
+		}
+	}
+
+	function verifyNav() {
+		if (localStorage.getItem("mode") == "aberto") {
+			$("#sidebarToggle").click();
+			localStorage.setItem("mode", "aberto");
+		}
+	}
 </script>

@@ -11,6 +11,19 @@ cnpj CHAR(14) PRIMARY KEY
 ,telefoneCelular CHAR(11)
 );
 
+CREATE TABLE tbUsuario(CREATE USER 'kashUser'@'%' IDENTIFIED BY 'kash';
+GRANT ALL PRIVILEGES ON dbkashplus.* TO 'kashUser'@'%' ;
+create database dbkashplus;
+use dbkashplus;
+
+CREATE TABLE tbEmpresa(
+cnpj CHAR(14) PRIMARY KEY
+,nome VARCHAR(100)
+,email VARCHAR(100)
+,telefoneFixo CHAR(10)
+,telefoneCelular CHAR(11)
+);
+
 CREATE TABLE tbUsuario(
 idUsuario INT PRIMARY KEY AUTO_INCREMENT
 ,fkEmpresa CHAR(14), FOREIGN KEY(fkEmpresa) REFERENCES tbEmpresa(cnpj)
@@ -43,6 +56,28 @@ idRegistro INT PRIMARY KEY AUTO_INCREMENT
 ,registro VARCHAR(50)
 ,dataHora DATETIME
 );
+
+CREATE TABLE tbRede(
+  macAddress CHAR(17) PRIMARY KEY
+  ,ipv4 CHAR(15)
+  ,ipv6 CHAR(30)
+  ,netmask4 CHAR(15)
+  ,fkMaquina VARCHAR(30)
+  , FOREIGN KEY(fkMaquina) REFERENCES tbMaquina(serialNumber)
+  );
+ 
+CREATE TABLE tbRegistroRede(
+  idRegistroRede INT PRIMARY KEY AUTO_INCREMENT
+ ,fkPlaca CHAR(17) 
+ ,mbEnviados DECIMAL(8,2)
+ ,mbRecebidos DECIMAL(8,2)
+ ,totalEnviado DECIMAL(8,2)
+ ,totalRecebido DECIMAL(8,2)
+ ,pacotesEnviados INT
+ ,pacotesRecebidos INT
+ ,dataHora DATETIME
+ , FOREIGN KEY(fkPlaca) REFERENCES tbRede(macAddress)
+)
 
 -- Criando Views --
 
@@ -89,5 +124,23 @@ CREATE VIEW vwFuncionario AS
     FROM
         tbEmpresa
             JOIN
-        tbUsuario ON cnpj = fkEmpresa
+        tbUsuario ON cnpj = fkEmpresa        
 ;
+
+CREATE VIEW vwRede AS
+    SELECT 
+    	idRegistroRede as ID
+    	,mbEnviados
+		,mbRecebidos
+		,pacotesEnviados
+		,pacotesRecebidos
+		,dataHora
+		,macAddress
+		,fkMaquina
+    FROM
+        tbRegistroRede
+            JOIN
+        tbRede ON fkPlaca = macAddress 
+;
+
+

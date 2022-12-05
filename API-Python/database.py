@@ -2,8 +2,8 @@ import mysql.connector
 import pyodbc
 import os
 
-# ambiente = 'desenvolvimento'
-ambiente = 'producao'
+ambiente = 'desenvolvimento'
+# ambiente = 'producao'
 
 if ambiente == 'desenvolvimento':
     cnx = mysql.connector.connect(user="kashUser",
@@ -42,6 +42,7 @@ if ambiente == 'desenvolvimento':
                 cursor.close()
                 cnx.close()
                 return dados
+
 else:
     if os.name == "nt":  # Windows
         cnx = pyodbc.connect(

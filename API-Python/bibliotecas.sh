@@ -1,3 +1,5 @@
+#!/bin/bash
+
 python -m venv venv
 cd venv
 source bin/activate

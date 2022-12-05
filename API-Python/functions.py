@@ -10,7 +10,7 @@ import cpuinfo
 from uuid import getnode as get_mac
 from random import randint
 from matplotlib.animation import FuncAnimation
-import matplotlib.pyplot as plt # Definindo um "apelido" para a biblioteca
+import matplotlib.pyplot as plt  # Definindo um "apelido" para a biblioteca
 import openpyxl
 #from wordCloud import cloud
 import requests
@@ -24,9 +24,10 @@ else:
 
 
 def randomSerial():
-    num = randint(100000000,999999999)
+    num = randint(100000000, 999999999)
     serial = "BRJ" + str(num)
     return serial
+
 
 def conversao_bytes(valor, tipo):
     if tipo == 1:  # KB
@@ -36,11 +37,13 @@ def conversao_bytes(valor, tipo):
     elif tipo == 3:  # GB
         return f'{valor / 1024 / 1024 / 1024: .2f}'
 
-def verificarComponentes(serialNumber): 
+
+def verificarComponentes(serialNumber):
     query = f"SELECT idComponente, tipo from tbComponente, tbMaquina where serialNumber = '{serialNumber}' and fkMaquina = tbMaquina.serialNumber order by tipo;"
     componentes = select(query, True)
     idComp = componentes
     return idComp
+
 
 def divisaoComponentes(serialNumber):
     idComp = verificarComponentes(serialNumber)
@@ -48,14 +51,14 @@ def divisaoComponentes(serialNumber):
     idDisco = []
     idRam = []
     for i in idComp:
-        if(i[1] == 'cpu'):
+        if (i[1] == 'cpu'):
             idCpu.append(i[0])
-        if(i[1] == 'disco'):
+        if (i[1] == 'disco'):
             idDisco.append(i[0])
-        if(i[1] == 'ram'):
+        if (i[1] == 'ram'):
             idRam.append(i[0])
     return idCpu, idDisco, idRam
-        
+
 
 def metricasMaximas(idCpu, idDisco, idRam):
     if sistema == "Windows":
@@ -79,6 +82,43 @@ def metricasMaximas(idCpu, idDisco, idRam):
         insert(queryRam)
 
 
+def cadastroRede(serialNumber):
+    query = f"SELECT * FROM tbRede WHERE fkMaquina = '{serialNumber}'"
+
+    dados = select(query)
+
+    placa = net_if_addrs()
+
+    for i in enumerate(placa):
+
+        if (i[0] == 1):
+            minha_placa = i[1]
+
+    placa = net_if_addrs()[minha_placa]
+
+    macAddress = placa[2].address
+
+    ipv4 = placa[0].address;
+    netmask4 = placa[0].netmask;
+    ipv6 = placa[1].address[:25]
+    netmask6 = placa[1].netmask
+
+    if type(dados) == type(None):
+        query = f"INSERT INTO tbRede(macAddress, ipv4, netmask4, netmask6, fkMaquina) VALUES ('{macAddress}', '{ipv4}', '{netmask4}', '{netmask6}', '{serialNumber}');"
+    else:
+        query = f"UPDATE tbRede SET macAddress = '{macAddress}', ipv4 = '{ipv4}', netmask4 = '{netmask4}', netmask6 = '{netmask6}' WHERE fkMaquina = '{serialNumber}';"
+
+    insert(query)
+
+    return 0
+
+
+def getMac(serialNumber):
+    query = f"SELECT macAddress FROM tbRede WHERE fkMaquina = '{serialNumber}'"
+
+    dados = select(query);
+    
+    return dados
 
 def monitorar():
     while (True):
@@ -94,11 +134,11 @@ def monitorar():
             usoCpuPorc = f'{cpu_percent()}%'
             usoPorCore = cpu_percent(percpu=True)
 
-
             # DISCO
             particoes = []
             if sistema == "Windows":
-                for part in disk_partitions(all=False): # identificando partições
+                # identificando partições
+                for part in disk_partitions(all=False):
                     if part[0] == "F:\\":
                         break
                     elif part[0] == "E:\\":
@@ -108,11 +148,9 @@ def monitorar():
             elif sistema == "Linux":
                 particoes.append("/")
 
-
-            porcentagemOcupados = [] 
+            porcentagemOcupados = []
             for j in particoes:
-                porcentagemOcupados.append(disk_usage(j).percent) 
-
+                porcentagemOcupados.append(disk_usage(j).percent)
 
             # Print parte da memória
             print("\033[1mInformações de memória\033[0m\n")
@@ -143,7 +181,6 @@ def monitorar():
 
             print("\n\nAperte ctrl + c para retornar")
 
-
             time.sleep(1)
         except KeyboardInterrupt:
             return "0"
@@ -151,7 +188,7 @@ def monitorar():
 
 def info():
     os.system(codeCleaner)
-    
+
     freqCpu = f'{round(cpu_freq().max, 0)}Mhz'
     qtdCores = cpu_count()
     qtdThreads = cpu_count(logical=False)
@@ -166,8 +203,7 @@ def info():
 
         mac = get_mac()
 
-    macString = ':'.join(("%012X" % mac) [i:i+2] for i in range(0,12,2))
-
+    macString = ':'.join(("%012X" % mac)[i:i+2] for i in range(0, 12, 2))
 
     versaoSistemas = platform.version()
     memoriaTotal = f'{conversao_bytes(virtual_memory().total, 3)}GB'
@@ -185,11 +221,17 @@ def info():
     print("\033[1mTempo gasto pelo usuário no computador desde a última vez em que foi ligado:\033[0m", tempoGasto)
 
     input("\n\n\033[1mPressione Enter para prosseguir...\033[0m")
-    return 0 
+    return 0
 
 
-def insertPeriodico(idCpu, idDisco, idRam, serialNumber, nome):
-    time.sleep(5)
+def insertPeriodico(idCpu, idDisco, idRam, macAddress):
+    intervaloInsert = 2 # em segundos
+
+    ultimosRecebidos = net_io_counters().packets_recv
+    ultimosEnviados = net_io_counters().packets_sent
+    ultimosPacotesRecebidos = net_io_counters().bytes_recv
+    ultimosPacotesEnviados = net_io_counters().bytes_sent
+
     while True:
         usoAtualMemoria = conversao_bytes(virtual_memory().used, 3)
         usoCpuPorc = cpu_percent()
@@ -197,7 +239,7 @@ def insertPeriodico(idCpu, idDisco, idRam, serialNumber, nome):
 
         particoes = []
         if sistema == "Windows":
-            for part in disk_partitions(all=False): # identificando partições
+            for part in disk_partitions(all=False):  # identificando partições
                 if part[0] == "F:\\":
                     break
                 elif part[0] == "E:\\":
@@ -207,13 +249,11 @@ def insertPeriodico(idCpu, idDisco, idRam, serialNumber, nome):
         elif sistema == "Linux":
             particoes.append("/")
 
-
-        discoOcupado = [] 
+        discoOcupado = []
         discoTotal = []
         for j in particoes:
             discoOcupado.append(conversao_bytes(disk_usage(j).used, 3))
             discoTotal.append(conversao_bytes(disk_usage(j).total, 3))
-
 
         usoDisco = discoOcupado[0]
 
@@ -249,7 +289,42 @@ def insertPeriodico(idCpu, idDisco, idRam, serialNumber, nome):
 
         print(response.text, "oi")
         
-        time.sleep(30)
+        # Pegando dados de rede
+
+        bytesRecebidos = net_io_counters().bytes_recv
+        bytesEnviados = net_io_counters().bytes_sent
+
+        novosRecebidos = bytesRecebidos - ultimosRecebidos
+        novosEnviados = bytesEnviados - ultimosEnviados
+
+        mbRecebidos = novosRecebidos / 1024 / 1024
+        mbEnviados = novosEnviados / 1024 / 1024
+
+        mbEnviadosTotal = bytesEnviados / 1024 / 1024
+        mbRecebidosTotal = bytesRecebidos / 1024 / 1024
+
+
+
+        # Pacotes
+
+        pacotesRecebidos = net_io_counters().packets_recv
+        pacotesEnviados = net_io_counters().packets_sent
+
+        novosPacotesRecebidos = pacotesRecebidos - ultimosPacotesRecebidos
+        novosPacotesEnviados = pacotesEnviados - ultimosPacotesEnviados
+    
+
+        queryRede = f"INSERT INTO tbRegistroRede(fkPlaca, mbEnviados, mbRecebidos, totalEnviado, totalRecebido, pacotesEnviados, pacotesRecebidos, dataHora) VALUES ('{macAddress}', {mbEnviados:.2f}, {mbRecebidos:.2f}, {mbEnviadosTotal:.2f}, {mbRecebidosTotal:.2f}, {novosPacotesEnviados}, {novosPacotesRecebidos},'{dataHora}');"
+
+        insert(queryRede)       
+
+        ultimosRecebidos = bytesRecebidos
+        ultimosEnviados = bytesEnviados
+        
+        ultimosPacotesRecebidos = pacotesRecebidos
+        ultimosPacotesEnviados = pacotesEnviados
+
+        time.sleep(intervaloInsert)
 
 
 
@@ -257,9 +332,9 @@ def relatorio():
     os.system(codeCleaner)
 
     hora = datetime.datetime.now()
-    with open('DadosMaquina.txt','w', encoding='utf-8') as arquivo:
-        arquivo.write("Data e hora do momento que foi salvo os dados:\n" + str(hora))
-
+    with open('DadosMaquina.txt', 'w', encoding='utf-8') as arquivo:
+        arquivo.write(
+            "Data e hora do momento que foi salvo os dados:\n" + str(hora))
 
     versaoSistemas = platform.version()
     arquitetura = cpuinfo.get_cpu_info()['arch']
@@ -269,33 +344,33 @@ def relatorio():
         arquitetura = "64 bits"
 
         mac = get_mac()
-    macString = ':'.join(("%012X" % mac) [i:i+2] for i in range(0,12,2))
+    macString = ':'.join(("%012X" % mac)[i:i+2] for i in range(0, 12, 2))
     tempoGasto = f"{round(cpu_times().user / 60 / 60, 2)} Horas"
     processador = cpuinfo.get_cpu_info()['brand_raw']
-    with open('DadosMaquina.txt','a', encoding='utf-8') as arquivo:
-        arquivo.write("\n\n━━━━━ Informações do computador ━━━━━\n\nSistema operacional: {}\nVersão do sistema: {}\nMac Address: {}\nArquiterura: {}\nProcessador: {}\nTempo gasto do computador desde a última vez em que foi ligado: {}\n".format(sistema, versaoSistemas, macString, arquitetura, processador, tempoGasto))
-
+    with open('DadosMaquina.txt', 'a', encoding='utf-8') as arquivo:
+        arquivo.write("\n\n━━━━━ Informações do computador ━━━━━\n\nSistema operacional: {}\nVersão do sistema: {}\nMac Address: {}\nArquiterura: {}\nProcessador: {}\nTempo gasto do computador desde a última vez em que foi ligado: {}\n".format(
+            sistema, versaoSistemas, macString, arquitetura, processador, tempoGasto))
 
     memoriaTotal = f'{conversao_bytes(virtual_memory().total, 3)}GB'
     memoriaDisponivel = f'{conversao_bytes(virtual_memory().available, 3)}GB'
     usoAtualMemoria = f'{conversao_bytes(virtual_memory().used, 3)}GB'
     memoriaEmUsoPerc = virtual_memory().percent
-    with open('DadosMaquina.txt','a', encoding='utf-8') as arquivo:
-        arquivo.write("\n━━━━━ MEMÓRIA RAM ━━━━━\n\nMemória total: {} \nMemória disponivel: {} \nUso atual: {} \nPorcentagem de uso: {}%\n".format(memoriaTotal, memoriaDisponivel, usoAtualMemoria, memoriaEmUsoPerc))
-    
+    with open('DadosMaquina.txt', 'a', encoding='utf-8') as arquivo:
+        arquivo.write("\n━━━━━ MEMÓRIA RAM ━━━━━\n\nMemória total: {} \nMemória disponivel: {} \nUso atual: {} \nPorcentagem de uso: {}%\n".format(
+            memoriaTotal, memoriaDisponivel, usoAtualMemoria, memoriaEmUsoPerc))
 
+    freqCpu = float(round(cpu_freq().current, 0))
     usoCpuPorc = f'{cpu_percent()}%'
     usoPorCore = cpu_percent(percpu=True)
-    freqCpu = round(cpu_freq().current, 0)
     qtdCores = cpu_count()
     qtdThreads = cpu_count(logical=False)
-    with open('DadosMaquina.txt','a', encoding='utf-8') as arquivo:
-        arquivo.write("\n━━━━━ CPU ━━━━━\n\nUso total: {}\nFrequência da CPU: {}Mhz\nQuantidade de núcleos: {}\nQuantidade de Threads: {}\nUso por core: {}\n".format(usoCpuPorc, freqCpu, qtdCores, qtdThreads, usoPorCore))
-    
+    with open('DadosMaquina.txt', 'a', encoding='utf-8') as arquivo:
+        arquivo.write("\n━━━━━ CPU ━━━━━\n\nUso total: {}\nFrequência da CPU: {}Mhz\nQuantidade de núcleos: {}\nQuantidade de Threads: {}\nUso por core: {}\n".format(
+            usoCpuPorc, freqCpu, qtdCores, qtdThreads, usoPorCore))
 
     particoes = []
     if sistema == "Windows":
-        for part in disk_partitions(all=False): # identificando partições
+        for part in disk_partitions(all=False):  # identificando partições
             if part[0] == "F:\\":
                 break
             elif part[0] == "E:\\":
@@ -305,45 +380,54 @@ def relatorio():
     elif sistema == "Linux":
         particoes.append("/")
 
-
-    porcentagemOcupados = [] 
+    porcentagemOcupados = []
     for j in particoes:
-        porcentagemOcupados.append(disk_usage(j).percent) 
-    with open('DadosMaquina.txt','a', encoding='utf-8') as arquivo:
-        arquivo.write("\n━━━━━ Disco ━━━━━\n\nPartições: {} \nPorcentagem ocupada de cada partição: {}\n".format(particoes, porcentagemOcupados))
-
+        porcentagemOcupados.append(disk_usage(j).percent)
+    with open('DadosMaquina.txt', 'a', encoding='utf-8') as arquivo:
+        arquivo.write("\n━━━━━ Disco ━━━━━\n\nPartições: {} \nPorcentagem ocupada de cada partição: {}\n".format(
+            particoes, porcentagemOcupados))
 
     print('Sucesso!!\n\nSeus dados foram salvos em um relatório chamado DadosMaquina.txt\n')
     input("\nPressione Enter para voltar ao menu...\n")
     return "0"
 
+
 def plotar():
 
-# o def é a forma que você define uma função em python, com uma sequência de instruções que podem ser solicitadas mais de uma vez sem a necessidade de repetição de cód
+    # o def é a forma que você define uma função em python, com uma sequência de instruções que podem ser solicitadas mais de uma vez sem a necessidade de repetição de cód
     def definirGraficos(frame):
-            
-        dispositivos = disk_partitions();
-        
-        consumoRAM.append(virtual_memory()[2]) # adicionando os valores capturados pelo psutil na lista valores
-        consumoRAM.remove(consumoRAM[0]) # remove o primeiro valor da lista
-        consumoCPU.append(cpu_percent(interval=None))# adicionando os valores capturados pelo psutil na lista valores
-        consumoCPU.remove(consumoCPU[0]) # remove o primeiro valor da lista
 
-        graficosRAM.cla() # limpa os eixos
-        graficosRAM.plot(consumoRAM, color='#b449de') # plota o gráfico
-        graficosRAM.scatter(len(consumoRAM) - 1, consumoRAM[-1], color='#b449de') # marcador (bolinha) na posição atual do gráfico
-        graficosRAM.title.set_text(f'Consumo de RAM - {consumoRAM[-1]}%') # título do gráfico
-        graficosRAM.set_ylim(0, 100) # limite do eixo y
-        
-        graficosCPU.cla() # limpa os eixos
-        graficosCPU.plot(consumoCPU, color='#49a7de') # plota o gráfico
-        graficosCPU.scatter(len(consumoCPU) - 1, consumoCPU[-1], color='#49a7de') # marcador (bolinha) na posição atual do gráfico
-        graficosCPU.title.set_text(f'Consumo de CPU - {consumoCPU[-1]}%') # título do gráfico
-        graficosCPU.set_ylim(0, 100) # limite do eixo y
+        dispositivos = disk_partitions()
 
-        #Criando um sistema que detecata quantas unidades de armazenamento tem na sua máquina e gerando um gráfico do tipo Pie = Torta/Pizza com a % de disco espaço e de espaço disponível
+        # adicionando os valores capturados pelo psutil na lista valores
+        consumoRAM.append(virtual_memory()[2])
+        consumoRAM.remove(consumoRAM[0])  # remove o primeiro valor da lista
+        # adicionando os valores capturados pelo psutil na lista valores
+        consumoCPU.append(cpu_percent(interval=None))
+        consumoCPU.remove(consumoCPU[0])  # remove o primeiro valor da lista
+
+        graficosRAM.cla()  # limpa os eixos
+        graficosRAM.plot(consumoRAM, color='#b449de')  # plota o gráfico
+        # marcador (bolinha) na posição atual do gráfico
+        graficosRAM.scatter(len(consumoRAM) - 1,
+                            consumoRAM[-1], color='#b449de')
+        graficosRAM.title.set_text(
+            f'Consumo de RAM - {consumoRAM[-1]}%')  # título do gráfico
+        graficosRAM.set_ylim(0, 100)  # limite do eixo y
+
+        graficosCPU.cla()  # limpa os eixos
+        graficosCPU.plot(consumoCPU, color='#49a7de')  # plota o gráfico
+        # marcador (bolinha) na posição atual do gráfico
+        graficosCPU.scatter(len(consumoCPU) - 1,
+                            consumoCPU[-1], color='#49a7de')
+        graficosCPU.title.set_text(
+            f'Consumo de CPU - {consumoCPU[-1]}%')  # título do gráfico
+        graficosCPU.set_ylim(0, 100)  # limite do eixo y
+
+        # Criando um sistema que detecata quantas unidades de armazenamento tem na sua máquina e gerando um gráfico do tipo Pie = Torta/Pizza com a % de disco espaço e de espaço disponível
         i = 3
-        cores = '#a5a8a8','#55cfed' # setando as cores que serão utilizadas no gráfico para ficarem estáticas.
+        # setando as cores que serão utilizadas no gráfico para ficarem estáticas.
+        cores = '#a5a8a8', '#55cfed'
 
         if sistema == "Windows":
             for dispositivo in dispositivos:
@@ -351,59 +435,91 @@ def plotar():
                 if dispositivo.device == "F:\\":
                     break
 
-                armzTotalDisco = round((disk_usage(f'{dispositivo.device}')[0]) / (10**9),2); # Capturando a capacidade total de armazenamento do disco
-                espacoUsadoDisco = round((disk_usage(f'{dispositivo.device}')[1]) / (10**9),2); # Capturando o espaço usado do disco
-                espacoLivreDisco = round((disk_usage(f'{dispositivo.device}')[2]) / (10**9),2); # Capturando o espaço disponível do disco
+                # Capturando a capacidade total de armazenamento do disco
+                armzTotalDisco = round(
+                    (disk_usage(f'{dispositivo.device}')[0]) / (10**9), 2)
+                # Capturando o espaço usado do disco
+                espacoUsadoDisco = round(
+                    (disk_usage(f'{dispositivo.device}')[1]) / (10**9), 2)
+                # Capturando o espaço disponível do disco
+                espacoLivreDisco = round(
+                    (disk_usage(f'{dispositivo.device}')[2]) / (10**9), 2)
 
-                labels = f'Espaço Usado - {espacoUsadoDisco} Gb', f'Espaço Disponível - {espacoLivreDisco} Gb' # Definindo as lavels (Textos) da legenda
-                sizes = [((espacoUsadoDisco/armzTotalDisco)*100), ((espacoLivreDisco/armzTotalDisco)*100)] # Definindo os tamanhos do gráfico de pizza em %
-                
-                graficosUnidArmz = plt.subplot(2,2,i) # Plotando o gráfico de pizza nas posições corretas da janela de gráficos
-                graficosUnidArmz.pie(sizes, autopct='%1.1f%%', startangle=0, colors = cores) # Setando as configurações do gráfico, como as medidas com arredondamento de 1 casa decimal, o ângulo de inicio do gráfico e suas cores.
-                graficosUnidArmz.title.set_text(f'Unidade - {dispositivo.device}') # título do gráfico
-                graficosUnidArmz.legend(labels, loc="best", bbox_to_anchor=((0.55, -0.5, 0.5, 0.5))) # Setando as configurações da legenda, como os títulos e sua posição.
-                graficosUnidArmz.axis('equal')  # Definindo a proporção de forma do gráficos para que as unidades de dados sejam as mesmas em todas as direções.
-                
+                # Definindo as lavels (Textos) da legenda
+                labels = f'Espaço Usado - {espacoUsadoDisco} Gb', f'Espaço Disponível - {espacoLivreDisco} Gb'
+                # Definindo os tamanhos do gráfico de pizza em %
+                sizes = [((espacoUsadoDisco/armzTotalDisco)*100),
+                         ((espacoLivreDisco/armzTotalDisco)*100)]
+
+                # Plotando o gráfico de pizza nas posições corretas da janela de gráficos
+                graficosUnidArmz = plt.subplot(2, 2, i)
+                # Setando as configurações do gráfico, como as medidas com arredondamento de 1 casa decimal, o ângulo de inicio do gráfico e suas cores.
+                graficosUnidArmz.pie(
+                    sizes, autopct='%1.1f%%', startangle=0, colors=cores)
+                graficosUnidArmz.title.set_text(
+                    f'Unidade - {dispositivo.device}')  # título do gráfico
+                # Setando as configurações da legenda, como os títulos e sua posição.
+                graficosUnidArmz.legend(
+                    labels, loc="best", bbox_to_anchor=((0.55, -0.5, 0.5, 0.5)))
+                # Definindo a proporção de forma do gráficos para que as unidades de dados sejam as mesmas em todas as direções.
+                graficosUnidArmz.axis('equal')
+
                 i = i+1
         else:
-            armzTotalDisco = round((disk_usage('/')[0]) / (10**9),2); # Capturando a capacidade total de armazenamento do disco
-            espacoUsadoDisco = round((disk_usage('/')[1]) / (10**9),2); # Capturando o espaço usado do disco
-            espacoLivreDisco = round((disk_usage('/')[2]) / (10**9),2); # Capturando o espaço disponível do disco
+            # Capturando a capacidade total de armazenamento do disco
+            armzTotalDisco = round((disk_usage('/')[0]) / (10**9), 2)
+            # Capturando o espaço usado do disco
+            espacoUsadoDisco = round((disk_usage('/')[1]) / (10**9), 2)
+            # Capturando o espaço disponível do disco
+            espacoLivreDisco = round((disk_usage('/')[2]) / (10**9), 2)
 
-            labels = f'Espaço Usado - {espacoUsadoDisco} Gb', f'Espaço Disponível - {espacoLivreDisco} Gb' # Definindo as lavels (Textos) da legenda
-            sizes = [((espacoUsadoDisco/armzTotalDisco)*100), ((espacoLivreDisco/armzTotalDisco)*100)] # Definindo os tamanhos do gráfico de pizza em %
+            # Definindo as lavels (Textos) da legenda
+            labels = f'Espaço Usado - {espacoUsadoDisco} Gb', f'Espaço Disponível - {espacoLivreDisco} Gb'
+            # Definindo os tamanhos do gráfico de pizza em %
+            sizes = [((espacoUsadoDisco/armzTotalDisco)*100),
+                     ((espacoLivreDisco/armzTotalDisco)*100)]
 
-                
-            graficosUnidArmz = plt.subplot(2,2,3) # Plotando o gráfico de pizza nas posições corretas da janela de gráficos
-            graficosUnidArmz.pie(sizes, autopct='%1.1f%%', startangle=0, colors = cores) # Setando as configurações do gráfico, como as medidas com arredondamento de 1 casa decimal, o ângulo de inicio do gráfico e suas cores.
-            graficosUnidArmz.title.set_text(f'Unidade - /') # título do gráfico
-            graficosUnidArmz.legend(labels, loc="best", bbox_to_anchor=((0.55, -0.5, 0.5, 0.5))) # Setando as configurações da legenda, como os títulos e sua posição.
-            graficosUnidArmz.axis('equal')  # Definindo a proporção de forma do gráficos para que as unidades de dados sejam as mesmas em todas as direções.    
-        
+            # Plotando o gráfico de pizza nas posições corretas da janela de gráficos
+            graficosUnidArmz = plt.subplot(2, 2, 3)
+            # Setando as configurações do gráfico, como as medidas com arredondamento de 1 casa decimal, o ângulo de inicio do gráfico e suas cores.
+            graficosUnidArmz.pie(sizes, autopct='%1.1f%%',
+                                 startangle=0, colors=cores)
+            graficosUnidArmz.title.set_text(
+                f'Unidade - /')  # título do gráfico
+            # Setando as configurações da legenda, como os títulos e sua posição.
+            graficosUnidArmz.legend(
+                labels, loc="best", bbox_to_anchor=((0.55, -0.5, 0.5, 0.5)))
+            # Definindo a proporção de forma do gráficos para que as unidades de dados sejam as mesmas em todas as direções.
+            graficosUnidArmz.axis('equal')
 
     # cria uma lista com 10 zeros, esta lista será utilizada no eixo y gráfico
-    consumoRAM = [0] * 10 
+    consumoRAM = [0] * 10
     consumoCPU = [0] * 10
 
     # propriedades dos gráficos
-    telaPrincipal = plt.figure(figsize=(7, 6), facecolor='#EEE') # cria a janela com o tamanho e a cor
+    # cria a janela com o tamanho e a cor
+    telaPrincipal = plt.figure(figsize=(7, 6), facecolor='#EEE')
     # criando os gráficos de CPU e RAM dentro da janela
     graficosRAM = plt.subplot(321)
     graficosCPU = plt.subplot(322)
 
-    graficosRAM.axes.get_xaxis().set_visible(False) # tira a visualização dos dados do eixo x
-    graficosRAM.set_facecolor('#DDD') # define a cor do gráfico
+    # tira a visualização dos dados do eixo x
+    graficosRAM.axes.get_xaxis().set_visible(False)
+    graficosRAM.set_facecolor('#DDD')  # define a cor do gráfico
 
-    graficosCPU.axes.get_xaxis().set_visible(False) # tira a visualização dos dados do eixo x
-    graficosCPU.set_facecolor('#DDD') # define a cor do gráfico
+    # tira a visualização dos dados do eixo x
+    graficosCPU.axes.get_xaxis().set_visible(False)
+    graficosCPU.set_facecolor('#DDD')  # define a cor do gráfico
 
     # função para chamar em loop a função definirGraficos em um intervalo de 1s ou 1000ms (milissegundos)
-    animacaoGeral = FuncAnimation(telaPrincipal, definirGraficos, interval=1000)
+    animacaoGeral = FuncAnimation(
+        telaPrincipal, definirGraficos, interval=1000)
 
     # exibe a tela principal com os gráficos
     plt.show()
 
     return "0"
+
 
 def arquivoCSV():
     os.system(codeCleaner)
@@ -417,7 +533,7 @@ def arquivoCSV():
 
     particoes = []
     if sistema == "Windows":
-        for part in disk_partitions(all=False): 
+        for part in disk_partitions(all=False):
             if part[0] == "F:\\" or part[0] == "E:\\":
                 break
             else:
@@ -425,24 +541,29 @@ def arquivoCSV():
     elif sistema == "Linux":
         particoes.append("/")
 
-    porcentagemOcupados = [] 
+    porcentagemOcupados = []
     for j in particoes:
-        porcentagemOcupados.append(disk_usage(j).percent) 
+        porcentagemOcupados.append(disk_usage(j).percent)
 
     book = openpyxl.Workbook()
     book.create_sheet('Simulação')
     page = book['Simulação']
     page.append(['Momento:', hora])
-    page.append(['Máquina', 'Memória total (GB)', 'Memória disponível (GB)', 'Uso atual da memória (GB)', 'Uso total da CPU (%)', 'Frequência da CPU','Partições', 'Porcentagem ocupada de cada partição'])
-    page.append(['Máquina 1:', memoriaTotal, memoriaDisponivel, usoAtualMemoria, usoCpuPorc, freqCpu, str(particoes), str(porcentagemOcupados)])
-    page.append(['Máquina 2:', memoriaTotal * 0.9, memoriaDisponivel * 0.9, usoAtualMemoria * 0.9, usoCpuPorc * 1.2, freqCpu * 0.9, str(particoes), str(porcentagemOcupados)])
-    page.append(['Máquina 3:', memoriaTotal * 1.4, memoriaDisponivel * 1.4, usoAtualMemoria * 1.4, usoCpuPorc * 0.9, freqCpu * 1.5, str(particoes), str(porcentagemOcupados)])
-    page.append(['Máquina 4:', memoriaTotal * 0.7, memoriaDisponivel * 0.7, usoAtualMemoria * 0.7, usoCpuPorc * 2, freqCpu * 1.4, str(particoes), str(porcentagemOcupados)])
-    page.append(['Máquina 5:', memoriaTotal * 1.8, memoriaDisponivel * 1.8, usoAtualMemoria * 1.8, usoCpuPorc * 1.8, freqCpu * 2, str(particoes), str(porcentagemOcupados)])
+    page.append(['Máquina', 'Memória total (GB)', 'Memória disponível (GB)', 'Uso atual da memória (GB)',
+                'Uso total da CPU (%)', 'Frequência da CPU', 'Partições', 'Porcentagem ocupada de cada partição'])
+    page.append(['Máquina 1:', memoriaTotal, memoriaDisponivel, usoAtualMemoria,
+                usoCpuPorc, freqCpu, str(particoes), str(porcentagemOcupados)])
+    page.append(['Máquina 2:', memoriaTotal * 0.9, memoriaDisponivel * 0.9, usoAtualMemoria *
+                0.9, usoCpuPorc * 1.2, freqCpu * 0.9, str(particoes), str(porcentagemOcupados)])
+    page.append(['Máquina 3:', memoriaTotal * 1.4, memoriaDisponivel * 1.4, usoAtualMemoria *
+                1.4, usoCpuPorc * 0.9, freqCpu * 1.5, str(particoes), str(porcentagemOcupados)])
+    page.append(['Máquina 4:', memoriaTotal * 0.7, memoriaDisponivel * 0.7, usoAtualMemoria *
+                0.7, usoCpuPorc * 2, freqCpu * 1.4, str(particoes), str(porcentagemOcupados)])
+    page.append(['Máquina 5:', memoriaTotal * 1.8, memoriaDisponivel * 1.8, usoAtualMemoria *
+                1.8, usoCpuPorc * 1.8, freqCpu * 2, str(particoes), str(porcentagemOcupados)])
 
     book.save('SimulacaoCaixas.csv')
 
     print('Sucesso!!\n\nSeus dados foram salvos em um relatório chamado SimulacaoCaixas.csv\n')
     input("\nPressione Enter para voltar ao menu...\n")
     return "0"
-
