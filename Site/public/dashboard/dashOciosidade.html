@@ -97,7 +97,7 @@
                                                     </div>
 
                                                     <div class="text-center mb-3"><button class="btn btn-primary btn-sm"
-                                                            onclick="obterDadosGraficosOciosidade(), obterInicioMonitoramento()"
+                                                            onclick="obterDadosGraficosOciosidade()"
                                                             id="btn_cadastro" style="margin-top: 2%;">Mostrar
                                                             Maquina</button>
                                                     </div>
@@ -168,7 +168,7 @@
                                 <h3 id="aviso_componente">Nenhum componente cadastrado para essa máquina</h3>
                                 <div class="card shadow mb-4" id="card_cpu" style="display: none;">
                                     <div class="card-header d-flex justify-content-between align-items-center">
-                                        <h6 class="text-primary fw-bold m-0">Média de uso da maquina(Horas)</h6>
+                                        <h6 class="text-primary fw-bold m-0">Uso da maquina(milisegundos)</h6>
                                     </div>
                                     <div class="card-body">
                                         <div class="chart-area"
@@ -201,7 +201,7 @@
                                         <tr>
                                             <th>Número Serial</th>
                                             <th>Nome</th>
-                                            <th>Média uso diario</th>
+                                            <th>Tempo Ocioso(%)</th>
                                             <th>CEP</th>
                                         </tr>
                                     </thead>
@@ -284,26 +284,6 @@
         return false;
     }
 
-    function obterInicioMonitoramento() {
-        serialNumber = slct_maquinas.value;
-
-        fetch(`/medidas/obterInicioMonitoramento/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
-            if (response.ok) {
-                response.json().then(function (resposta) {
-                    dataInicio = new Date(resposta[0].datahora);
-                    span_inicioMonitoramento.innerHTML = dataInicio.getDate() + "/" + dataInicio.getMonth() + "/" + dataInicio.getFullYear() + " " + dataInicio.getHours() + ":" + dataInicio.getMinutes() + ":" + dataInicio.getSeconds();
-
-                });
-            } else {
-                console.error('Nenhum dado encontrado ou erro na API');
-            }
-        })
-            .catch(function (error) {
-                console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
-            });
-
-    }
-
     function obterDadosGraficosOciosidade() {
         serialNumber = slct_maquinas.value;
 
@@ -326,6 +306,26 @@
                     card_cpu.style.display = "block";
                     aviso_componente.style.display = "none";
 
+                    usuario = parseFloat(resposta[0].usoUsuario);
+                    ocioso = parseFloat(resposta[0].usoOcioso);
+                    tempoTotalUtilizacao = usuario + ocioso;
+                    tempoTotalUtilizacao = new Date(tempoTotalUtilizacao * 1000);
+                    diaTempoTotalUtilizacao = tempoTotalUtilizacao.getUTCDate() - 1;
+                    horaTempoTotalUtilizacao = tempoTotalUtilizacao.getUTCHours();
+
+                    //Data de hoje - data do registro
+                    dataInicio = new Date();
+                    dataInicio.setDate(dataInicio.getDate() - diaTempoTotalUtilizacao);
+                    dataInicio.setHours(dataInicio.getHours() - horaTempoTotalUtilizacao);
+                    diaInicio = dataInicio.getDate();
+                    mesInicio = dataInicio.getMonth() + 1;
+                    anoInicio = dataInicio.getFullYear();
+                    horaInicio = dataInicio.getHours();
+                    minutoInicio = dataInicio.getMinutes();
+                    segundoInicio = dataInicio.getSeconds();
+
+                    // console.log(diaInicio + "/" + mesInicio + "/" + anoInicio + " " + horaInicio + ":" + minutoInicio + ":" + segundoInicio);
+
                     usoUsuario = new Date(resposta[0].usoUsuario * 1000);
                     hoursUsuario = usoUsuario.getUTCHours();
                     minutesUsuario = usoUsuario.getUTCMinutes();
@@ -337,13 +337,7 @@
                     minutesOcioso = usoOcioso.getUTCMinutes();
                     secondsOcioso = usoOcioso.getSeconds();
 
-                    // pegar data de hoje
-                    dataAtual = new Date();
-                    console.log(dataAtual);
-
-                    
-
-
+                    span_inicioMonitoramento.innerHTML = diaInicio + "/" + mesInicio + "/" + anoInicio + " " + horaInicio + ":" + minutoInicio + ":" + segundoInicio;
                     span_tempoUso.innerHTML = hoursUsuario + " Horas " + minutesUsuario + " Minutos ";
                     span_tempoOcioso.innerHTML = daysOcioso + " Dias " + hoursOcioso + " Horas " + minutesOcioso + " Minutos ";
                     
@@ -369,8 +363,8 @@
             labels: labels,
             datasets: [
                 {
-                    yAxisID: 'y-usoCpu',
-                    label: 'Uso da cpu',
+                    yAxisID: 'y-usoMaquina',
+                    label: 'Uso da maquina(milisegundos)',
                     lineTension: 0.3,
                     backgroundColor: "rgba(78, 115, 223, 0.5)",
                     borderColor: "rgba(78, 115, 223, 1)",
@@ -460,6 +454,8 @@
                 console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
             });
 
+            return novoRegistro[0].usoUsuario, novoRegistro[0].usoOcioso;
+
     }
 
     function obterDadosTodasMaquinas() {
@@ -487,7 +483,7 @@
 
                         serialNumber = json[i].fkMaquina;
                         nome = json[i].nome;
-                        mediaUsoDiario = json[i].usoOcioso;
+                        mediaOciosoDiario = (parseFloat(json[i].usoOcioso) / (parseFloat(json[i].usoUsuario) + parseFloat(json[i].usoOcioso))) * 100;
                         cep = json[i].cep;
 
                         var linha = document.createElement('tr');
@@ -501,9 +497,9 @@
                         linha.appendChild(colunaNome);
                         colunaNome.innerHTML = nome;
 
-                        var colunaUsoUsuario = document.createElement('td');
-                        linha.appendChild(colunaUsoUsuario);
-                        colunaUsoUsuario.innerHTML = mediaUsoDiario;
+                        var colunaUsoOcioso = document.createElement('td');
+                        linha.appendChild(colunaUsoOcioso);
+                        colunaUsoOcioso.innerHTML = mediaOciosoDiario;
 
                         var colunaCep = document.createElement('td');
                         linha.appendChild(colunaCep);
