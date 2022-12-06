@@ -1,7 +1,8 @@
 import datetime
 from dis import disco
 from pickletools import read_int4
-import time, json
+import time
+import json
 from psutil import *
 import os
 import platform
@@ -82,7 +83,7 @@ def metricasMaximas(idCpu, idDisco, idRam):
 
 
 def cadastroRede(serialNumber):
-    query = f"SELECT * FROM tbRede WHERE fkMaquina = '{serialNumber}'"
+    query = f"SELECT * FROM tbRede WHERE fkMaquina = '{serialNumber}';"
 
     dados = select(query)
 
@@ -97,15 +98,17 @@ def cadastroRede(serialNumber):
 
     macAddress = placa[2].address
 
-    ipv4 = placa[0].address;
-    netmask4 = placa[0].netmask;
+    ipv4 = placa[0].address
+    netmask4 = placa[0].netmask
     ipv6 = placa[1].address[:25]
 
     if type(dados) == type(None):
-        query = f"INSERT INTO tbRede(macAddress, ipv4, netmask4, fkMaquina) VALUES ('{macAddress}', '{ipv4}', '{netmask4}', '{serialNumber}');"
+        query = f"INSERT INTO tbRede(macAddress, ipv4, ipv6, netmask4, fkMaquina) VALUES ('{macAddress}', '{ipv4}', '{ipv6}', '{netmask4}', '{serialNumber}');"
     else:
-        query = f"INSERT INTO tbRede(macAddress, ipv4, netmask4, fkMaquina) VALUES ('{macAddress}', '{ipv4}', '{netmask4}', '{serialNumber}');"
-        
+        macSelect = dados[0]
+        queryDelete = f"DELETE FROM tbRegistroRede WHERE fkPlaca = '{macSelect}';"
+        query = f"UPDATE tbRede SET macAddress = '{macAddress}', ipv4 = '{ipv4}', ipv6 = '{ipv6}', netmask4 = '{netmask4}' WHERE fkMaquina = '{serialNumber}';"
+        insert(queryDelete)
 
     insert(query)
 
@@ -116,7 +119,7 @@ def getMac(serialNumber):
     query = f"SELECT macAddress FROM tbRede WHERE fkMaquina = '{serialNumber}'"
 
     dados = select(query)
-    
+
     return dados
 
 
@@ -185,6 +188,7 @@ def monitorar():
         except KeyboardInterrupt:
             return "0"
 
+
 def info():
     os.system(codeCleaner)
 
@@ -224,14 +228,51 @@ def info():
 
 
 def insertPeriodico(idCpu, idDisco, idRam, macAddress, serialNumber, urlOpen):
-    intervaloInsert = 2 # em segundos
+    intervaloInsert = 2  # em segundos
 
-    ultimosRecebidos = net_io_counters().packets_recv
-    ultimosEnviados = net_io_counters().packets_sent
-    ultimosPacotesRecebidos = net_io_counters().bytes_recv
-    ultimosPacotesEnviados = net_io_counters().bytes_sent
+    ultimosRecebidos = net_io_counters().bytes_recv
+    ultimosEnviados = net_io_counters().bytes_sent
+    ultimosPacotesRecebidos = net_io_counters().packets_recv
+    ultimosPacotesEnviados = net_io_counters().packets_sent
 
     while True:
+        
+        dataHora = datetime.datetime.now()
+        dataHora = datetime.datetime.strftime(dataHora, "%Y-%m-%d %H:%M:%S")
+
+        # Pegando dados de rede
+
+        bytesRecebidos = net_io_counters().bytes_recv
+        bytesEnviados = net_io_counters().bytes_sent
+
+        novosRecebidos = bytesRecebidos - ultimosRecebidos
+        novosEnviados = bytesEnviados - ultimosEnviados
+
+        mbRecebidos = novosRecebidos / 1024 / 1024
+        mbEnviados = novosEnviados / 1024 / 1024
+
+        mbEnviadosTotal = bytesEnviados / 1024 / 1024
+        mbRecebidosTotal = bytesRecebidos / 1024 / 1024
+
+        # Pacotes
+
+        pacotesRecebidos = net_io_counters().packets_recv
+        pacotesEnviados = net_io_counters().packets_sent
+
+        novosPacotesRecebidos = pacotesRecebidos - ultimosPacotesRecebidos
+        novosPacotesEnviados = pacotesEnviados - ultimosPacotesEnviados
+
+        queryRede = f"INSERT INTO tbRegistroRede(fkPlaca, mbEnviados, mbRecebidos, totalEnviado, totalRecebido, pacotesEnviados, pacotesRecebidos, dataHora) VALUES ('{macAddress}', {mbEnviados:.2f}, {mbRecebidos:.2f}, {mbEnviadosTotal:.2f}, {mbRecebidosTotal:.2f}, {novosPacotesEnviados}, {novosPacotesRecebidos},'{dataHora}');"
+        insert(queryRede)
+
+        ultimosRecebidos = bytesRecebidos
+        ultimosEnviados = bytesEnviados
+
+        ultimosPacotesRecebidos = pacotesRecebidos
+        ultimosPacotesEnviados = pacotesEnviados
+
+        #Dados de Registro 
+
         usoAtualMemoria = conversao_bytes(virtual_memory().used, 3)
         usoCpuPorc = cpu_percent()
         usoAtualMemoriaPorc = virtual_memory().percent
@@ -260,22 +301,19 @@ def insertPeriodico(idCpu, idDisco, idRam, macAddress, serialNumber, urlOpen):
 
         usoDisco = discoOcupado[0]
 
-        dataHora = datetime.datetime.now()
-        dataHora = datetime.datetime.strftime(dataHora, "%Y-%m-%d %H:%M:%S")
-
         queryTempoUso = f"INSERT INTO tbOciosidade(fkMaquina, usoUsuario, usoOcioso, datahora) VALUES ('{serialNumber}', '{usoUsuario}', '{usoOciosidade}', '{dataHora}');"
         insert(queryTempoUso)
 
         for i in idCpu:
-            queryCpu = f"INSERT INTO tbRegistro(fkComponente, registro, dataHora) VALUES ('{i}', '{usoCpuPorc}', '{dataHora}');"
+            queryCpu = f"INSERT INTO tbRegistro(fkComponente, registro, dataHora) VALUES ('{i}', {usoCpuPorc}, '{dataHora}');"
             insert(queryCpu)
 
         for i in idDisco:
-            queryDisco = f"INSERT INTO tbRegistro(fkComponente, registro, dataHora) VALUES ('{i}', '{usoDisco}', '{dataHora}');"
+            queryDisco = f"INSERT INTO tbRegistro(fkComponente, registro, dataHora) VALUES ('{i}', {usoDisco}, '{dataHora}');"
             insert(queryDisco)
 
         for i in idRam:
-            queryRam = f"INSERT INTO tbRegistro(fkComponente, registro, dataHora) VALUES ('{i}', '{usoAtualMemoria}', '{dataHora}');"
+            queryRam = f"INSERT INTO tbRegistro(fkComponente, registro, dataHora) VALUES ('{i}', {usoAtualMemoria}, '{dataHora}');"
             insert(queryRam)
 
         # url = "https://api.pipefy.com/graphql"
@@ -293,7 +331,7 @@ def insertPeriodico(idCpu, idDisco, idRam, macAddress, serialNumber, urlOpen):
         #         "content-type": "application/json"
         #     }
         #     response = requests.post(url, json=payload, headers=headers)
-        
+
         # if usoDisco > 0:
         #     payload = {("{\"query\": \"mutation{ createCard( input: { pipe_id: \\\"302821637\\\", phase_id: \\\"317566487\\\" title:\\\"Alerta de uso de Disco - Máquina "+ serialNumber +" \\\" fields_attributes: [ {field_id: \\\"aviso\\\", field_value: \\\"O uso de seu disco está fora do ideal\\\"} {field_id: \\\"serial_number\\\", field_value: \\\" "+ serialNumber +" \\\"} {field_id: \\\"uso\\\", field_value: \\\" "+  usoDisco +" GB\\\"} {field_id: \\\"data_hora\\\", field_value: \\\" "+  dataHora +"\\\"} ] } ) {clientMutationId card {id title }}}\"}")}
         #     headers = {
@@ -302,7 +340,7 @@ def insertPeriodico(idCpu, idDisco, idRam, macAddress, serialNumber, urlOpen):
         #         "content-type": "application/json"
         #     }
         #     response = requests.post(url, json=payload, headers=headers)
-        
+
         # if usoAtualMemoria > 0:
         #     payload = {("{\"query\": \"mutation{ createCard( input: { pipe_id: \\\"302821637\\\", phase_id: \\\"317574217\\\" title:\\\"Alerta de uso de Ram - Máquina "+ serialNumber +" \\\" fields_attributes: [ {field_id: \\\"aviso\\\", field_value: \\\"O uso de seu disco está fora do ideal\\\"} {field_id: \\\"serial_number\\\", field_value: \\\" "+ serialNumber +" \\\"} {field_id: \\\"uso\\\", field_value: \\\" "+  usoAtualMemoria +" GB\\\"} {field_id: \\\"data_hora\\\", field_value: \\\" "+  dataHora +" \\\"} ] } ) {clientMutationId card {id title }}}\"}")}
         #     headers = {
@@ -318,37 +356,35 @@ def insertPeriodico(idCpu, idDisco, idRam, macAddress, serialNumber, urlOpen):
 
         # data = {"query": "mutation{ createCard( input: { pipe_id: \"302821637\" fields_attributes: [ {field_id: \"aviso\", field_value: \"Sua CPU está fora do ideal\"} {field_id: \"serial_number\", field_value: \"AQUI VIRÁ O SERIAL NUMBER\"} {field_id: \"uso\", field_value: \"AQUI VIRÁ O USO DA CPU\"} {field_id: \"data_hora\", field_value: \"08/11/2022 00:00\"} ] } ) {clientMutationId card {id title }}}"}
 
-
         # headers = {
         #     "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c2VyIjp7ImlkIjozMDIxNzYyNTMsImVtYWlsIjoiMjIyLTFjY28tZ3J1cG8xMEBiYW5kdGVjLmNvbS5iciIsImFwcGxpY2F0aW9uIjozMDAyMTQwMDV9fQ.zV0vqSFmSDOMiHXQ2QsOhfjt_khTh5EJ_0myF0dbD8dzebwTL-nJ2wo7HR-sIrG6mkR0RdZV7uEIdY-c4aUfww",
         #     "Content-Type": "application/json"}
 
         # response = requests.request("POST", url, json=data, headers=headers)
 
-        if os.name == "nt":
-            capturaTemp(serialNumber, urlOpen)
-        else:
-            import psutil
-            # Temperatura - Linux
-            tempInfo = psutil.sensors_temperatures()
-            tempAtual = int(tempInfo['coretemp'][0][1])
-
-            #Clock - Linux
-            clock = int(psutil.cpu_freq().current)
-
-            query = f"INSERT INTO tbTemperatura(fkMaquina, tempAtual, clock, dataHora) VALUES ('{serialNumber}', '{tempAtual}', '{clock}', '{dataHora}');"
-            insert(query)
-
         # print(response)
 
         # print(response.text, "oi")
 
+        # Temperatura
+        if os.name == "nt":
+            capturaTemp(serialNumber, urlOpen)
+        else:
+            # Temperatura - Linux
+            tempInfo = sensors_temperatures()
+            tempAtual = int(tempInfo['coretemp'][0][1])
+
+            #Clock - Linux
+            clock = int(cpu_freq().current)
+
+            query = f"INSERT INTO tbTemperatura(fkMaquina, tempAtual, clock, dataHora) VALUES ('{serialNumber}', '{tempAtual}', '{clock}', '{dataHora}');"
+            insert(query)
 
         # Processos
         listaProcessos = []
 
         for proc in process_iter():
-            infoProc = proc.as_dict(['name','cpu_percent', 'memory_percent'])
+            infoProc = proc.as_dict(['name', 'cpu_percent', 'memory_percent'])
             if infoProc['cpu_percent'] > 0 and infoProc['name'] != 'System Idle Process':
                 listaProcessos.append(infoProc)
 
@@ -360,56 +396,26 @@ def insertPeriodico(idCpu, idDisco, idRam, macAddress, serialNumber, urlOpen):
         for proc in listaProcessos[:1]:
             nomeProcesso = proc['name']
             cpuProcesso = proc['cpu_percent']
-            ramProcesso = round(proc['memory_percent'],2)
-            
+            ramProcesso = round(proc['memory_percent'], 2)
+
             queryProc = f"INSERT INTO tbProcesso(fkMaquina, processo, usoCpu, usoRam, dataHora) VALUES ('{serialNumber}', '{nomeProcesso}', '{cpuProcesso}', '{ramProcesso}', '{dataHora}');"
             insert(queryProc)
 
-        # Pegando dados de rede
-
-        bytesRecebidos = net_io_counters().bytes_recv
-        bytesEnviados = net_io_counters().bytes_sent
-
-        novosRecebidos = bytesRecebidos - ultimosRecebidos
-        novosEnviados = bytesEnviados - ultimosEnviados
-
-        mbRecebidos = novosRecebidos / 1024 / 1024
-        mbEnviados = novosEnviados / 1024 / 1024
-
-        mbEnviadosTotal = bytesEnviados / 1024 / 1024
-        mbRecebidosTotal = bytesRecebidos / 1024 / 1024
-
-        # Pacotes
-
-        pacotesRecebidos = net_io_counters().packets_recv
-        pacotesEnviados = net_io_counters().packets_sent
-
-        novosPacotesRecebidos = pacotesRecebidos - ultimosPacotesRecebidos
-        novosPacotesEnviados = pacotesEnviados - ultimosPacotesEnviados
-    
-
-        queryRede = f"INSERT INTO tbRegistroRede(fkPlaca, mbEnviados, mbRecebidos, totalEnviado, totalRecebido, pacotesEnviados, pacotesRecebidos, dataHora) VALUES ('{macAddress}', {mbEnviados:.2f}, {mbRecebidos:.2f}, {mbEnviadosTotal:.2f}, {mbRecebidosTotal:.2f}, {novosPacotesEnviados}, {novosPacotesRecebidos},'{dataHora}');"
-
-        insert(queryRede)       
-
-        ultimosRecebidos = bytesRecebidos
-        ultimosEnviados = bytesEnviados
-        
-        ultimosPacotesRecebidos = pacotesRecebidos
-        ultimosPacotesEnviados = pacotesEnviados
-
         time.sleep(intervaloInsert)
+
 
 def capturaTemp(serialNumber, urlOpen):
     try:
-        url = urlOpen + "data.json" 
+        url = urlOpen + "data.json"
         req = requests.get(url)
-        jsonText= req.text.encode("utf8")
+        jsonText = req.text.encode("utf8")
         data = json.loads(jsonText)
 
-        tempDados = int(data["Children"][0]["Children"][0]["Children"][1]["Children"][0]["Value"][:2])
-        clockDado = int(data["Children"][0]["Children"][0]["Children"][0]["Children"][1]["Value"][:4])
-        
+        tempDados = int(data["Children"][0]["Children"][0]
+                        ["Children"][1]["Children"][0]["Value"][:2])
+        clockDado = int(data["Children"][0]["Children"][0]
+                        ["Children"][0]["Children"][1]["Value"][:4])
+
         dataHora = datetime.datetime.now()
         dataHora = datetime.datetime.strftime(dataHora, "%Y-%m-%d %H:%M:%S")
         query = f"INSERT INTO tbTemperatura(fkMaquina, tempAtual, clock, dataHora) VALUES ('{serialNumber}', '{tempDados}', '{clockDado}', '{dataHora}');"
@@ -418,7 +424,8 @@ def capturaTemp(serialNumber, urlOpen):
         print('Erro ao capturar a temperatura')
         print('Por favor ligue o open hardware monitor na url:')
         print(url + '\n\n')
-        
+
+
 def relatorio():
     os.system(codeCleaner)
 

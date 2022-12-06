@@ -24,6 +24,7 @@ public class CadastroRede {
     private HardwareAbstractionLayer hal = si.getHardware();
     private List<NetworkIF> redes = hal.getNetworkIFs();
     private NetworkIF rede = redes.get(redes.size() - 1);
+    private String macAddress;
 
     public void cadastroRede() {
         TbRede validacao = new TbRede();
@@ -37,10 +38,12 @@ public class CadastroRede {
             cursor.update(String.format("INSERT INTO tbRede(macAddress, ipv4, ipv6, netmask4, fkMaquina) VALUES ('%s', '%s', '%s', '%s', '%s');", getMac(), getIpv4(), getIpv6(), getNetmask4(), serialNumber));
             System.out.println("Rede cadastrada");
         } else {
+            String macSelect = validacao.getMacAddress();
+            cursor.update(String.format("DELETE FROM tbRegistroRede WHERE fkPlaca = '%s'", macSelect));
             cursor.update(String.format("UPDATE tbRede SET macAddress = '%s', ipv4 = '%s', ipv6 = '%s' ,netmask4 = '%s' WHERE fkMaquina = '%s';", getMac(), getIpv4(), getIpv6(), getNetmask4(), serialNumber));
             System.out.println("Rede atualizada");
         }
-        
+
         ThreadInsert insert = new ThreadInsert();
     }
 
