@@ -165,7 +165,7 @@
 
                         <div class="row">
                             <div class="col">
-                                <h3 id="aviso_componente">Nenhum componente cadastrado para essa máquina</h3>
+                                <h3 id="aviso_componente">Selecione alguma maquina para mostrar o gráfico</h3>
                                 <div class="card shadow mb-4" id="card_cpu" style="display: none;">
                                     <div class="card-header d-flex justify-content-between align-items-center">
                                         <h6 class="text-primary fw-bold m-0">Uso da maquina(milisegundos)</h6>
@@ -308,7 +308,10 @@
 
                     usuario = resposta[0].usoUsuario;
                     ocioso = resposta[0].usoOcioso;
+                    console.log("Uso do usuário: " + usuario);
+                    console.log("Uso ocioso: " + ocioso);
                     tempoTotalUtilizacao = usuario + ocioso;
+                    
                     tempoTotalUtilizacao = new Date(tempoTotalUtilizacao * 1000);
                     diaTempoTotalUtilizacao = tempoTotalUtilizacao.getUTCDate() - 1;
                     horaTempoTotalUtilizacao = tempoTotalUtilizacao.getUTCHours();
@@ -327,6 +330,7 @@
                     // console.log(diaInicio + "/" + mesInicio + "/" + anoInicio + " " + horaInicio + ":" + minutoInicio + ":" + segundoInicio);
 
                     usoUsuario = new Date(resposta[0].usoUsuario * 1000);
+                    daysUsuario = usoUsuario.getUTCDate() - 1;
                     hoursUsuario = usoUsuario.getUTCHours();
                     minutesUsuario = usoUsuario.getUTCMinutes();
                     secondsUsuario = usoUsuario.getSeconds();
@@ -338,8 +342,18 @@
                     secondsOcioso = usoOcioso.getSeconds();
 
                     span_inicioMonitoramento.innerHTML = diaInicio + "/" + mesInicio + "/" + anoInicio + " " + horaInicio + ":" + minutoInicio + ":" + segundoInicio;
-                    span_tempoUso.innerHTML = hoursUsuario + " Horas " + minutesUsuario + " Minutos ";
-                    span_tempoOcioso.innerHTML = daysOcioso + " Dias " + hoursOcioso + " Horas " + minutesOcioso + " Minutos ";
+
+                    if(daysUsuario > 0){
+                        span_tempoUso.innerHTML = daysUsuario + " Dias " + hoursUsuario + " Horas " + minutesUsuario + " Minutos ";
+                    } else {
+                        span_tempoUso.innerHTML = hoursUsuario + " Horas " + minutesUsuario + " Minutos ";
+                    }
+
+                    if(daysOcioso > 0){
+                        span_tempoOcioso.innerHTML = daysOcioso + " Dias " + hoursOcioso + " Horas " + minutesOcioso + " Minutos ";
+                    } else {
+                        span_tempoOcioso.innerHTML = hoursOcioso + " Horas " + minutesOcioso + " Minutos ";
+                    }
                     
                     resposta.reverse();
 
