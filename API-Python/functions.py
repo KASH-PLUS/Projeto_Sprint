@@ -90,18 +90,32 @@ def cadastroRede(serialNumber):
 
     placa = net_if_addrs()
 
-    for i in enumerate(placa):
+    if(os.name() == "nt"):
+        for i in enumerate(placa):
 
-        if (i[0] == 1):
-            minha_placa = i[1]
+            if (i[0] == 3):
+                minha_placa = i[1]
 
-    placa = net_if_addrs()[minha_placa]
+        placa = net_if_addrs()[minha_placa]
 
-    macAddress = placa[2].address
+        macAddress = placa[3].address
 
-    ipv4 = placa[0].address
-    netmask4 = placa[0].netmask
-    ipv6 = placa[1].address[:25]
+        ipv4 = placa[1].address
+        netmask4 = placa[1].netmask
+        ipv6 = placa[2].address[:25]
+    else:
+        for i in enumerate(placa):
+
+            if (i[0] == 1):
+                minha_placa = i[1]
+
+        placa = net_if_addrs()[minha_placa]
+
+        macAddress = placa[2].address
+
+        ipv4 = placa[0].address
+        netmask4 = placa[0].netmask
+        ipv6 = placa[1].address[:25]
 
     if type(dados) == type(None):
         query = f"INSERT INTO tbRede(macAddress, ipv4, ipv6, netmask4, fkMaquina) VALUES ('{macAddress}', '{ipv4}', '{ipv6}', '{netmask4}', '{serialNumber}');"

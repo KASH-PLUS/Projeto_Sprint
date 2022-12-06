@@ -41,6 +41,8 @@ def login():
                     break
                 else:
                     print("\033[1mValor inávlido\n")
+        else:
+            url = 0
         
         serialNumber = dados[0]
         nome = dados[1]
