@@ -14,9 +14,5 @@ python -m pip install openpyxl
 python -m pip install pyodbc
 # python -m pip install wordcloud
 python -m pip install requests
-<<<<<<< HEAD
-
-=======
->>>>>>> 45600070992520c90f9950105ffef196026e1a6e
 
 
