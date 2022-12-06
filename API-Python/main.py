@@ -95,14 +95,11 @@ def main():
         dados = login()
         serialNumber = dados[0]
         nome = dados[1]
+        url = dados[2]
         componentes = divisaoComponentes(serialNumber)
         idCpu = componentes[0]
         idDisco = componentes[1]
         idRam = componentes[2]
-        url = 0
-        if os.name == "nt":
-            print("Verificamos que sua máquina é Windows")
-            url = input("Por favor, insira a url do open hardware monitor\n")
         metricasMaximas(idCpu, idDisco, idRam)
         cadastroRede(serialNumber)
         macAddress = getMac(serialNumber)
@@ -125,12 +122,12 @@ print(r"""
         ||_________||           |  ___  |
         |  + + + +  |           | |___| |
             _|_|_   \           |       |
-        (_____)   \          |       |
-                    \    ___  |       |
-            ______  \__/   \_|       |
-            |   _  |      _/  |       |
-            |  ( ) |     /    |_______|
-            |___|__|    /         
+           (_____)   \          |       |
+                      \    ___  |       |
+             ______    \__/   \_|       |
+            |   _  |     /      |       |
+            |  ( ) |    /       |_______|
+            |___|__|   /         
                 \_____/
 
 """) 

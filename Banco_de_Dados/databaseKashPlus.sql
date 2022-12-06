@@ -67,7 +67,7 @@ idRegistro INT PRIMARY KEY AUTO_INCREMENT
 );
 
 CREATE TABLE tbRede(
-  macAddress CHAR(17) PRIMARY KEY
+   macAddress CHAR(17) PRIMARY KEY
   ,ipv4 CHAR(15)
   ,ipv6 CHAR(30)
   ,netmask4 CHAR(15)
@@ -77,7 +77,7 @@ CREATE TABLE tbRede(
  
 CREATE TABLE tbRegistroRede(
   idRegistroRede INT PRIMARY KEY AUTO_INCREMENT
- ,fkPlaca CHAR(17) 
+ ,fkPlaca CHAR(17)
  ,mbEnviados DECIMAL(8,2)
  ,mbRecebidos DECIMAL(8,2)
  ,totalEnviado DECIMAL(8,2)
@@ -87,6 +87,7 @@ CREATE TABLE tbRegistroRede(
  ,dataHora DATETIME
  , FOREIGN KEY(fkPlaca) REFERENCES tbRede(macAddress)
 );
+
 
 CREATE TABLE tbTemperatura (
 id INT PRIMARY KEY AUTO_INCREMENT,
@@ -170,8 +171,6 @@ CREATE VIEW vwRede AS
 ;
 
 
-        tbUsuario ON cnpj = fkEmpresa
-;
 
 CREATE VIEW vwTemp AS 
 	SELECT

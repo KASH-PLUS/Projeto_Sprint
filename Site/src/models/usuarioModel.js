@@ -33,7 +33,7 @@ function selecionarMaquinas(cnpj) {
     }
     else if (process.env.AMBIENTE_PROCESSO == "producao") {
         var instrucao = `
-        SELECT serialNumber, nome FROM tbMaquina where fkEmpresa = '${cnpj}';
+        SELECT NumeroSerial as serialNumber , Maquina as nome FROM vwMaquina where Cnpj = '${cnpj}' group by NumeroSerial, Maquina;
         `;
     }
 
@@ -227,7 +227,31 @@ function deletarCaixa(serialNumber) {
 function listarSelect(cnpj) {
     console.log("ACESSEI O USUARIO MODEL \n \n\t\t >> Se aqui der erro de 'Error: connect ECONNREFUSED',\n \t\t >> verifique suas credenciais de acesso ao banco\n \t\t >> e se o servidor de seu BD está rodando corretamente. \n\n function listar()");
 
-    var instrucao = `SELECT serialNumber, nome FROM tbMaquina where fkEmpresa = '${cnpj}';`;
+    var instrucao = `SELECT NumeroSerial as serialNumber, Maquina as nome 
+            FROM vwMaquina where Cnpj = '${cnpj}' GROUP BY NumeroSerial, Maquina
+        `;
+
+    console.log("Executando a instrução SQL: \n" + instrucao);
+    return database.executar(instrucao)
+}
+
+function listarProcessos(serialNumber) {
+    console.log("ACESSEI O USUARIO MODEL \n \n\t\t >> Se aqui der erro de 'Error: connect ECONNREFUSED',\n \t\t >> verifique suas credenciais de acesso ao banco\n \t\t >> e se o servidor de seu BD está rodando corretamente. \n\n function listar():");
+
+    var instrucao = '';
+
+    if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
+        var instrucao = `
+            SELECT dataHora, processo, usoCpu, usoRam FROM tbProcesso 
+            WHERE fkMaquina = '${serialNumber}' ORDER BY usoCpu DESC LIMIT 15
+        `;
+    }
+    else if (process.env.AMBIENTE_PROCESSO == "producao") {
+        var instrucao = `
+            SELECT TOP 15 FORMAT(dataHora,'%H:%m:%s') as dataHora, processo, usoCpu, usoRam FROM [dbo].[tbProcesso] 
+            WHERE fkMaquina = '${serialNumber}' ORDER BY usoCpu DESC
+        `;
+    }
 
     console.log("Executando a instrução SQL: \n" + instrucao);
     return database.executar(instrucao)
@@ -251,5 +275,6 @@ module.exports = {
     listarTemperatura,
     listarSelect,
     selecionarMaquinas,
-    obterDadosTodasMaquinas
+    obterDadosTodasMaquinas,
+    listarProcessos
 };

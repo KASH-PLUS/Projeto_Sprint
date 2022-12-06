@@ -31,7 +31,7 @@
 								Usuário</span></a><a class="nav-link" href="addCaixa.html" id="link_add_caixa"><i
 								class="fas fa-server"></i><span>Cadastrar Caixa</span></a><a class="nav-link"
 							href="dashMapa.html" id="link_dash_mapa"><i class="fas fa-map"></i><span>Dash -
-								Região</span></a><a class="nav-link" href="dashMat.html" id="link_dash_proc"><i
+								Região</span></a><a class="nav-link" href="dashProcesso.html" id="link_dash_proc"><i
 								class="fas fa-user"></i><span>Dash - Processos</span></a>
 						<a class="nav-link" href="dashOciosidade.html" id="link_dash_mapa"><i
 								class="fas fa-map"></i><span>Dash -
@@ -103,7 +103,7 @@
 														</select>
 													</div>
 													<div class="text-center mb-3"><button class="btn btn-primary btn-sm"
-															onclick="obterDadosGraficoCpu(), obterDadosGraficoRam()"
+															onclick="obterDadosGraficoCpu(), obterDadosGraficoRam(), listarProcessos()"
 															id="btn_ver" style="margin-top: 2%;">Ver</button>
 
 													</div>
@@ -119,7 +119,7 @@
 				<div class="container-fluid">
 					<div id="graficos" style="display: none;">
 						<div class="row">
-							<div class="col">
+							<div class="col-8">
 								<div class="row">
 									<div class="col">
 										<div class="card shadow mb-4">
@@ -128,7 +128,7 @@
 											</div>
 											<div class="card-body">
 												<div class="chart-container" id="grafico_cpu"
-													style="position: relative; width: 75vw;">
+													style="position: relative; width: 40vw;">
 													<canvas id="myChartCpu">
 													</canvas>
 												</div>
@@ -144,11 +144,37 @@
 											</div>
 											<div class="card-body">
 												<div class="chart-container" id="grafico_ram"
-													style="position: relative; width: 75vw;">
+													style="position: relative; width: 40vw;">
 													<canvas id="myChartRam">
 													</canvas>
 												</div>
 											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-4">
+								<div class="card shadow mb-4">
+									<div class="card-header d-flex justify-content-between align-items-center">
+										<h6 class="text-primary fw-bold m-0">Processos que mais usam componente</h6>
+									</div>
+									<div class="card-body">
+										<div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
+											<table class="table my-0" id="dataTable">
+												<thead>
+													<tr>
+														<th>Hora</th>
+														<th>Processo</th>
+														<th>Cpu</th>
+														<th>Ram</th>
+													</tr>
+												</thead>
+												<tbody id="table_body">
+												</tbody>
+												<tfoot>
+													<tr></tr>
+												</tfoot>
+											</table>
 										</div>
 									</div>
 								</div>
@@ -526,4 +552,73 @@
 
 	}
 
+	function listarProcessos() {
+		
+		var serialNumberVar = slct_caixas.value;
+
+		fetch("/usuarios/listarProcessos", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                serialNumberServer: serialNumberVar
+            })
+        }).then(function (resposta) {
+            console.log("ESTOU NO THEN DO listar()!")
+
+            if (resposta.ok) {
+                console.log(resposta);
+
+                resposta.json().then(json => {
+                    console.log(json);
+                    console.log(JSON.stringify(json));
+
+                    var tabela = document.getElementById("table_body");
+                    
+					for (var i = 0; i < json.length; i++) {
+                        data = json[i].dataHora;
+                        processo = json[i].processo;
+                        cpu = json[i].usoCpu;
+						ram = json[i].usoRam;
+
+                        var linha = document.createElement('tr');
+                        tabela.appendChild(linha);
+
+                        var colunaData = document.createElement('td');
+                        linha.appendChild(colunaData);
+                        colunaData.innerHTML = data;
+
+                        var colunaProcesso = document.createElement('td');
+                        linha.appendChild(colunaProcesso);
+                        colunaProcesso.innerHTML = processo;
+
+                        var colunaCpu = document.createElement('td');
+                        linha.appendChild(colunaCpu);
+                        colunaCpu.innerHTML = cpu;
+
+						var colunaRam = document.createElement('td');
+                        linha.appendChild(colunaRam);
+                        colunaRam.innerHTML = ram;
+                    }
+
+                });
+
+
+            } else {
+                console.log("Houve um erro ao tentar listar!");
+            }
+
+        }).catch(function (erro) {
+            console.log(erro);
+        })
+	
+	}
+
 </script>
+
+<!-- SELECT TOP 20 DATE_FORMAT(dataHora,'%H:%i:%s'), processo, usoCpu, usoRam FROM [dbo].[tbProcesso] 
+WHERE fkMaquina = '123' ORDER BY usoCpu DESC
+
+SELECT dataHora, processo, usoCpu, usoRam FROM tbProcesso 
+WHERE fkMaquina = '123' ORDER BY usoCpu DESC -->

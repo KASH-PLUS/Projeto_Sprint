@@ -82,27 +82,30 @@ h6:hover{color:#000}
 }
 
 #leg_bom {
-  color: green;
+  color: rgb(123, 197, 49);
 }
 
 #leg_analise {
-  color: rgb(196, 119, 4);
+  color: rgb(209, 185, 52);
 }
 
 #leg_critico {
-  color: red;
+  color: rgb(197, 49, 49);
 }
 
 #leg_c_bom{
-  background-color: green;
+  background-color: rgb(168, 255, 81);
+  border: rgb(123, 197, 49) 4px solid;
 }
 
 #leg_c_analise{
-  background-color: #e8bb1a;
+  background-color: rgb(255, 229, 81);
+  border: rgb(209, 185, 52) 4px solid;
 }
 
 #leg_c_critico{
-  background-color: red;
+  background-color: rgb(255, 81, 81);
+  border: rgb(197, 49, 49) 4px solid;
 }
 
 @media (max-width: 765px){

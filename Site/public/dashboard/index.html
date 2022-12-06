@@ -1275,6 +1275,8 @@
 
 	function obterDadosGraficoDisco(serialNumber) {
 
+		var valorMaximoD = 0;
+		var usoDisco = 0;
 		span_usoDisco.innerHTML = "";
 
 		document.getElementById('myChartDisco').remove();
@@ -1615,9 +1617,11 @@
 						var componente = json[i].Componente;
 
 						if (componente == "cpu") {
+							// alert(serialNumber);
 							document.getElementById("card_cpu").style.display = "block";
 							document.getElementById("aviso_componente").style.display = "none";
-							// alert(serialNumber);
+							document.getElementById("card_temp").style.display = "none";
+							document.getElementById("kpis_temp").style.display = "none";
 							verificarTemperatura(serialNumber);
 						}
 
