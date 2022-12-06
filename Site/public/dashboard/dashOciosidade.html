@@ -306,8 +306,8 @@
                     card_cpu.style.display = "block";
                     aviso_componente.style.display = "none";
 
-                    usuario = parseFloat(resposta[0].usoUsuario);
-                    ocioso = parseFloat(resposta[0].usoOcioso);
+                    usuario = resposta[0].usoUsuario;
+                    ocioso = resposta[0].usoOcioso;
                     tempoTotalUtilizacao = usuario + ocioso;
                     tempoTotalUtilizacao = new Date(tempoTotalUtilizacao * 1000);
                     diaTempoTotalUtilizacao = tempoTotalUtilizacao.getUTCDate() - 1;
@@ -454,8 +454,6 @@
                 console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
             });
 
-            return novoRegistro[0].usoUsuario, novoRegistro[0].usoOcioso;
-
     }
 
     function obterDadosTodasMaquinas() {
@@ -483,7 +481,9 @@
 
                         serialNumber = json[i].fkMaquina;
                         nome = json[i].nome;
-                        mediaOciosoDiario = (parseFloat(json[i].usoOcioso) / (parseFloat(json[i].usoUsuario) + parseFloat(json[i].usoOcioso))) * 100;
+                        tempoTotalUso = json[i].usoOcioso + json[i].usoUsuario;
+                        mediaOciosoDiario = (json[i].usoOcioso / tempoTotalUso) * 100;
+                        mediaOciosoDiario = mediaOciosoDiario.toFixed(1);
                         cep = json[i].cep;
 
                         var linha = document.createElement('tr');
@@ -499,7 +499,7 @@
 
                         var colunaUsoOcioso = document.createElement('td');
                         linha.appendChild(colunaUsoOcioso);
-                        colunaUsoOcioso.innerHTML = mediaOciosoDiario;
+                        colunaUsoOcioso.innerHTML = mediaOciosoDiario + '%';
 
                         var colunaCep = document.createElement('td');
                         linha.appendChild(colunaCep);
