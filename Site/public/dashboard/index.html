@@ -318,7 +318,7 @@
 
 						<div class="row">
 							<div class="col-lg-9 col-xl-9">
-								<div class="card shadow mb-4" id="card_condicao" style="display: none;">
+								<div class="card shadow mb-4" id="card_condicao" style="display: block;">
 									<div class="card-header d-flex justify-content-between align-items-center">
 										<h6 class="text-primary fw-bold m-0">Registro de Status: </h6>
 									</div>
@@ -334,7 +334,7 @@
 							</div>
 
 							<div class="col-lg-3 col-xl-3">
-								<div class="card shadow mb-4" id="card_legenda" style="display: none;">
+								<div class="card shadow mb-4" id="card_legenda" style="display: block;">
 									<div class="card-header d-flex justify-content-between align-items-center">
 										<h6 class="text-primary fw-bold m-0">Legenda Status: </h6>
 									</div>
@@ -1467,6 +1467,24 @@
 				console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
 			});
 
+		fetch(`/medidas/maxDisco/${serialNumber}`, {
+			cache: 'no-store'
+		}).then(function (response) {
+			if (response.ok) {
+				response.json().then(function (resposta) {
+					console.log(`Dados recebidos: ${JSON.stringify(resposta)}`);
+					resposta.reverse();
+
+					valorMaximoD = resposta[0].valorMaximo;
+
+				});
+			} else {
+				console.error('Nenhum dado encontrado ou erro na API');
+			}
+		}).catch(function (error) {
+			console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
+		});
+
 
 		fetch(`/medidas/ultimasCondicaoDisco/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
 			if (response.ok) {
@@ -1509,21 +1527,21 @@
 		let labels = [];
 		let cores = [];
 
-		if(peso.length > 0){
+		if (peso.length > 0) {
 			document.getElementById("card_condicao").style.display = "block";
 			document.getElementById("card_legenda").style.display = "block";
 		} else {
 			document.getElementById("card_condicao").style.display = "none";
-			document.getElementById("card_legenda").style.display = "none";	
+			document.getElementById("card_legenda").style.display = "none";
 		}
 
 		for (let i = 0; i < peso.length; i++) {
 			if (peso[i] >= 8) {
-				cores.push("red")
+				cores.push("rgb(255, 81, 81)")
 			} else if (peso[i] >= 4) {
-				cores.push("yellow")
+				cores.push("rgb(255, 229, 81)")
 			} else {
-				cores.push("green")
+				cores.push("rgb(168, 255, 81)")
 			}
 		}
 
