@@ -17,6 +17,7 @@ import requests
 # from wordCloud import cloud
 
 if os.name == "nt":
+    sistema = "Windows"
     codeCleaner = "cls"
 else:
     sistema = "Linux"

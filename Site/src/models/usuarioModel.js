@@ -33,7 +33,7 @@ function selecionarMaquinas(cnpj) {
     }
     else if (process.env.AMBIENTE_PROCESSO == "producao") {
         var instrucao = `
-        SELECT serialNumber, nome FROM tbMaquina where fkEmpresa = '${cnpj}';
+        SELECT NumeroSerial as serialNumber , Maquina as nome FROM vwMaquina where Cnpj = '${cnpj}' group by NumeroSerial, Maquina;
         `;
     }
 

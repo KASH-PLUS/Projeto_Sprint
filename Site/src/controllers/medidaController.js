@@ -266,23 +266,6 @@ function buscarMedidasEmTempoRealTempoUso(req, res) {
     });
 }
 
-function obterInicioMonitoramento(req, res) {
-
-    var serialNumber = req.params.serialNumber;
-
-    medidaModel.obterInicioMonitoramento(serialNumber).then(function (resultado) {
-        if (resultado.length > 0) {
-            res.status(200).json(resultado);
-        } else {
-            res.status(204).send("Nenhum resultado encontrado!")
-        }
-    }).catch(function (erro) {
-        console.log(erro);
-        console.log("Houve um erro ao buscar as ultimas medidas.", erro.sqlMessage);
-        res.status(500).json(erro.sqlMessage);
-    });
-}
-
 function buscarMedidasEmTempoRealRam(req, res) {
 
     var serialNumber = req.params.serialNumber;
@@ -503,6 +486,5 @@ module.exports = {
     buscarUltimasMedidasProcRam,
     buscarMedidasEmTempoRealProcRam,
     buscarUltimasMedidasOciosidade,
-    buscarMedidasEmTempoRealTempoUso,
-    obterInicioMonitoramento
+    buscarMedidasEmTempoRealTempoUso
 }
