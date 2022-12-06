@@ -1300,7 +1300,7 @@
 					console.log(`Dados recebidos: ${JSON.stringify(resposta)}`);
 					resposta.reverse();
 
-					valorMaximo = resposta[0].valorMaximo;
+					valorMaximoD = resposta[0].valorMaximo;
 
 				});
 			} else {
@@ -1321,13 +1321,13 @@
 
 					usoDisco = resposta[0].Registro;
 
-					porcentagemDisco = Math.round((usoDisco / valorMaximo) * 100);
+					porcentagemDisco = Math.round((usoDisco / valorMaximoD) * 100);
 					document.getElementById("barra_usoDisco").style.width = porcentagemDisco + "%";
 					document.getElementById("span_usoDisco").innerHTML = porcentagemDisco + "%";
 
 					DiscoCor(porcentagemDisco);
 
-					plotarGraficoDisco(valorMaximo, usoDisco);
+					plotarGraficoDisco(valorMaximoD, usoDisco);
 				});
 			} else {
 				console.error('Nenhum dado encontrado ou erro na API');
@@ -1338,7 +1338,7 @@
 
 	}
 
-	function plotarGraficoDisco(valorMaximo, usoDisco) {
+	function plotarGraficoDisco(valorMaximoD, usoDisco) {
 
 
 		console.log('iniciando plotagem do gráfico...');
@@ -1353,14 +1353,14 @@
 
 		divGrafico.appendChild(canvas);
 
-		valorMaximo = valorMaximo - usoDisco;
+		valorMaximoD = valorMaximoD - usoDisco;
 
 		let labels = ["disponível", "em uso"];
 
 		var dados = {
 			labels: labels,
 			datasets: [{
-				data: [valorMaximo, usoDisco],
+				data: [valorMaximoD, usoDisco],
 				backgroundColor: [
 					'rgb(50,205,50)',
 					'rgb(255,0,0)'
@@ -1658,10 +1658,10 @@
 					console.log(`Dados recebidos: ${JSON.stringify(resposta)}`);
 					resposta.reverse();
 
-					valorMaximo = resposta[0].valorMaximo;
+					valorMaximoR = resposta[0].valorMaximo;
 
-					if (valorMaximo != null) {
-						document.getElementById("span_ramMaxima").innerHTML = valorMaximo + "GB";
+					if (valorMaximoR != null) {
+						document.getElementById("span_ramMaxima").innerHTML = valorMaximoR + "GB";
 					}
 
 				});
@@ -1694,7 +1694,7 @@
 
 	function RamCor(registroRam) {
 
-		porcRam = (registroRam * 100) / valorMaximo;
+		porcRam = (registroRam * 100) / valorMaximoR;
 
 		if (porcRam <= 0.0) {
 			cor = "red";

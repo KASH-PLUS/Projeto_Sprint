@@ -35,10 +35,10 @@ function buscarUltimasCondicaoCpu(serialNumber) {
         instrucaoSql = `select 
                             CONVERT(varchar, Horario, 111) as 'Data',
                             round(avg(Registro),2) as 'CPU'	
-                        from vwConsumo2
+                        from vwConsumo
                             where Componente = 'cpu' 
                             and NumeroSerial = '${serialNumber}' 
-                            and cast(Horario as time) between '10:00:00' and '22:00:00'
+                            and cast(Horario as time) between '10:00:00' and '23:59:00'
                         group by CONVERT(varchar, Horario, 111);`;
     } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
         instrucaoSql = `select 
@@ -46,7 +46,7 @@ function buscarUltimasCondicaoCpu(serialNumber) {
                         from vwConsumo 
                             where Componente = 'cpu'
                             and NumeroSerial = '${serialNumber}' 
-                            and cast(Horario as time) between '10:00:00' and '22:00:00'
+                            and cast(Horario as time) between '10:00:00' and '23:59:00'
                         group by cast(Horario as date)
                         limit 7;`;
     } else {
@@ -66,18 +66,18 @@ function buscarUltimasCondicaoRam(serialNumber) {
         instrucaoSql = `select 
                             CONVERT(varchar, Horario, 111) as 'Data',
                             round(avg(Registro),2) as 'RAM'	
-                        from vwConsumo2
+                        from vwConsumo
                             where Componente = 'ram' 
                             and NumeroSerial = '${serialNumber}' 
-                            and cast(Horario as time) between '10:00:00' and '22:00:00'
+                            and cast(Horario as time) between '10:00:00' and '23:59:00'
                         group by CONVERT(varchar, Horario, 111);`;
     } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
         instrucaoSql = `select 
                             round(avg(Registro),2) as 'RAM'	
                         from vwConsumo 
                             where Componente = 'ram'
-                            and NumeroSerial = '${serialNumber}' 
-                            and cast(Horario as time) between '10:00:00' and '22:00:00'
+                            and NumeroSerial = '${serialNumber}'
+                            and cast(Horario as time) between '10:00:00' and '23:59:00'
                         group by cast(Horario as date)
                         limit 7;`;
     } else {
@@ -97,10 +97,10 @@ function buscarUltimasCondicaoDisco(serialNumber) {
         instrucaoSql = `select 
                             CONVERT(varchar, Horario, 111) as 'Data',
                             round(avg(Registro),2) as 'Disco'	
-                        from vwConsumo2
+                        from vwConsumo
                             where Componente = 'disco' 
                             and NumeroSerial = '${serialNumber}' 
-                            and cast(Horario as time) between '10:00:00' and '22:00:00'
+                            and cast(Horario as time) between '10:00:00' and '23:59:00'
                         group by CONVERT(varchar, Horario, 111);`;
     } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
         instrucaoSql = `select 
@@ -109,7 +109,7 @@ function buscarUltimasCondicaoDisco(serialNumber) {
                         from vwConsumo 
                             where Componente = 'disco'
                             and NumeroSerial = '${serialNumber}' 
-                            and cast(Horario as time) between '10:00:00' and '22:00:00'
+                            and cast(Horario as time) between '10:00:00' and '23:59:00'
                         group by cast(Horario as date)
                         limit 7;`;
     } else {
