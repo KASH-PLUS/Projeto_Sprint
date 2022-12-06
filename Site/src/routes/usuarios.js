@@ -72,4 +72,9 @@ router.post("/gerarSelect", function (req, res) {
     usuarioController.gerarSelect(req, res);
 })
 
+router.post("/listarProcessos", function (req, res) {
+    usuarioController.listarProcessos(req, res);
+})
+
+
 module.exports = router;

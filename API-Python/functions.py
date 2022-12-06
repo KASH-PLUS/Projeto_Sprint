@@ -103,6 +103,7 @@ def cadastroRede(serialNumber):
     ipv6 = placa[1].address[:25]
 
     if type(dados) == type(None):
+        print("eh none")
         query = f"INSERT INTO tbRede(macAddress, ipv4, ipv6, netmask4, fkMaquina) VALUES ('{macAddress}', '{ipv4}', '{ipv6}', '{netmask4}', '{serialNumber}');"
     else:
         macSelect = dados[0]
