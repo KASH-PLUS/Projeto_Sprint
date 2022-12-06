@@ -17,6 +17,7 @@ import requests
 # from wordCloud import cloud
 
 if os.name == "nt":
+    sistema = "Windows"
     codeCleaner = "cls"
 else:
     sistema = "Linux"
@@ -104,13 +105,12 @@ def cadastroRede(serialNumber):
 
     if type(dados) == type(None):
         query = f"INSERT INTO tbRede(macAddress, ipv4, ipv6, netmask4, fkMaquina) VALUES ('{macAddress}', '{ipv4}', '{ipv6}', '{netmask4}', '{serialNumber}');"
+        insert(query)
     else:
         macSelect = dados[0]
-        queryDelete = f"DELETE FROM tbRegistroRede WHERE fkPlaca = '{macSelect}';"
-        query = f"UPDATE tbRede SET macAddress = '{macAddress}', ipv4 = '{ipv4}', ipv6 = '{ipv6}', netmask4 = '{netmask4}' WHERE fkMaquina = '{serialNumber}';"
-        insert(queryDelete)
-
-    insert(query)
+        if macSelect != macAddress:
+            os.system(codeCleaner)
+            print("Sua máquina já possui a placa de rede vinculada a uma outra máquina, por favor utilize a máquina correta para fazer login e obter os dados da rede")
 
     return 0
 
@@ -236,7 +236,7 @@ def insertPeriodico(idCpu, idDisco, idRam, macAddress, serialNumber, urlOpen):
     ultimosPacotesEnviados = net_io_counters().packets_sent
 
     while True:
-        
+
         dataHora = datetime.datetime.now()
         dataHora = datetime.datetime.strftime(dataHora, "%Y-%m-%d %H:%M:%S")
 
@@ -271,7 +271,7 @@ def insertPeriodico(idCpu, idDisco, idRam, macAddress, serialNumber, urlOpen):
         ultimosPacotesRecebidos = pacotesRecebidos
         ultimosPacotesEnviados = pacotesEnviados
 
-        #Dados de Registro 
+        # Dados de Registro
 
         usoAtualMemoria = conversao_bytes(virtual_memory().used, 3)
         usoCpuPorc = cpu_percent()

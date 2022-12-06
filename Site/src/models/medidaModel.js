@@ -331,26 +331,6 @@ function buscarMedidasEmTempoRealTempoUso(serialNumber) {
     return database.executar(instrucaoSql);
 }
 
-function obterInicioMonitoramento(serialNumber) {
-    
-    instrucaoSql = ''
-    
-    if (process.env.AMBIENTE_PROCESSO == "producao") {       
-        instrucaoSql = `select top 1 datahora
-        from tbOciosidade where fkMaquina = '${serialNumber}' order by idRegistro;`;
-        
-    } else if (process.env.AMBIENTE_PROCESSO == "desenvolvimento") {
-        instrucaoSql = `select datahora
-         from tbOciosidade where fkMaquina = '${serialNumber}' order by idRegistro limit 1;`;
-    } else {
-        console.log("\nO AMBIENTE (produção OU desenvolvimento) NÃO FOI DEFINIDO EM app.js\n");
-        return
-    }
-
-    console.log("Executando a instrução SQL: \n" + instrucaoSql);
-    return database.executar(instrucaoSql);
-}
-
 function buscarMedidasEmTempoRealRam(serialNumber) {
 
     instrucaoSql = ''
@@ -665,6 +645,5 @@ module.exports = {
     buscarUltimasMedidasProcRam,
     buscarMedidasEmTempoRealProcRam,
     buscarUltimasMedidasOciosidade,
-    buscarMedidasEmTempoRealTempoUso,
-    obterInicioMonitoramento
+    buscarMedidasEmTempoRealTempoUso
 }
