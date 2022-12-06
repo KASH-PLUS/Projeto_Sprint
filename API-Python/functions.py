@@ -368,7 +368,8 @@ def insertPeriodico(idCpu, idDisco, idRam, macAddress, serialNumber, urlOpen):
 
         # Temperatura
         if os.name == "nt":
-            capturaTemp(serialNumber, urlOpen)
+            if(urlOpen != 0):
+                capturaTemp(serialNumber, urlOpen)
         else:
             # Temperatura - Linux
             tempInfo = sensors_temperatures()
@@ -423,7 +424,7 @@ def capturaTemp(serialNumber, urlOpen):
     except:
         print('Erro ao capturar a temperatura')
         print('Por favor ligue o open hardware monitor na url:')
-        print(url + '\n\n')
+        print(urlOpen + '\n\n')
 
 
 def relatorio():

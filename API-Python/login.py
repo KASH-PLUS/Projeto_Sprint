@@ -23,11 +23,29 @@ def login():
 
     else: 
         os.system(codeCleaner)
-        print("\033[1mSucesso no Login\033[0m\n\nLogin feito com sucesso\nAbrindo menu inicial...\n")
+        print("\033[1mSucesso no Login\033[0m\n\nLogin feito com sucesso\n")
+
+        if os.name == "nt":
+            print("Verificamos que sua máquina é Windows")
+            while(True):
+                confirmacao = input("Deseja capturar a temperatura? S/N\n")
+
+                if(confirmacao == 'S' or confirmacao == 's'):
+                    os.system(codeCleaner)
+                    url = input("\033[1mPor favor, insira a url do open hardware monitor\n")
+                    break
+                elif(confirmacao == 'N' or confirmacao == 'n'):
+                    os.system(codeCleaner)
+                    url = 0
+                    print("\033[1mAbrindo menu inicial...\n")
+                    break
+                else:
+                    print("\033[1mValor inávlido\n")
+        
         serialNumber = dados[0]
         nome = dados[1]
         time.sleep(2)
-        return serialNumber, nome
+        return serialNumber, nome, url
 
 def cadastroComponentes(idUsuario):
     
