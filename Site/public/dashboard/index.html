@@ -1467,6 +1467,24 @@
 				console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
 			});
 
+		fetch(`/medidas/maxDisco/${serialNumber}`, {
+			cache: 'no-store'
+		}).then(function (response) {
+			if (response.ok) {
+				response.json().then(function (resposta) {
+					console.log(`Dados recebidos: ${JSON.stringify(resposta)}`);
+					resposta.reverse();
+
+					valorMaximoD = resposta[0].valorMaximo;
+
+				});
+			} else {
+				console.error('Nenhum dado encontrado ou erro na API');
+			}
+		}).catch(function (error) {
+			console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
+		});
+
 
 		fetch(`/medidas/ultimasCondicaoDisco/${serialNumber}`, { cache: 'no-store' }).then(function (response) {
 			if (response.ok) {
