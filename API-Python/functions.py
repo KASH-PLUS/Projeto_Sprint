@@ -90,7 +90,7 @@ def cadastroRede(serialNumber):
 
     placa = net_if_addrs()
 
-    if(os.name() == "nt"):
+    if os.name == "nt":
         for i in enumerate(placa):
 
             if (i[0] == 3):

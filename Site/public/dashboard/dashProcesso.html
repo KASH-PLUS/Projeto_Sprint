@@ -555,6 +555,7 @@
 	function listarProcessos() {
 		
 		var serialNumberVar = slct_caixas.value;
+		table_body.innerHTML = ''
 
 		fetch("/usuarios/listarProcessos", {
             method: "POST",
