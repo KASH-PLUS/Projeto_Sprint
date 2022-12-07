@@ -118,8 +118,14 @@ def cadastroRede(serialNumber):
         ipv6 = placa[1].address[:25]
 
     if type(dados) == type(None):
-        query = f"INSERT INTO tbRede(macAddress, ipv4, ipv6, netmask4, fkMaquina) VALUES ('{macAddress}', '{ipv4}', '{ipv6}', '{netmask4}', '{serialNumber}');"
-        insert(query)
+        query = f"SELECT * FROM tbRede WHERE macAddress = '{macAddress}'"
+        dados = select(query)
+        if type(dados) == type(None):
+            query = f"INSERT INTO tbRede(macAddress, ipv4, ipv6, netmask4, fkMaquina) VALUES ('{macAddress}', '{ipv4}', '{ipv6}', '{netmask4}', '{serialNumber}');"
+            insert(query)
+        else:
+            os.system(codeCleaner)
+            print("Sua máquina já possui a placa de rede vinculada a uma outra máquina, por favor utilize a máquina correta para fazer login e obter os dados da rede")
     else:
         macSelect = dados[0]
         if macSelect != macAddress:
