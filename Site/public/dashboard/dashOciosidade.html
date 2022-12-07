@@ -430,6 +430,7 @@
                 response.json().then(function (novoRegistro) {
 
                     usoUsuario = new Date(novoRegistro[0].usoUsuario * 1000);
+                    daysUsuario = usoUsuario.getUTCDate() - 1;
                     hoursUsuario = usoUsuario.getUTCHours();
                     minutesUsuario = usoUsuario.getUTCMinutes();
                     secondsUsuario = usoUsuario.getSeconds();
@@ -440,8 +441,17 @@
                     minutesOcioso = usoOcioso.getUTCMinutes();
                     secondsOcioso = usoOcioso.getSeconds();
 
-                    span_tempoUso.innerHTML = hoursUsuario + " Horas " + minutesUsuario + " Minutos ";
-                    span_tempoOcioso.innerHTML = daysOcioso + " Dias " + hoursOcioso + " Horas " + minutesOcioso + " Minutos ";
+                    if(daysUsuario > 0){
+                        span_tempoUso.innerHTML = daysUsuario + " Dias " + hoursUsuario + " Horas " + minutesUsuario + " Minutos ";
+                    } else {
+                        span_tempoUso.innerHTML = hoursUsuario + " Horas " + minutesUsuario + " Minutos ";
+                    }
+
+                    if(daysOcioso > 0){
+                        span_tempoOcioso.innerHTML = daysOcioso + " Dias " + hoursOcioso + " Horas " + minutesOcioso + " Minutos ";
+                    } else {
+                        span_tempoOcioso.innerHTML = hoursOcioso + " Horas " + minutesOcioso + " Minutos ";
+                    }
 
                     // CpuCor(novoRegistro[0].usoUsuario);
 
