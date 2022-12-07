@@ -84,7 +84,7 @@ def menu(serialNumber, nome, idCpu, idDisco, idRam, urlOpen, macAddress):
         main()
         exit()
     while opcaoUser != 1 and opcaoUser != 2 and opcaoUser != 3 and opcaoUser != 4 and opcaoUser != 5 and opcaoUser != 6:
-        menu(serialNumber, nome, idCpu, idDisco, idRam)
+        menu(serialNumber, nome, idCpu, idDisco, idRam, urlOpen, macAddress)
 
 def main():
     os.system(codeCleaner)
