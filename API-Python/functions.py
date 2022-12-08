@@ -13,7 +13,7 @@ from random import randint
 from matplotlib.animation import FuncAnimation
 import matplotlib.pyplot as plt  # Definindo um "apelido" para a biblioteca
 import openpyxl
-import requests
+from conexaoPipefy import criarCard
 # from wordCloud import cloud
 
 if os.name == "nt":
@@ -336,55 +336,36 @@ def insertPeriodico(idCpu, idDisco, idRam, macAddress, serialNumber, urlOpen):
             queryRam = f"INSERT INTO tbRegistro(fkComponente, registro, dataHora) VALUES ('{i}', {usoAtualMemoria}, '{dataHora}');"
             insert(queryRam)
 
-        # url = "https://api.pipefy.com/graphql"
+        usoDisco = float(usoDisco)
+        if usoCpuPorc > 0:
+            phaseId = "317555598"
+            componente = 'CPU'
+            serialNumber = serialNumber
+            registroAceitavel = "abaixo de 70%"
+            registroObtido = usoCpuPorc
+            dataHora = dataHora
 
-        # usoCpuPorc = str(usoCpuPorc)
-        # usoDisco = str(usoDisco)
-        # usoAtualMemoria = str(usoAtualMemoria)
-        # dataHora = str(dataHora)
+            criarCard(phaseId, componente, serialNumber, registroAceitavel, registroObtido, dataHora)
 
-        # if usoCpuPorc > 0:
-        #     payload = {("{\"query\": \"mutation{ createCard( input: { pipe_id: \\\"302821637\\\", phase_id: \\\"317555598\\\" title:\\\"Alerta de uso de Disco - Máquina "+ serialNumber +" \\\" fields_attributes: [ {field_id: \\\"aviso\\\", field_value: \\\"O uso de seu disco está fora do ideal\\\"} {field_id: \\\"serial_number\\\", field_value: \\\" "+ serialNumber +" \\\"} {field_id: \\\"uso\\\", field_value: \\\" "+ usoCpuPorc +" \\\"} {field_id: \\\"data_hora\\\", field_value: \\\" "+ dataHora +" \\\"} ] } ) {clientMutationId card {id title }}}\"}")}
-        #     headers = {
-        #         "accept": "application/json",
-        #         "Authorization": "sha512-lLFRPmsF5Wq2e3Y++70j7xewpYmBAvJBP2hm6Wcf7hqv6tl5T2CS8XNJ+vm/ZV0oeVjJ+SgshtS+6CQtRpXRBA==?Ufww",
-        #         "content-type": "application/json"
-        #     }
-        #     response = requests.post(url, json=payload, headers=headers)
+        if usoAtualMemoriaPorc > 0:
+            phaseId = "317574217"
+            componente = 'RAM'
+            serialNumber = serialNumber
+            registroAceitavel = "abaixo de 70%"
+            registroObtido = usoAtualMemoriaPorc
+            dataHora = dataHora
 
-        # if usoDisco > 0:
-        #     payload = {("{\"query\": \"mutation{ createCard( input: { pipe_id: \\\"302821637\\\", phase_id: \\\"317566487\\\" title:\\\"Alerta de uso de Disco - Máquina "+ serialNumber +" \\\" fields_attributes: [ {field_id: \\\"aviso\\\", field_value: \\\"O uso de seu disco está fora do ideal\\\"} {field_id: \\\"serial_number\\\", field_value: \\\" "+ serialNumber +" \\\"} {field_id: \\\"uso\\\", field_value: \\\" "+  usoDisco +" GB\\\"} {field_id: \\\"data_hora\\\", field_value: \\\" "+  dataHora +"\\\"} ] } ) {clientMutationId card {id title }}}\"}")}
-        #     headers = {
-        #         "accept": "application/json",
-        #         "Authorization": "sha512-lLFRPmsF5Wq2e3Y++70j7xewpYmBAvJBP2hm6Wcf7hqv6tl5T2CS8XNJ+vm/ZV0oeVjJ+SgshtS+6CQtRpXRBA==?Ufww",
-        #         "content-type": "application/json"
-        #     }
-        #     response = requests.post(url, json=payload, headers=headers)
+            criarCard(phaseId, componente, serialNumber, registroAceitavel, registroObtido, dataHora)
 
-        # if usoAtualMemoria > 0:
-        #     payload = {("{\"query\": \"mutation{ createCard( input: { pipe_id: \\\"302821637\\\", phase_id: \\\"317574217\\\" title:\\\"Alerta de uso de Ram - Máquina "+ serialNumber +" \\\" fields_attributes: [ {field_id: \\\"aviso\\\", field_value: \\\"O uso de seu disco está fora do ideal\\\"} {field_id: \\\"serial_number\\\", field_value: \\\" "+ serialNumber +" \\\"} {field_id: \\\"uso\\\", field_value: \\\" "+  usoAtualMemoria +" GB\\\"} {field_id: \\\"data_hora\\\", field_value: \\\" "+  dataHora +" \\\"} ] } ) {clientMutationId card {id title }}}\"}")}
-        #     headers = {
-        #         "accept": "application/json",
-        #         "Authorization": "sha512-lLFRPmsF5Wq2e3Y++70j7xewpYmBAvJBP2hm6Wcf7hqv6tl5T2CS8XNJ+vm/ZV0oeVjJ+SgshtS+6CQtRpXRBA==?Ufww",
-        #         "content-type": "application/json"
-        #     }
-        #     # Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c2VyIjp7ImlkIjozMDIxNzYyNTMsImVtYWlsIjoiMjIyLTFjY28tZ3J1cG8xMEBiYW5kdGVjLmNvbS5iciIsImFwcGxpY2F0aW9uIjozMDAyMTQyNTF9fQ.BDmwgdA6MjMvUaD3x6l34bBKpv9-8epdwzgHOwIOV_zljVHNf1lefNgHg0--ZA_vLjSVT2cFwpwOmiIcPwqfQw
-        #     response = requests.post(url, json=payload, headers=headers)
-        # # SITE PARA PEGAR ID DE CADA FIELD DO CARD PIPEFY
-        # # https://app.pipefy.com/graphiql
-        # url = "https://api.pipefy.com/graphql"
+        if usoDisco > 0:
+            phaseId = "317566487"
+            componente = 'Disco'
+            serialNumber = serialNumber
+            registroAceitavel = "abaixo de 60%"
+            registroObtido = usoDisco
+            dataHora = dataHora
 
-        # data = {"query": "mutation{ createCard( input: { pipe_id: \"302821637\" fields_attributes: [ {field_id: \"aviso\", field_value: \"Sua CPU está fora do ideal\"} {field_id: \"serial_number\", field_value: \"AQUI VIRÁ O SERIAL NUMBER\"} {field_id: \"uso\", field_value: \"AQUI VIRÁ O USO DA CPU\"} {field_id: \"data_hora\", field_value: \"08/11/2022 00:00\"} ] } ) {clientMutationId card {id title }}}"}
-
-        # headers = {
-        #     "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c2VyIjp7ImlkIjozMDIxNzYyNTMsImVtYWlsIjoiMjIyLTFjY28tZ3J1cG8xMEBiYW5kdGVjLmNvbS5iciIsImFwcGxpY2F0aW9uIjozMDAyMTQwMDV9fQ.zV0vqSFmSDOMiHXQ2QsOhfjt_khTh5EJ_0myF0dbD8dzebwTL-nJ2wo7HR-sIrG6mkR0RdZV7uEIdY-c4aUfww",
-        #     "Content-Type": "application/json"}
-
-        # response = requests.request("POST", url, json=data, headers=headers)
-
-        # print(response)
-
-        # print(response.text, "oi")
+            criarCard(phaseId, componente, serialNumber, registroAceitavel, registroObtido, dataHora)
 
         # Temperatura
         if os.name == "nt":
@@ -423,7 +404,6 @@ def insertPeriodico(idCpu, idDisco, idRam, macAddress, serialNumber, urlOpen):
             insert(queryProc)
 
         time.sleep(intervaloInsert)
-
 
 def capturaTemp(serialNumber, urlOpen):
     try:
