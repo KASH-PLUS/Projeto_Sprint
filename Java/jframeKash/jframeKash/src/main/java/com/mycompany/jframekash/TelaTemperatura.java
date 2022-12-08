@@ -41,8 +41,8 @@ public class TelaTemperatura extends javax.swing.JFrame {
             timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
-                    lblClock.setText("Temperatura Atual: ");
-                    lblClock.setText(lblClock.getText() + temperatura.getTemperatura());
+                    lblTemperatura.setText("Temperatura Atual: ");
+                    lblTemperatura.setText(lblTemperatura.getText() + temperatura.getTemperatura());
                     prgTemperatura.setValue((temperatura.getTemperatura()).intValue());
                     
                     Long clockLong = cpu.getCurrentFreq()[1];
